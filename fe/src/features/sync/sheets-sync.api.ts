@@ -253,11 +253,12 @@ async function buildWalletNameMap(spreadsheetId: string): Promise<Map<string, st
   return new Map(rows.map((row) => [String(row[0] ?? ""), String(row[1] ?? "")]));
 }
 
-/** Sets the Date column's display format on one row — cosmetic only
- * (DAY()/EOMONTH() work on the underlying serial number regardless of
- * display format), but keeps the sheet looking like a real date column
- * with a calendar picker on manual edit, matching the pre-migration UX. */
-async function formatDateCell(spreadsheetId: string, row: number): Promise<void> {
+/** Sets the Date and Amount columns' display format on one row — cosmetic
+ * only (DAY()/EOMONTH() work on the Date's underlying serial number, sums
+ * work on Amount's raw value, regardless of display format), but keeps
+ * the sheet looking right: a real date column with a calendar picker, and
+ * thousands-separated money, on manual edit too. */
+async function formatRowCells(spreadsheetId: string, row: number): Promise<void> {
   await sheetsFetch(`${SHEETS_API}/${spreadsheetId}:batchUpdate`, {
     method: "POST",
     body: JSON.stringify({
@@ -266,6 +267,13 @@ async function formatDateCell(spreadsheetId: string, row: number): Promise<void>
           repeatCell: {
             range: { sheetId: TRANSACTIONS_SHEET_ID, startRowIndex: row - 1, endRowIndex: row, startColumnIndex: 1, endColumnIndex: 2 },
             cell: { userEnteredFormat: { numberFormat: { type: "DATE", pattern: "yyyy-mm-dd" } } },
+            fields: "userEnteredFormat.numberFormat",
+          },
+        },
+        {
+          repeatCell: {
+            range: { sheetId: TRANSACTIONS_SHEET_ID, startRowIndex: row - 1, endRowIndex: row, startColumnIndex: 5, endColumnIndex: 6 },
+            cell: { userEnteredFormat: { numberFormat: { type: "NUMBER", pattern: "#,##0" } } },
             fields: "userEnteredFormat.numberFormat",
           },
         },
@@ -296,13 +304,13 @@ async function upsertExpense(spreadsheetId: string, expense: Expense): Promise<v
     // Appended row's exact index isn't known without re-reading — one more
     // cheap ID-column read to format just that row's Date cell.
     const appendedRow = await findRow(spreadsheetId, "Transactions", expense.id);
-    if (appendedRow !== -1) await formatDateCell(spreadsheetId, appendedRow);
+    if (appendedRow !== -1) await formatRowCells(spreadsheetId, appendedRow);
   } else {
     await sheetsFetch(`${SHEETS_API}/${spreadsheetId}/values/Transactions!A${row}:O${row}?valueInputOption=RAW`, {
       method: "PUT",
       body: JSON.stringify({ values }),
     });
-    await formatDateCell(spreadsheetId, row);
+    await formatRowCells(spreadsheetId, row);
   }
 }
 
@@ -430,6 +438,13 @@ export async function pushAll(spreadsheetId: string, expenses: Expense[], wallet
             repeatCell: {
               range: { sheetId: TRANSACTIONS_SHEET_ID, startRowIndex: 1, endRowIndex: 1 + expenses.length, startColumnIndex: 1, endColumnIndex: 2 },
               cell: { userEnteredFormat: { numberFormat: { type: "DATE", pattern: "yyyy-mm-dd" } } },
+              fields: "userEnteredFormat.numberFormat",
+            },
+          },
+          {
+            repeatCell: {
+              range: { sheetId: TRANSACTIONS_SHEET_ID, startRowIndex: 1, endRowIndex: 1 + expenses.length, startColumnIndex: 5, endColumnIndex: 6 },
+              cell: { userEnteredFormat: { numberFormat: { type: "NUMBER", pattern: "#,##0" } } },
               fields: "userEnteredFormat.numberFormat",
             },
           },

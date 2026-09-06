@@ -89,6 +89,22 @@ function colorRange(
   };
 }
 
+const THOUSANDS_FORMAT = { type: "NUMBER" as const, pattern: "#,##0" };
+
+/** endRow omitted (undefined) means "to the bottom of the sheet" — used
+ * for QUERY spill ranges whose row count isn't fixed (e.g. Spend by
+ * Month, which grows every month the sheet is used) so the format never
+ * needs re-applying as they grow. */
+function numberFormatRange(sheetId: number, startRow: number, endRow: number | undefined, startCol: number, endCol: number) {
+  return {
+    repeatCell: {
+      range: { sheetId, startRowIndex: startRow, ...(endRow !== undefined ? { endRowIndex: endRow } : {}), startColumnIndex: startCol, endColumnIndex: endCol },
+      cell: { userEnteredFormat: { numberFormat: THOUSANDS_FORMAT } },
+      fields: "userEnteredFormat.numberFormat",
+    },
+  };
+}
+
 function mergeRange(sheetId: number, startRow: number, endRow: number, startCol: number, endCol: number) {
   return {
     mergeCells: {
@@ -282,6 +298,18 @@ async function buildSpreadsheetStructure_(accessToken: string, spreadsheetId: st
         },
       },
     },
+    // Thousands-separator number format on every money cell — Sheets'
+    // "#,##0" token renders using the spreadsheet's own locale separator,
+    // no hardcoded "," vs "." guess. Transactions!F (Amount) gets its own
+    // per-row format on every write instead (see sheets-sync.api.ts's
+    // formatRowCells) since rows are appended one at a time after
+    // provisioning.
+    numberFormatRange(STATS_SHEET_ID, 2, 3, 1, 2), // B3: Total Pengeluaran
+    numberFormatRange(STATS_SHEET_ID, 3, 4, 1, 2), // B4: Rata-rata Harian
+    numberFormatRange(STATS_SHEET_ID, 44, undefined, 1, 2), // B45:B — Tren Pengeluaran sums
+    numberFormatRange(STATS_SHEET_ID, 44, undefined, 4, 5), // E45:E — Distribusi Kategori sums
+    numberFormatRange(STATS_SHEET_ID, 45, undefined, 7, 8), // H46:H — Spend by Wallet
+    numberFormatRange(STATS_SHEET_ID, 44, undefined, 10, 11), // K45:K — Spend by Month (grows every month)
     // Filter/sort arrows on both sheets' header rows.
     { setBasicFilter: { filter: { range: { sheetId: TRANSACTIONS_SHEET_ID, startRowIndex: 0, startColumnIndex: 0, endColumnIndex: TXN_HEADERS.length } } } },
     { setBasicFilter: { filter: { range: { sheetId: CONFIG_SHEET_ID, startRowIndex: 0, startColumnIndex: 0, endColumnIndex: WALLET_HEADERS.length } } } },
