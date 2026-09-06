@@ -1,0 +1,5 @@
+# SPA fallback — without this, Cloudflare Pages 404s on any direct
+# navigation to a path with no matching static file: /auth/google (Google's
+# OAuth redirect target), /privacy, /terms. Real static assets (JS/CSS/
+# icons) still resolve normally — Pages checks those before applying this.
+/*  /index.html  200

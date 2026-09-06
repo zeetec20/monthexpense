@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#141811" />
+    <title>MonthExpense</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- vite-plugin-pwa injects the manifest link at build time; these iOS
+         home-screen tags aren't auto-injected and are added manually. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MonthExpense" />
+    <!-- Google Identity Services — client-side sign-in (id_token) and
+         OAuth token client (access_token) for the Google-login sync
+         setup. See src/features/sync/google-auth.ts. No SRI hash here on
+         purpose: Google serves and updates this script unversioned and
+         explicitly documents that pinning its integrity hash breaks it
+         on their next update — not an oversight. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+API_KEY=local-dev-secret-change-me
+REGULAR_API_KEY=local-dev-regular-secret-change-me
+PREMIUM_API_KEY=local-dev-premium-secret-change-me
+UPSTASH_REDIS_REST_URL=https://your-instance.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-upstash-token
+# LOCAL_MOCK_AI=true   # uncomment to skip real Workers AI calls locally

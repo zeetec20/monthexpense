@@ -1,0 +1,7 @@
+Toko Barokah
+
+Gula 1kg      15
+Minyak        28
+Telur         22
+
+total         65

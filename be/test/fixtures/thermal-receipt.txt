@@ -1,0 +1,15 @@
+WARUNG SED
+AP RASA
+JL RAYA NO 7
+
+02/14/24
+--------------------
+NASI GORE  1  15000
+ES TEH     2   5000
+KERUPUK    1   2000
+--------------------
+TOTAL        27000
+BAYAR        30000
+KEMBALI       3000
+--------------------
+TERIMA KASIH

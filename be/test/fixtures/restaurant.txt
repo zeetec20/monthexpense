@@ -1,0 +1,21 @@
+THE GARDEN BISTRO
+221 Baker Street
+London
+
+Order #4471          Table 12
+12 Jan 2024   19:47
+
+1x Grilled Salmon          18.50
+1x Caesar Salad             9.00
+2x Sparkling Water           4.00
+1x Tiramisu                  7.50
+
+Subtotal                    43.00
+Service Charge (10%)         4.30
+Tax (8%)                     3.44
+Total                       50.74
+
+Payment: Credit Card
+Amount Charged: 50.74
+
+Thank you for dining with us!

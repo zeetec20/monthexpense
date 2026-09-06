@@ -1,0 +1,117 @@
+/* Design tokens — ported 1:1 from ../expense-tracker's src/index.css.
+ * Variable NAMES kept as-is (every existing component already references
+ * these) — only the VALUES changed, so every screen picks up the new
+ * palette automatically, not just the ones explicitly reskinned this pass.
+ * Default (no class) = dark, matching expense-tracker's own :root-is-dark
+ * convention; `.light` overrides. See src/hooks/useTheme.ts for the toggle.
+ */
+
+:root {
+  /* Paper / ink — expense-tracker's --bg-… / --text-… vars (dark) */
+  --color-paper: #141811;
+  --color-paper-2: #1a1f16;
+  --color-paper-3: #22281d;
+  --color-ink: #f0f3e8;
+  --color-ink-2: #a9b4a0;
+  --color-ink-3: #6f7b6c;
+  --color-rule: #2e3627;
+
+  /* Accent — expense-tracker's sage --accent-emerald (dark) */
+  --color-accent: #8fb98a;
+  --color-accent-ink: #141811;
+  --color-accent-soft: #2e3d27;
+
+  /* New surface/wallet tokens (expense-tracker's --bg-card-hover/-subtle,
+   * --border-subtle, --wallet-1/2/3-bg/-ink) — only used by the newly
+   * reskinned Home/shell screens, wired into Tailwind utilities in app.css. */
+  --color-paper-hover: #2a3124;
+  --color-paper-subtle: #1d231a;
+  --color-rule-subtle: #242b1e;
+  --color-wallet-1: #2e3d27;
+  --color-wallet-1-ink: #eaf2e4;
+  --color-wallet-2: #22281d;
+  --color-wallet-2-ink: #f0f3e8;
+  --color-wallet-3: #e8ede2;
+  --color-wallet-3-ink: #1f2b38;
+
+  /* Dark graphite band + code card — folded onto the same paper-2/3 surfaces */
+  --color-graphite: #1a1f16;
+  --color-graphite-2: #22281d;
+  --color-on-graphite: #f0f3e8;
+  --color-on-graphite-muted: #a9b4a0;
+
+  /* Status */
+  --color-success: #8fb98a;
+  --color-error: #e8836b;
+  --color-focus: var(--color-accent);
+
+  /* Fonts — expense-tracker loads no webfont, system stack falls back to it */
+  --font-display: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Type scale */
+  --text-display: clamp(2.25rem, 1.7rem + 2.5vw, 3.25rem);
+  --text-display-s: clamp(1.75rem, 1.4rem + 1.6vw, 2.25rem);
+  --text-xl: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* 4pt space scale */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* Radii — expense-tracker leans on rounded-2xl/3xl directly in JSX; these
+   * back the few remaining var(--radius-*) consumers at an equivalent scale. */
+  --radius-control: 1rem;
+  --radius-card: 1.5rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 400ms;
+}
+
+.light {
+  --color-paper: #f7f8f3;
+  --color-paper-2: #eff2e8;
+  --color-paper-3: #ffffff;
+  --color-ink: #1f2b38;
+  --color-ink-2: #55645b;
+  --color-ink-3: #8b988d;
+  --color-rule: #e4e8dc;
+
+  --color-accent: #567f4c;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #dce9d4;
+
+  --color-paper-hover: #f4f6ec;
+  --color-paper-subtle: #f1f4ea;
+  --color-rule-subtle: #ecefe3;
+  --color-wallet-1: #dce9d4;
+  --color-wallet-1-ink: #1f2b38;
+  --color-wallet-2: #f3eedf;
+  --color-wallet-2-ink: #1f2b38;
+  --color-wallet-3: #22303c;
+  --color-wallet-3-ink: #f0f3e8;
+
+  --color-graphite: #eff2e8;
+  --color-graphite-2: #ffffff;
+  --color-on-graphite: #1f2b38;
+  --color-on-graphite-muted: #55645b;
+
+  --color-success: #567f4c;
+  --color-error: #d6544a;
+}

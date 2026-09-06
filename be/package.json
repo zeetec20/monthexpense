@@ -1,0 +1,29 @@
+{
+  "name": "receipt-parser",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:remote": "wrangler dev --remote",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "types": "wrangler types",
+    "deploy": "wrangler deploy",
+    "deploy:dry-run": "wrangler deploy --dry-run",
+    "mint-secret": "bun scripts/mint-secret.ts"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.38.3",
+    "hono": "^4.6.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.0",
+    "@cloudflare/workers-types": "^5.20260821.1",
+    "typescript": "^5.6.0",
+    "vitest": "^3.2.0",
+    "wrangler": "4"
+  }
+}

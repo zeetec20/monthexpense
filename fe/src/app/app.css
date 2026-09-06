@@ -1,0 +1,277 @@
+/* Palette/structure ported 1:1 from ../expense-tracker (see tokens.css's
+ * header comment) — nav: 5-slot bottom bar + FAB (MobileContainer clone).
+ */
+
+@import "tailwindcss";
+@import "../../tokens.css";
+
+/* expense-tracker keys its dark:/light: split off an explicit .dark/.light
+ * class (see src/hooks/useTheme.ts), not prefers-color-scheme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Palette overrides ported verbatim from expense-tracker's src/index.css —
+ * "sage / coral / lavender / mint" reference fintech tones standing in for
+ * Tailwind's stock emerald/rose/sky/teal scales, since the ported
+ * components (AppShell, HomeDashboard, TransactionsPage, …) use those
+ * utility classes directly (bg-emerald-600, text-sky-500, etc). */
+@theme {
+  --color-emerald-50: #f4f7f0;
+  --color-emerald-100: #e6eedd;
+  --color-emerald-200: #cfe0c2;
+  --color-emerald-300: #afcba0;
+  --color-emerald-400: #93b785;
+  --color-emerald-500: #7fa873;
+  --color-emerald-600: #5c8551;
+  --color-emerald-700: #4a6e41;
+  --color-emerald-800: #35512f;
+  --color-emerald-900: #243820;
+  --color-emerald-950: #141f12;
+
+  --color-rose-50: #fdf4f1;
+  --color-rose-100: #fae6df;
+  --color-rose-200: #f5cdbf;
+  --color-rose-300: #f0ae99;
+  --color-rose-400: #f09a82;
+  --color-rose-500: #e8836b;
+  --color-rose-600: #d9634e;
+  --color-rose-700: #b84a38;
+  --color-rose-800: #94392b;
+  --color-rose-900: #742f23;
+  --color-rose-950: #3f170f;
+
+  --color-sky-50: #f6f4fb;
+  --color-sky-100: #ece8f8;
+  --color-sky-200: #d8d1f1;
+  --color-sky-300: #c0b5e9;
+  --color-sky-400: #a795df;
+  --color-sky-500: #937ed4;
+  --color-sky-600: #7e68c4;
+  --color-sky-700: #6853a8;
+  --color-sky-800: #524288;
+  --color-sky-900: #3f336b;
+  --color-sky-950: #251e40;
+
+  --color-teal-50: #f2f7ef;
+  --color-teal-100: #e2eddc;
+  --color-teal-200: #c6ddbb;
+  --color-teal-300: #b9d8ae;
+  --color-teal-400: #9cc691;
+  --color-teal-500: #7fae74;
+  --color-teal-600: #639158;
+  --color-teal-700: #4e7545;
+  --color-teal-800: #3d5c37;
+  --color-teal-900: #2f472b;
+  --color-teal-950: #182716;
+}
+
+/* Semantic surface tokens as real Tailwind utilities (bg-surface, text-ink,
+ * bg-wallet-1, …) — matches expense-tracker's own literal class names in
+ * the reskinned components, alongside the pre-existing shadcn bridge below
+ * (unchanged — still serves ConnectGate/ManualEntryForm/ExpenseReviewModal/
+ * ExpenseDetailModal/WalletSettingsPage, none of which are reskinned yet). */
+@theme inline {
+  --color-surface: var(--color-paper);
+  --color-elevated: var(--color-paper-2);
+  --color-card-hover: var(--color-paper-hover);
+  --color-card-subtle: var(--color-paper-subtle);
+  --color-line: var(--color-rule);
+  --color-line-subtle: var(--color-rule-subtle);
+  --color-ink-soft: var(--color-ink-2);
+  --color-ink-faint: var(--color-ink-3);
+  --color-accent-strong: var(--color-accent);
+  --color-wallet-1: var(--color-wallet-1);
+  --color-wallet-1-ink: var(--color-wallet-1-ink);
+  --color-wallet-2: var(--color-wallet-2);
+  --color-wallet-2-ink: var(--color-wallet-2-ink);
+  --color-wallet-3: var(--color-wallet-3);
+  --color-wallet-3-ink: var(--color-wallet-3-ink);
+  /* Brand accent as its own utility name (brand, not accent) — shadcn's
+   * Button/Badge primitives already use `accent` as their neutral
+   * ghost/outline hover surface (see the bridge below); reusing that name
+   * for the emerald brand color would silently repaint every ghost-button
+   * hover. New components use bg-brand/text-brand/border-brand instead. */
+  --color-brand: var(--color-accent);
+  --color-brand-ink: var(--color-accent-ink);
+
+  /* Pre-existing shadcn primitive bridge — unchanged in shape, still
+   * pointing at tokens.css's names (now repointed to the new palette). */
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --radius-sm: calc(var(--radius-control) - 2px);
+  --radius-md: var(--radius-control);
+  --radius-lg: var(--radius-card);
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-paper);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-paper);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-ink);
+  --color-secondary: var(--color-paper-2);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-paper-2);
+  --color-muted-foreground: var(--color-ink-3);
+  --color-accent: var(--color-paper-3);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-error);
+  --color-border: var(--color-rule);
+  --color-input: var(--color-rule);
+  --color-ring: var(--color-focus);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+/* Clickable elements always show a pointer cursor (Tailwind v4 preflight
+ * defaults buttons to cursor:default) — mirrors expense-tracker's own
+ * base-layer reset. Non-button/select clickable divs still need an
+ * explicit cursor-pointer class since this can't reach them. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  select:not(:disabled),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+  button:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+}
+
+html {
+  overflow-x: clip;
+  color-scheme: light dark;
+  /* AppShell's bottom nav isn't fixed/sticky — it just sits at the end of
+   * a flex column sized h-dvh, so it's only ever as low as that box
+   * measures. iOS standalone PWAs commonly haven't settled dvh/safe-area
+   * on the very first paint after launch, leaving a sliver below the box
+   * genuinely unpainted — body's own background only covers its own
+   * (equally short) content box, so that sliver fell through to the
+   * browser's UA-default white instead of the app's actual theme. html's
+   * box always spans the true viewport, so filling it here guarantees
+   * there's nothing left to show through, regardless of the dvh timing. */
+  background: var(--color-paper);
+}
+
+body {
+  overflow-x: clip;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Enter/exit animation utilities for Radix data-state-driven components
+ * (Dialog, Select, Popover) — `data-[state=open]:animate-in` etc need
+ * these registered as real utilities (via @utility) to combine with
+ * variants; a plain-CSS class here would not. Small hand-written subset
+ * of tailwindcss-animate's composable var-based approach — only the
+ * combos this app actually uses, not the full plugin. */
+@utility animate-in {
+  animation-name: enter;
+  animation-duration: 150ms;
+  --tw-enter-opacity: initial;
+  --tw-enter-scale: initial;
+  --tw-enter-translate-x: initial;
+  --tw-enter-translate-y: initial;
+}
+@utility animate-out {
+  animation-name: exit;
+  animation-duration: 150ms;
+  --tw-exit-opacity: initial;
+  --tw-exit-scale: initial;
+  --tw-exit-translate-x: initial;
+  --tw-exit-translate-y: initial;
+}
+@utility fade-in-0 {
+  --tw-enter-opacity: 0;
+}
+@utility fade-out-0 {
+  --tw-exit-opacity: 0;
+}
+@utility zoom-in-95 {
+  --tw-enter-scale: 0.95;
+}
+@utility zoom-out-95 {
+  --tw-exit-scale: 0.95;
+}
+@utility slide-in-from-top-2 {
+  --tw-enter-translate-y: -0.5rem;
+}
+@utility slide-in-from-bottom-2 {
+  --tw-enter-translate-y: 0.5rem;
+}
+
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
+      scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1));
+  }
+}
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0)
+      scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1));
+  }
+}
+
+/* Gentle vertical bob for illustrated empty states (EmptyState). */
+@utility animate-float {
+  animation: float 2.5s ease-in-out infinite;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* No-scrollbar utility — used by the horizontally-scrolling wallet card
+ * carousel and tab strips, matches expense-tracker's own convention. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
