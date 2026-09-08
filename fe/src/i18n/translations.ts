@@ -19,23 +19,18 @@ export const translations = {
     login: "Login",
     installInstructionsTitle: "Pasang MonthExpense",
     installWelcomeTitle: "Pasang MonthExpense di layar utama",
-    installWelcomeBody:
-      "Akses lebih cepat dan bisa dipakai offline. Begini caranya:",
+    installWelcomeBody: "Akses lebih cepat dan bisa dipakai offline. Begini caranya:",
     installBenefitOffline:
       "Bisa dipakai sepenuhnya offline. Pindai struk dan input suara tetap jalan tanpa koneksi.",
     installBenefitPersistent:
       "Model pindai/suara tersimpan lebih stabil. Tab browser bisa dibersihkan otomatis setelah seminggu tidak dibuka, aplikasi terpasang tidak begitu.",
-    installBenefitFast:
-      "Langsung buka ke aplikasi, tanpa bilah alamat atau tab browser.",
-    installAndroidTapButton:
-      "Ketuk tombol Pasang di atas untuk memasang aplikasi ini.",
+    installBenefitFast: "Langsung buka ke aplikasi, tanpa bilah alamat atau tab browser.",
+    installAndroidTapButton: "Ketuk tombol Pasang di atas untuk memasang aplikasi ini.",
     installAndroidStep1: "Ketuk menu ⋮ di kanan atas Chrome",
-    installAndroidStep2:
-      'Ketuk "Instal aplikasi" (atau "Tambahkan ke layar utama")',
+    installAndroidStep2: 'Ketuk "Instal aplikasi" (atau "Tambahkan ke layar utama")',
     installAndroidStep3: 'Konfirmasi "Instal"',
     installAndroidOtherStep1: "Ketuk menu ⋮ di kanan atas browser",
-    installAndroidOtherStep2:
-      'Ketuk "Instal aplikasi" (atau "Tambahkan ke layar utama")',
+    installAndroidOtherStep2: 'Ketuk "Instal aplikasi" (atau "Tambahkan ke layar utama")',
     installAndroidOtherStep3: 'Konfirmasi "Instal"',
     installIosSafariStep1: "Ketuk Bagikan di toolbar bawah Safari",
     installIosSafariStep2: 'Gulir ke bawah, ketuk "Tambah ke Layar Utama"',
@@ -155,18 +150,14 @@ export const translations = {
     voiceParsing: "Memahami maksudnya…",
     voiceListening: "Merekam… ketuk lagi untuk memproses",
     voiceTapToSpeak: "Ketuk untuk bicara",
-    voiceErrorUnsupported:
-      'Input suara tidak didukung di browser ini. Gunakan "Tambah manual".',
-    voiceErrorMicBlocked:
-      "Akses mikrofon diblokir. Izinkan di pengaturan browser Anda.",
+    voiceErrorUnsupported: 'Input suara tidak didukung di browser ini. Gunakan "Tambah manual".',
+    voiceErrorMicBlocked: "Akses mikrofon diblokir. Izinkan di pengaturan browser Anda.",
     voiceErrorParseFailed: "Tidak bisa memahami pengeluaran itu.",
     voiceErrorTranscribeFailed: "Tidak bisa mentranskripsi rekaman itu.",
     voiceErrorGeneric: "Tidak terdengar jelas.",
-    voiceErrorUnclear:
-      "Tidak bisa memahami ucapan Anda. Coba bicara lebih jelas.",
+    voiceErrorUnclear: "Tidak bisa memahami ucapan Anda. Coba bicara lebih jelas.",
     voiceErrorQuotaExceeded: "Batas harian input suara sudah tercapai. Coba lagi besok.",
-    voiceErrorNoSpeech:
-      "Suara tidak terdengar jelas. Coba lagi, bicara lebih dekat ke mic.",
+    voiceErrorNoSpeech: "Suara tidak terdengar jelas. Coba lagi, bicara lebih dekat ke mic.",
 
     // Scanner
     scannerTryAgain: "Coba lagi",
@@ -176,19 +167,20 @@ export const translations = {
     scannerReadingReceipt: "Membaca struk…",
     scannerParsingReceipt: "Memproses struk…",
     scannerLoadingEngine: "Memuat mesin OCR…",
-    scannerErrorUnclear:
-      "Tidak bisa membaca struk ini. Pastikan gambarnya jelas.",
+    scannerErrorUnclear: "Tidak bisa membaca struk ini. Pastikan gambarnya jelas.",
     scannerErrorParseFailed: "Tidak bisa memproses struk ini.",
     scannerErrorQuotaExceeded: "Batas harian pindai struk sudah tercapai. Coba lagi besok.",
 
     // Paste receipt text (Manual entry's second mode)
     textReceiptCard: "Proses Teks",
-    textReceiptPlaceholder: "Tempel di sini teks struk/chat, contoh dari laundry, e-commerce, atau ojek online…",
+    textReceiptPlaceholder:
+      "Tempel di sini teks struk/chat, contoh dari laundry, e-commerce, atau ojek online…",
     textReceiptParsing: "Memproses teks…",
     textReceiptFallbackTitle: "Struk",
     textReceiptErrorUnclear: "Tidak bisa memahami teks ini sebagai struk.",
     textReceiptErrorParseFailed: "Tidak bisa memproses teks ini.",
-    textReceiptErrorQuotaExceeded: "Batas harian tempel teks struk sudah tercapai. Coba lagi besok.",
+    textReceiptErrorQuotaExceeded:
+      "Batas harian tempel teks struk sudah tercapai. Coba lagi besok.",
     quotaRemaining: "Sisa {remaining}/{limit} hari ini",
     cameraRequesting: "Meminta akses kamera…",
     cameraUnavailable: "Kamera tidak tersedia di perangkat/browser ini.",
@@ -201,17 +193,14 @@ export const translations = {
     pwaUpdatedOk: "Oke",
     offlineFeatureUnavailable:
       "Tidak ada koneksi internet. Fitur ini membutuhkannya untuk berfungsi.",
-    syncOfflineWarning:
-      "Tidak ada koneksi internet. Sinkronisasi tidak bisa dilakukan sekarang.",
+    syncOfflineWarning: "Tidak ada koneksi internet. Sinkronisasi tidak bisa dilakukan sekarang.",
     cameraBlockedTitle: "Akses kamera diblokir",
     cameraBlockedChrome:
       "Klik ikon kamera/gembok di bilah alamat → Izinkan, lalu muat ulang halaman.",
     cameraBlockedFirefox:
       "Klik ikon gembok di bilah alamat → hapus izin yang diblokir, muat ulang, lalu Izinkan saat diminta.",
-    cameraBlockedSafariMac:
-      "Menu Safari → Settings for This Website → Camera → Allow.",
-    cameraBlockedIos:
-      "Buka app Settings iOS → Safari → Camera → Allow, lalu muat ulang halaman.",
+    cameraBlockedSafariMac: "Menu Safari → Settings for This Website → Camera → Allow.",
+    cameraBlockedIos: "Buka app Settings iOS → Safari → Camera → Allow, lalu muat ulang halaman.",
     cameraBlockedOther:
       "Periksa pengaturan situs di browser Anda dan izinkan akses kamera, lalu muat ulang.",
 
@@ -247,17 +236,12 @@ export const translations = {
     connectBody:
       "Hubungkan Google Sheet Anda untuk memulai. Di situlah pengeluaran Anda tersimpan.",
     connectWithGoogle: "Hubungkan dengan Google",
-    connectErrorNoCode:
-      "Google tidak mengembalikan kode otorisasi. Coba masuk lagi.",
-    connectErrorStateMismatch:
-      "Tautan masuk ini sudah digunakan atau kedaluwarsa. Coba lagi.",
+    connectErrorNoCode: "Google tidak mengembalikan kode otorisasi. Coba masuk lagi.",
+    connectErrorStateMismatch: "Tautan masuk ini sudah digunakan atau kedaluwarsa. Coba lagi.",
     sheetSecretInvalid: "Sheet secret tidak valid.",
-    sheetSecretBanned:
-      "Sheet secret diblokir sementara setelah ketidakcocokan spreadsheet.",
-    sheetSecretAlreadyBound:
-      "Sheet secret ini sudah terhubung ke spreadsheet lain.",
-    googleSignInDidntLoad:
-      "Google sign-in tidak dapat dimuat. Periksa koneksi Anda dan coba lagi.",
+    sheetSecretBanned: "Sheet secret diblokir sementara setelah ketidakcocokan spreadsheet.",
+    sheetSecretAlreadyBound: "Sheet secret ini sudah terhubung ke spreadsheet lain.",
+    googleSignInDidntLoad: "Google sign-in tidak dapat dimuat. Periksa koneksi Anda dan coba lagi.",
     googlePopupNoResponse:
       "Popup Google sign-in tidak merespons. Izinkan popup untuk situs ini dan coba lagi.",
     googleAccessDenied: "Tidak bisa mendapatkan akses Google Drive/Sheets.",
@@ -270,10 +254,8 @@ export const translations = {
     googleCreatingSheet: "Membuat spreadsheet Anda…",
     googleBuildingStructure: "Menyiapkan halaman Statistik…",
     homeConnectWarningPrefix: "Masuk dengan Google untuk menambah pengeluaran.",
-    connectStepVerifying:
-      "Mengonfirmasi kunci sinkronisasi ini dengan server kami…",
-    connectStepMerging:
-      "Menggabungkan dengan data yang sudah ada di perangkat ini…",
+    connectStepVerifying: "Mengonfirmasi kunci sinkronisasi ini dengan server kami…",
+    connectStepMerging: "Menggabungkan dengan data yang sudah ada di perangkat ini…",
     connectStepSaving: "Menyimpan ke Google Sheet Anda…",
 
     // Reminder banner
@@ -314,10 +296,8 @@ export const translations = {
       "Works fully offline. Scan and voice entry keep running without a connection.",
     installBenefitPersistent:
       "Scan/voice models stay cached reliably. A browser tab can get cleared automatically after a week of inactivity, an installed app won't.",
-    installBenefitFast:
-      "Opens straight to the app, no browser address bar or tabs.",
-    installAndroidTapButton:
-      "Tap the Install button above to install this app.",
+    installBenefitFast: "Opens straight to the app, no browser address bar or tabs.",
+    installAndroidTapButton: "Tap the Install button above to install this app.",
     installAndroidStep1: "Tap the ⋮ menu, top-right of Chrome",
     installAndroidStep2: 'Tap "Install app" (or "Add to Home screen")',
     installAndroidStep3: 'Confirm "Install"',
@@ -438,13 +418,11 @@ export const translations = {
     voiceTapToSpeak: "Tap to speak",
     voiceErrorUnsupported:
       'Voice input isn\'t supported in this browser. Use "Add manually" instead.',
-    voiceErrorMicBlocked:
-      "Microphone access is blocked. Allow it in your browser settings.",
+    voiceErrorMicBlocked: "Microphone access is blocked. Allow it in your browser settings.",
     voiceErrorParseFailed: "Unable to understand that expense.",
     voiceErrorTranscribeFailed: "Unable to transcribe that recording.",
     voiceErrorGeneric: "Didn't catch that.",
-    voiceErrorUnclear:
-      "Unable to understand your speech. Try speaking more clearly.",
+    voiceErrorUnclear: "Unable to understand your speech. Try speaking more clearly.",
     voiceErrorQuotaExceeded: "Daily voice entry limit reached. Try again tomorrow.",
     voiceErrorNoSpeech: "Didn't catch that. Try again, speak closer to the mic.",
 
@@ -455,14 +433,14 @@ export const translations = {
     scannerReadingReceipt: "Reading receipt…",
     scannerParsingReceipt: "Parsing receipt…",
     scannerLoadingEngine: "Loading OCR engine…",
-    scannerErrorUnclear:
-      "Unable to read the receipt. Make sure the image is clear.",
+    scannerErrorUnclear: "Unable to read the receipt. Make sure the image is clear.",
     scannerErrorParseFailed: "Unable to process this receipt.",
     scannerErrorQuotaExceeded: "Daily receipt scan limit reached. Try again tomorrow.",
 
     // Paste receipt text (Manual entry's second mode)
     textReceiptCard: "Process Text",
-    textReceiptPlaceholder: "Paste receipt/chat text here, e.g. from laundry, e-commerce, or ride-hailing…",
+    textReceiptPlaceholder:
+      "Paste receipt/chat text here, e.g. from laundry, e-commerce, or ride-hailing…",
     textReceiptParsing: "Processing text…",
     textReceiptFallbackTitle: "Receipt",
     textReceiptErrorUnclear: "Unable to understand this text as a receipt.",
@@ -478,20 +456,16 @@ export const translations = {
     pwaUpdatedBody:
       "The application has been successfully updated, you are now using the latest version of the application.",
     pwaUpdatedOk: "OK",
-    offlineFeatureUnavailable:
-      "No internet connection. This feature needs it to work.",
+    offlineFeatureUnavailable: "No internet connection. This feature needs it to work.",
     syncOfflineWarning: "No internet connection. Can't sync right now.",
     cameraBlockedTitle: "Camera access blocked",
     cameraBlockedChrome:
       "Click the camera/lock icon in the address bar → Allow, then reload the page.",
     cameraBlockedFirefox:
       "Click the lock icon in the address bar → clear the blocked permission, reload, then Allow when prompted.",
-    cameraBlockedSafariMac:
-      "Safari menu → Settings for This Website → Camera → Allow.",
-    cameraBlockedIos:
-      "Open the iOS Settings app → Safari → Camera → Allow, then reload the page.",
-    cameraBlockedOther:
-      "Check your browser's site settings and allow camera access, then reload.",
+    cameraBlockedSafariMac: "Safari menu → Settings for This Website → Camera → Allow.",
+    cameraBlockedIos: "Open the iOS Settings app → Safari → Camera → Allow, then reload the page.",
+    cameraBlockedOther: "Check your browser's site settings and allow camera access, then reload.",
 
     syncTitle: "Google Sheets Sync",
     connectSheets: "Connect Google Sheets",
@@ -521,20 +495,16 @@ export const translations = {
     needsReauthTitle: "Reconnect needed",
     needsReauthBody:
       "Syncing needs a fresh connection to Google. Local data is still here. Click to continue.",
-    connectBody:
-      "Connect your Google Sheet to get started. It's where your expenses live.",
+    connectBody: "Connect your Google Sheet to get started. It's where your expenses live.",
     connectWithGoogle: "Connect with Google",
-    connectErrorNoCode:
-      "Google didn't return an authorization code. Try signing in again.",
-    connectErrorStateMismatch:
-      "This sign-in link was already used or expired. Try again.",
+    connectErrorNoCode: "Google didn't return an authorization code. Try signing in again.",
+    connectErrorStateMismatch: "This sign-in link was already used or expired. Try again.",
     sheetSecretInvalid: "Invalid sync secret.",
-    sheetSecretBanned:
-      "This sync secret was temporarily banned after a spreadsheet mismatch.",
-    sheetSecretAlreadyBound:
-      "This sync secret is already bound to a different spreadsheet.",
+    sheetSecretBanned: "This sync secret was temporarily banned after a spreadsheet mismatch.",
+    sheetSecretAlreadyBound: "This sync secret is already bound to a different spreadsheet.",
     googleSignInDidntLoad: "Google sign-in didn't load. Check your connection and try again.",
-    googlePopupNoResponse: "Google sign-in popup didn't respond. Allow popups for this site and try again.",
+    googlePopupNoResponse:
+      "Google sign-in popup didn't respond. Allow popups for this site and try again.",
     googleAccessDenied: "Could not get Google Drive/Sheets access.",
     googleNoEmail: "Google didn't return an email for this account.",
     googleSignInFailed: "Google sign-in failed. Please try again.",
@@ -582,18 +552,13 @@ export type TKey = keyof typeof translations.id;
 /** `translations.id` is authoritative for the key set — `en` falls back to
  * the `id` string if a key is ever missing there rather than showing a
  * raw key, since `id` is the primary/default language here. */
-export function t(
-  lang: Lang,
-  key: TKey,
-  params?: Record<string, string | number>,
-): string {
+export const t = (lang: Lang, key: TKey, params?: Record<string, string | number>): string => {
   let str: string = translations[lang][key] ?? translations.id[key];
   if (params) {
-    for (const [k, v] of Object.entries(params))
-      str = str.replace(`{${k}}`, String(v));
+    for (const [k, v] of Object.entries(params)) str = str.replace(`{${k}}`, String(v));
   }
   return str;
-}
+};
 
 // BE (text-processing-slm's checkIdentity) throws these exact English
 // strings in its {error:{message}} response — sheets-sync.api.ts's
@@ -608,13 +573,14 @@ const BACKEND_MESSAGE_KEYS: Record<string, TKey> = {
   // google-auth.ts throws these client-side (no BE involved) — same
   // untranslated-English problem as the BE strings above, same fix.
   "Google sign-in didn't load. Check your connection and try again.": "googleSignInDidntLoad",
-  "Google sign-in popup didn't respond. Allow popups for this site and try again.": "googlePopupNoResponse",
+  "Google sign-in popup didn't respond. Allow popups for this site and try again.":
+    "googlePopupNoResponse",
   "Could not get Google Drive/Sheets access.": "googleAccessDenied",
   "Google didn't return an email for this account.": "googleNoEmail",
   "Google sign-in failed. Please try again.": "googleSignInFailed",
 };
 
-export function translateBackendMessage(message: string, lang: Lang): string {
+export const translateBackendMessage = (message: string, lang: Lang): string => {
   const key = BACKEND_MESSAGE_KEYS[message];
   return key ? t(lang, key) : message;
-}
+};

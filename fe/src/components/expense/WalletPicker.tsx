@@ -1,10 +1,16 @@
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AnimalAvatar } from "@/components/ui/AnimalAvatar";
 import { t, type Lang } from "@/i18n/translations";
 import type { Wallet } from "@/features/wallet/wallet.schema";
 
-export function WalletPicker({
+export const WalletPicker = ({
   id,
   wallets,
   value,
@@ -18,7 +24,7 @@ export function WalletPicker({
   onChange: (walletId: string) => void;
   lang?: Lang;
   className?: string;
-}) {
+}) => {
   const selected = wallets.find((w) => w.id === value);
 
   return (
@@ -40,7 +46,11 @@ export function WalletPicker({
           <SelectValue>
             {selected && (
               <span className="flex min-w-0 items-center gap-2">
-                <AnimalAvatar animal={selected.animal} className="w-5 h-5 shrink-0" iconClassName="w-3 h-3" />
+                <AnimalAvatar
+                  animal={selected.animal}
+                  className="w-5 h-5 shrink-0"
+                  iconClassName="w-3 h-3"
+                />
                 <span className="min-w-0 flex-1 truncate">{selected.name}</span>
               </span>
             )}
@@ -50,7 +60,11 @@ export function WalletPicker({
           {wallets.map((wallet) => (
             <SelectItem key={wallet.id} value={wallet.id}>
               <span className="flex min-w-0 items-center gap-2">
-                <AnimalAvatar animal={wallet.animal} className="w-5 h-5 shrink-0" iconClassName="w-3 h-3" />
+                <AnimalAvatar
+                  animal={wallet.animal}
+                  className="w-5 h-5 shrink-0"
+                  iconClassName="w-3 h-3"
+                />
                 <span className="min-w-0 flex-1 truncate">{wallet.name}</span>
               </span>
             </SelectItem>
@@ -59,4 +73,4 @@ export function WalletPicker({
       </Select>
     </div>
   );
-}
+};

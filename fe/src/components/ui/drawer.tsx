@@ -1,30 +1,33 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Drawer as DrawerPrimitive } from "vaul"
+import * as React from "react";
+import { Drawer as DrawerPrimitive } from "vaul";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Drawer(props: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
 }
 
 function DrawerPortal(props: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
-  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
+  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />;
 }
 
 function DrawerClose(props: React.ComponentProps<typeof DrawerPrimitive.Close>) {
-  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
+  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
 }
 
-function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
+function DrawerOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
   return (
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
       className={cn("absolute inset-0 z-50 bg-black/60 backdrop-blur-sm", className)}
       {...props}
     />
-  )
+  );
 }
 
 // vaul's real Handle, not a plain div — required for `handleOnly` (see
@@ -35,7 +38,10 @@ function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof Draw
 // guarantee our exact visual style wins over vaul's own injected default
 // handle CSS, which loads (and would otherwise win on a specificity tie)
 // after our stylesheet.
-function DrawerHandle({ className, ...props }: React.ComponentProps<typeof DrawerPrimitive.Handle>) {
+function DrawerHandle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Handle>) {
   return (
     <DrawerPrimitive.Handle
       data-slot="drawer-handle"
@@ -45,7 +51,7 @@ function DrawerHandle({ className, ...props }: React.ComponentProps<typeof Drawe
       )}
       {...props}
     />
-  )
+  );
 }
 
 function DrawerContent({
@@ -68,11 +74,25 @@ function DrawerContent({
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
-  )
+  );
 }
 
 function DrawerTitle({ className, ...props }: React.ComponentProps<typeof DrawerPrimitive.Title>) {
-  return <DrawerPrimitive.Title data-slot="drawer-title" className={cn("sr-only", className)} {...props} />
+  return (
+    <DrawerPrimitive.Title
+      data-slot="drawer-title"
+      className={cn("sr-only", className)}
+      {...props}
+    />
+  );
 }
 
-export { Drawer, DrawerPortal, DrawerClose, DrawerOverlay, DrawerContent, DrawerHandle, DrawerTitle }
+export {
+  Drawer,
+  DrawerPortal,
+  DrawerClose,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHandle,
+  DrawerTitle,
+};

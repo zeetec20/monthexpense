@@ -11,33 +11,35 @@ import type { OcrDocument } from "./ocr.types";
 type OcrInstance = Awaited<ReturnType<typeof import("@paddleocr/paddleocr-js").PaddleOCR.create>>;
 let ocrPromise: Promise<OcrInstance> | undefined;
 
-function getOCR() {
+const getOCR = () => {
   // Assignment happens synchronously (no await before it) so concurrent
   // callers share one in-flight promise instead of racing two OCR instances.
   if (!ocrPromise) {
-    ocrPromise = import("@paddleocr/paddleocr-js").then(({ PaddleOCR }) => PaddleOCR.create(OCR_CONFIG));
+    ocrPromise = import("@paddleocr/paddleocr-js").then(({ PaddleOCR }) =>
+      PaddleOCR.create(OCR_CONFIG),
+    );
   }
   return ocrPromise;
-}
+};
 
 /** Kicks off OCR init ahead of time (e.g. on app load) so the first real scan
  * reuses the already-in-flight/resolved instance instead of starting cold. */
-export function warmUpOcr(): void {
+export const warmUpOcr = (): void => {
   void getOCR();
-}
+};
 
 /** Runs OCR on a receipt image and returns the normalized document. */
-export async function recognizeReceipt(image: Blob): Promise<OcrDocument> {
+export const recognizeReceipt = async (image: Blob): Promise<OcrDocument> => {
   const ocr = await getOCR();
   const result = await ocr.predict(image);
   return normalizeOcrResult(result);
-}
+};
 
 /** Adapter: keeps the raw PaddleOCR result shape out of the rest of the app. */
-export function normalizeOcrResult(result: {
+export const normalizeOcrResult = (result: {
   items: { text: string; score: number; poly: [number, number][] }[];
   image: { width: number; height: number };
-}): OcrDocument {
+}): OcrDocument => {
   const lines = result.items.map((item) => ({
     text: item.text,
     confidence: item.score ?? null,
@@ -49,4 +51,4 @@ export function normalizeOcrResult(result: {
     lines,
     imageSize: result.image,
   };
-}
+};

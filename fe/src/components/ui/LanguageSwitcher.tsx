@@ -16,9 +16,7 @@ export function LanguageSwitcher({
         onClick={() => onChange("id")}
         className={
           "h-8 w-8 flex items-center justify-center rounded-[10px] text-xs font-bold transition-all " +
-          (lang === "id"
-            ? "bg-emerald-600 text-white shadow-sm"
-            : "text-ink-faint hover:text-ink")
+          (lang === "id" ? "bg-emerald-600 text-white shadow-sm" : "text-ink-faint hover:text-ink")
         }
         title="Bahasa Indonesia"
       >
@@ -29,9 +27,7 @@ export function LanguageSwitcher({
         onClick={() => onChange("en")}
         className={
           "h-8 w-8 flex items-center justify-center rounded-[10px] text-xs font-bold transition-all " +
-          (lang === "en"
-            ? "bg-emerald-600 text-white shadow-sm"
-            : "text-ink-faint hover:text-ink")
+          (lang === "en" ? "bg-emerald-600 text-white shadow-sm" : "text-ink-faint hover:text-ink")
         }
         title="English"
       >

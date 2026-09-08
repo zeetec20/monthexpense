@@ -13,7 +13,9 @@ const validate = (rawOutput: string): { expense?: Receipt; errorSummary?: string
   try {
     candidate = extractJson(rawOutput);
   } catch (err) {
-    return { errorSummary: err instanceof Error ? err.message : "invalid or unparseable JSON output" };
+    return {
+      errorSummary: err instanceof Error ? err.message : "invalid or unparseable JSON output",
+    };
   }
 
   const result = ReceiptSchema.safeParse(normalizeReceiptCandidate(candidate));
@@ -23,7 +25,10 @@ const validate = (rawOutput: string): { expense?: Receipt; errorSummary?: string
     // cross-check (rare for a short spoken transcript); checkVoiceCompleteness
     // covers the more common "nothing to compare against, but something's
     // still missing" case.
-    expense.metadata = { ...expense.metadata, validation_warning: checkArithmetic(expense) ?? checkVoiceCompleteness(expense) };
+    expense.metadata = {
+      ...expense.metadata,
+      validation_warning: checkArithmetic(expense) ?? checkVoiceCompleteness(expense),
+    };
     return { expense };
   }
   return { errorSummary: summarizeZodError(result.error) };
@@ -47,7 +52,14 @@ export const parseExpenseVoice = async (
   let rawOutput = String(await model.parse(transcript, referenceDate, language));
   let { expense, errorSummary } = validate(rawOutput);
   if (!expense) {
-    console.error(JSON.stringify({ msg: "parse attempt failed", attempt: 0, errorSummary, outputLength: rawOutput.length }));
+    console.error(
+      JSON.stringify({
+        msg: "parse attempt failed",
+        attempt: 0,
+        errorSummary,
+        outputLength: rawOutput.length,
+      }),
+    );
   }
 
   let attempts = 0;
@@ -56,7 +68,14 @@ export const parseExpenseVoice = async (
     rawOutput = String(await model.repair(rawOutput, errorSummary!, referenceDate, language));
     ({ expense, errorSummary } = validate(rawOutput));
     if (!expense) {
-      console.error(JSON.stringify({ msg: "parse attempt failed", attempt: attempts, errorSummary, outputLength: rawOutput.length }));
+      console.error(
+        JSON.stringify({
+          msg: "parse attempt failed",
+          attempt: attempts,
+          errorSummary,
+          outputLength: rawOutput.length,
+        }),
+      );
     }
   }
 

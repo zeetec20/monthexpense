@@ -3,19 +3,20 @@ import { useCallback, useEffect, useState } from "react";
 export type Theme = "dark" | "light";
 const STORAGE_KEY = "expense-notes.theme.v1";
 
-function readStoredTheme(): Theme {
+const readStoredTheme = (): Theme => {
   const stored = typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
   if (stored === "light" || stored === "dark") return stored;
   // First-ever visit — follow the phone's OS-level color scheme.
-  const prefersLight = typeof matchMedia !== "undefined" && matchMedia("(prefers-color-scheme: light)").matches;
+  const prefersLight =
+    typeof matchMedia !== "undefined" && matchMedia("(prefers-color-scheme: light)").matches;
   return prefersLight ? "light" : "dark";
-}
+};
 
 /** Ported from expense-tracker's ExpenseContext theme handling — always
  * sets exactly one of .dark/.light on <html> (not "no class for dark"),
  * since Tailwind's `dark:` utility variant here is keyed to an explicit
  * `.dark` ancestor (see app.css's @custom-variant), not prefers-color-scheme. */
-export function useTheme() {
+export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(readStoredTheme);
 
   useEffect(() => {
@@ -30,4 +31,4 @@ export function useTheme() {
   }, []);
 
   return { theme, setTheme, toggleTheme };
-}
+};

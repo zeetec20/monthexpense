@@ -23,12 +23,15 @@ const defaultLang = (): LangCode => "id-ID";
 // Two per language so the hint doesn't look static/repetitive — one is
 // picked at mount (below) and stays put for the component's lifetime.
 const EXAMPLE_SENTENCES: Record<LangCode, string[]> = {
-  "en-US": ['e.g. "Bought coffee, twenty thousand rupiah"', 'e.g. "Paid for parking, five thousand rupiah"'],
+  "en-US": [
+    'e.g. "Bought coffee, twenty thousand rupiah"',
+    'e.g. "Paid for parking, five thousand rupiah"',
+  ],
   "id-ID": ['misal: "Beli kopi, dua puluh ribu"', 'misal: "Bayar parkir, lima ribu"'],
 };
 
 /** Audio-only entry point — no typed fields here, "Add manually" (App.tsx) covers that. */
-export function VoiceEntry({
+export const VoiceEntry = ({
   onSubmit,
   wallets,
   defaultWalletId,
@@ -40,12 +43,13 @@ export function VoiceEntry({
   /** App UI language — distinct from `LangCode` below, which is the
    * speech-recognition language and stays a separate axis. */
   lang?: Lang;
-}) {
+}) => {
   const [sttLang, setSttLang] = useState<LangCode>(defaultLang);
   // Stable for the component's lifetime — picked once, not re-rolled on
   // every render/state change.
   const [exampleIdx] = useState(() => Math.floor(Math.random() * 2));
-  const { status, result, message, detail, start, stop, reset, supported } = useVoiceExpense(sttLang);
+  const { status, result, message, detail, start, stop, reset, supported } =
+    useVoiceExpense(sttLang);
   const online = useOnlineStatus();
   const quota = useEntryQuota("voice");
 
@@ -98,7 +102,9 @@ export function VoiceEntry({
               aria-pressed={sttLang === code}
               className={
                 "h-7 w-10 flex items-center justify-center rounded-xl text-xs font-bold transition-all " +
-                (sttLang === code ? "bg-emerald-600 text-white shadow-sm" : "text-ink-faint hover:text-ink")
+                (sttLang === code
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-ink-faint hover:text-ink")
               }
             >
               {label}
@@ -155,18 +161,24 @@ export function VoiceEntry({
       </button>
 
       {supported && (
-        <p className="text-center text-xs text-ink-faint">{EXAMPLE_SENTENCES[sttLang][exampleIdx]}</p>
+        <p className="text-center text-xs text-ink-faint">
+          {EXAMPLE_SENTENCES[sttLang][exampleIdx]}
+        </p>
       )}
 
       {status === "error" && message && (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-center text-xs whitespace-pre-line text-ink-faint">{t(lang, message)}</p>
+          <p className="text-center text-xs whitespace-pre-line text-ink-faint">
+            {t(lang, message)}
+          </p>
           {/* Temporary diagnostic: voiceErrorGeneric collapses a few
               distinct causes (empty clip vs. clip uploaded but server
               said silence vs. transcribe request itself failing) into
               one message — this shows which, so a report from a real
               device is actionable without needing devtools access. */}
-          {detail && <p className="text-center text-[10px] font-mono text-ink-faint/70">{detail}</p>}
+          {detail && (
+            <p className="text-center text-[10px] font-mono text-ink-faint/70">{detail}</p>
+          )}
           <Button variant="outline" size="sm" onClick={reset}>
             {t(lang, "scannerTryAgain")}
           </Button>
@@ -174,4 +186,4 @@ export function VoiceEntry({
       )}
     </div>
   );
-}
+};

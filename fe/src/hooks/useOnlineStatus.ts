@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-function readOnline(): boolean {
+const readOnline = (): boolean => {
   return typeof navigator === "undefined" || navigator.onLine;
-}
+};
 
 /** Tracks browser connectivity via the online/offline window events — used
  * to skip a guaranteed-fail sync push while offline, and to retry it
  * automatically the moment connectivity returns (see sync.store.ts). */
-export function useOnlineStatus(): boolean {
+export const useOnlineStatus = (): boolean => {
   const [online, setOnline] = useState<boolean>(readOnline);
 
   useEffect(() => {
@@ -22,4 +22,4 @@ export function useOnlineStatus(): boolean {
   }, []);
 
   return online;
-}
+};

@@ -45,13 +45,13 @@ The universal slop-test gates apply, plus these editorial-specific bans:
 
 ## Voice fixtures
 
-Each macrostructure under editorial picks from these opening-line patterns. Imitate the *shape*, not the wording.
+Each macrostructure under editorial picks from these opening-line patterns. Imitate the _shape_, not the wording.
 
-- *"Type, set with care."*
-- *"Print discipline, on screen."*
-- *"A small skill that argues against the average."*
-- *"We compose the page like a broadsheet — hairlines, columns, restraint."*
-- *"Restraint, repeated, becomes a signature."*
+- _"Type, set with care."_
+- _"Print discipline, on screen."_
+- _"A small skill that argues against the average."_
+- _"We compose the page like a broadsheet — hairlines, columns, restraint."_
+- _"Restraint, repeated, becomes a signature."_
 
 ## Nav and footer voice
 

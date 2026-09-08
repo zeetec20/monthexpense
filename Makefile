@@ -3,6 +3,8 @@
         build-fe \
         test-fe test-be \
         typecheck-be \
+        lint lint-fe lint-be \
+        format format-fe format-be \
         deploy-fe deploy-be \
         tunnel-fe tunnel-be
 
@@ -31,6 +33,22 @@ test-be:
 
 typecheck-be:
 	cd be && bun run typecheck
+
+lint: lint-fe lint-be
+
+lint-fe:
+	cd fe && bun run lint
+
+lint-be:
+	cd be && bun run lint
+
+format: format-fe format-be
+
+format-fe:
+	cd fe && bun run format
+
+format-be:
+	cd be && bun run format
 
 deploy-fe:
 	cd fe && bun run deploy

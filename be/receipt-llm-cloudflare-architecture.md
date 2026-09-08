@@ -81,19 +81,19 @@ The core principle is:
 
 ## 3. Technology Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Runtime | Cloudflare Workers | Serverless execution |
-| HTTP framework | Hono | REST API routing and middleware |
-| AI | Cloudflare Workers AI | LLM inference |
-| Validation | Zod | Request and response validation |
-| Package manager/tooling | Bun | Local development and dependency management |
-| Deployment | Wrangler | Cloudflare deployment/configuration |
-| Secrets | Cloudflare Worker Secrets | API authentication secret |
-| Storage | None | Keep the service stateless |
-| Database | None | Not required for the initial architecture |
-| Queue | None | Requests are synchronous |
-| Object storage | None | The API receives text, not images |
+| Layer                   | Technology                | Purpose                                     |
+| ----------------------- | ------------------------- | ------------------------------------------- |
+| Runtime                 | Cloudflare Workers        | Serverless execution                        |
+| HTTP framework          | Hono                      | REST API routing and middleware             |
+| AI                      | Cloudflare Workers AI     | LLM inference                               |
+| Validation              | Zod                       | Request and response validation             |
+| Package manager/tooling | Bun                       | Local development and dependency management |
+| Deployment              | Wrangler                  | Cloudflare deployment/configuration         |
+| Secrets                 | Cloudflare Worker Secrets | API authentication secret                   |
+| Storage                 | None                      | Keep the service stateless                  |
+| Database                | None                      | Not required for the initial architecture   |
+| Queue                   | None                      | Requests are synchronous                    |
+| Object storage          | None                      | The API receives text, not images           |
 
 ---
 
@@ -979,7 +979,7 @@ Keep the application Worker-native by relying on Web APIs rather than Bun-specif
 Avoid building the application around:
 
 ```ts
-Bun.serve()
+Bun.serve();
 ```
 
 because production runs in the Cloudflare Workers runtime.
@@ -1114,31 +1114,31 @@ A single response envelope makes the REST API easier to consume.
 
 ## 27. Design Decision Summary
 
-| Decision | Recommendation |
-|---|---|
-| Runtime | Cloudflare Workers |
-| Framework | Hono |
-| Development | Bun |
-| AI | Cloudflare Workers AI |
-| API style | REST |
-| Architecture | Stateless |
-| Input | OCR text |
-| Image handling | None |
-| OCR | None |
-| Database | None |
-| Queue | None |
-| Storage | None |
-| Authentication | Bearer API key |
-| Validation | Zod |
-| LLM output | Untrusted |
-| JSON handling | Parse → validate → normalize |
-| Repair | Maximum one attempt |
-| Retry | Strictly bounded |
-| Logging | Metadata only |
-| API version | `/v1` |
-| Primary endpoint | `POST /v1/receipts/parse` |
-| Health endpoint | `GET /health` |
-| Metadata endpoint | `GET /v1/meta` |
+| Decision          | Recommendation               |
+| ----------------- | ---------------------------- |
+| Runtime           | Cloudflare Workers           |
+| Framework         | Hono                         |
+| Development       | Bun                          |
+| AI                | Cloudflare Workers AI        |
+| API style         | REST                         |
+| Architecture      | Stateless                    |
+| Input             | OCR text                     |
+| Image handling    | None                         |
+| OCR               | None                         |
+| Database          | None                         |
+| Queue             | None                         |
+| Storage           | None                         |
+| Authentication    | Bearer API key               |
+| Validation        | Zod                          |
+| LLM output        | Untrusted                    |
+| JSON handling     | Parse → validate → normalize |
+| Repair            | Maximum one attempt          |
+| Retry             | Strictly bounded             |
+| Logging           | Metadata only                |
+| API version       | `/v1`                        |
+| Primary endpoint  | `POST /v1/receipts/parse`    |
+| Health endpoint   | `GET /health`                |
+| Metadata endpoint | `GET /v1/meta`               |
 
 ## 28. Core Principle
 

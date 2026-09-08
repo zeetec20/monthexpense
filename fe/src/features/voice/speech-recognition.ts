@@ -28,13 +28,13 @@ interface SpeechRecognitionLike extends EventTarget {
 }
 type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
 
-function getCtor(): SpeechRecognitionCtor | null {
+const getCtor = (): SpeechRecognitionCtor | null => {
   const w = window as unknown as {
     SpeechRecognition?: SpeechRecognitionCtor;
     webkitSpeechRecognition?: SpeechRecognitionCtor;
   };
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
+};
 
 // Every iOS browser (Safari, Chrome iOS, etc.) wraps the same WebKit
 // engine — same pattern as LiveCameraCapture.tsx's detectCameraBrowser.
@@ -44,24 +44,31 @@ function getCtor(): SpeechRecognitionCtor | null {
 // with no visible feedback at all. Treat iOS as unsupported outright so
 // voice entry routes straight to the Cloudflare mic-recording fallback
 // instead of hitting this broken tier first every time.
-function isIOS(): boolean {
+const isIOS = (): boolean => {
   const ua = navigator.userAgent;
-  return /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-}
+  return (
+    /iPhone|iPad|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+};
 
-export function isSpeechRecognitionSupported(): boolean {
+export const isSpeechRecognitionSupported = (): boolean => {
   return typeof window !== "undefined" && !isIOS() && getCtor() !== null;
-}
+};
 
 export interface SpeechRecognizer {
   start(): void;
   stop(): void;
 }
 
-export function createSpeechRecognizer(
+export const createSpeechRecognizer = (
   lang: string,
-  handlers: { onResult: (transcript: string) => void; onError: (error: string) => void; onEnd: () => void },
-): SpeechRecognizer | null {
+  handlers: {
+    onResult: (transcript: string) => void;
+    onError: (error: string) => void;
+    onEnd: () => void;
+  },
+): SpeechRecognizer | null => {
   const Ctor = getCtor();
   if (!Ctor) return null;
 
@@ -82,4 +89,4 @@ export function createSpeechRecognizer(
     start: () => recognition.start(),
     stop: () => recognition.stop(),
   };
-}
+};

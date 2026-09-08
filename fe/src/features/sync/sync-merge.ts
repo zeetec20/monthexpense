@@ -7,10 +7,10 @@ import type { Expense } from "@/features/expense/expense.schema";
  * authoritative side once a device is actively connecting/reconnecting).
  * Exported for direct testing — no React render harness in this repo, see
  * wallet.store.ts's addWalletPure/etc. for the same reasoning. */
-export function mergeById<T extends { id: string }>(sheetItems: T[], localItems: T[]): T[] {
+export const mergeById = <T extends { id: string }>(sheetItems: T[], localItems: T[]): T[] => {
   const sheetIds = new Set(sheetItems.map((i) => i.id));
   return [...sheetItems, ...localItems.filter((i) => !sheetIds.has(i.id))];
-}
+};
 
 /** Whether this device has anything worth merging, vs. just the untouched
  * default wallet every fresh device auto-seeds — used to tell "this device
@@ -18,11 +18,11 @@ export function mergeById<T extends { id: string }>(sheetItems: T[], localItems:
  * joining an already-connected account" (the common multi-device case),
  * which should be a pure pull, not a merge (a naive id-merge would show a
  * duplicate "Main Wallet" — same name, different id, from each side). */
-export function hasRealLocalData(expenses: Expense[], wallets: Wallet[]): boolean {
+export const hasRealLocalData = (expenses: Expense[], wallets: Wallet[]): boolean => {
   if (expenses.length > 0) return true;
   if (wallets.length > 1) return true;
   return wallets.length === 1 && wallets[0]!.name !== DEFAULT_WALLET_NAME;
-}
+};
 
 /** Sheet-wins merge for the trailing-window recent-pull (see sync.store.ts's
  * pullRecentAndMerge): everything in `local` dated before `cutoff` (a
@@ -33,9 +33,13 @@ export function hasRealLocalData(expenses: Expense[], wallets: Wallet[]): boolea
  * added/edited something in the window and another device having deleted
  * something in it (a sheet-side delete just isn't in `recent` to begin
  * with). Exported for direct testing, same reasoning as mergeById above. */
-export function mergeRecentWindow(local: Expense[], recent: Expense[], cutoff: string): Expense[] {
+export const mergeRecentWindow = (
+  local: Expense[],
+  recent: Expense[],
+  cutoff: string,
+): Expense[] => {
   return [...local.filter((e) => e.date < cutoff), ...recent];
-}
+};
 
 /** Collapses wallets sharing a name (trimmed, case-insensitive) down to the
  * first occurrence, remapping any expense's walletId off a dropped
@@ -45,10 +49,10 @@ export function mergeRecentWindow(local: Expense[], recent: Expense[], cutoff: s
  * wallets survive a merge — this is what actually collapses them back
  * into one, both before pushing to the sheet and as a local self-heal.
  * No-ops (returns the same references) when nothing collides. */
-export function dedupeWalletsByName(
+export const dedupeWalletsByName = (
   wallets: Wallet[],
   expenses: Expense[],
-): { wallets: Wallet[]; expenses: Expense[] } {
+): { wallets: Wallet[]; expenses: Expense[] } => {
   const survivorIdByName = new Map<string, string>();
   const idRemap = new Map<string, string>();
   const deduped: Wallet[] = [];
@@ -65,6 +69,8 @@ export function dedupeWalletsByName(
   if (idRemap.size === 0) return { wallets, expenses };
   return {
     wallets: deduped,
-    expenses: expenses.map((e) => (e.walletId && idRemap.has(e.walletId) ? { ...e, walletId: idRemap.get(e.walletId) } : e)),
+    expenses: expenses.map((e) =>
+      e.walletId && idRemap.has(e.walletId) ? { ...e, walletId: idRemap.get(e.walletId) } : e,
+    ),
   };
-}
+};

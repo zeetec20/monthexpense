@@ -43,8 +43,17 @@ export const createFakeReceiptModel = (): ReceiptModel & {
 
 /** Same double as createFakeReceiptModel, for the voice-expense path — same Receipt shape, see ai/prompt.ts's EXPENSE_SYSTEM_PROMPT. */
 export const createFakeExpenseModel = (): ExpenseModel & {
-  parseImpl: (transcript: string, referenceDate: string, language?: "en" | "id") => Promise<unknown>;
-  repairImpl: (rawOutput: string, errorSummary: string, referenceDate: string, language?: "en" | "id") => Promise<unknown>;
+  parseImpl: (
+    transcript: string,
+    referenceDate: string,
+    language?: "en" | "id",
+  ) => Promise<unknown>;
+  repairImpl: (
+    rawOutput: string,
+    errorSummary: string,
+    referenceDate: string,
+    language?: "en" | "id",
+  ) => Promise<unknown>;
 } => {
   return {
     parseImpl: async () =>

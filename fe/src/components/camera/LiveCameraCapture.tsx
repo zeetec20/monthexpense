@@ -26,15 +26,17 @@ interface LiveCameraCaptureProps {
 // (which is mobile-install-specific and returns the wrong set of options
 // for this).
 type CameraBrowser = "chrome" | "firefox" | "safariMac" | "ios" | "other";
-function detectCameraBrowser(): CameraBrowser {
+const detectCameraBrowser = (): CameraBrowser => {
   const ua = navigator.userAgent;
-  const isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isIOS =
+    /iPhone|iPad|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   if (isIOS) return "ios"; // every iOS browser shares WebKit's permission UI, lives in the iOS Settings app
   if (/Firefox/.test(ua)) return "firefox";
   if (/Chrome|Chromium|Edg/.test(ua)) return "chrome";
   if (/Safari/.test(ua)) return "safariMac";
   return "other";
-}
+};
 const BLOCKED_INSTRUCTION_KEY: Record<CameraBrowser, TKey> = {
   chrome: "cameraBlockedChrome",
   firefox: "cameraBlockedFirefox",
@@ -50,19 +52,26 @@ const BLOCKED_INSTRUCTION_KEY: Record<CameraBrowser, TKey> = {
  * way to pick an existing photo from the same control. Keeps a separate
  * camera-less file input for gallery/file-browse (works the same on
  * mobile and desktop, since `capture` never applies on desktop anyway). */
-export function LiveCameraCapture({ onCapture, disabled, active, lang, onExpandChange }: LiveCameraCaptureProps) {
-  const { videoRef, state, canSwitch, switching, switchCamera, requestCamera } = useCameraStream(active);
+export const LiveCameraCapture = ({
+  onCapture,
+  disabled,
+  active,
+  lang,
+  onExpandChange,
+}: LiveCameraCaptureProps) => {
+  const { videoRef, state, canSwitch, switching, switchCamera, requestCamera } =
+    useCameraStream(active);
   const [expanded, setExpanded] = useState(false);
   const [flash, setFlash] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  function setExpandedAndNotify(next: boolean) {
+  const setExpandedAndNotify = (next: boolean) => {
     setExpanded(next);
     onExpandChange?.(next);
-  }
+  };
 
-  function handleShutter() {
+  const handleShutter = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     if (!video || !canvas || video.videoWidth === 0) return;
@@ -71,14 +80,18 @@ export function LiveCameraCapture({ onCapture, disabled, active, lang, onExpandC
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      setFlash(true);
-      setTimeout(() => setFlash(false), 150);
-      onCapture(new File([blob], "capture.jpg", { type: "image/jpeg" }));
-      setExpandedAndNotify(false);
-    }, "image/jpeg", 0.92);
-  }
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) return;
+        setFlash(true);
+        setTimeout(() => setFlash(false), 150);
+        onCapture(new File([blob], "capture.jpg", { type: "image/jpeg" }));
+        setExpandedAndNotify(false);
+      },
+      "image/jpeg",
+      0.92,
+    );
+  };
 
   return (
     <div className="flex w-full flex-col items-center gap-2">
@@ -106,7 +119,9 @@ export function LiveCameraCapture({ onCapture, disabled, active, lang, onExpandC
             className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[var(--color-paper-2)] px-4 text-[var(--color-ink-3)] disabled:opacity-50"
           >
             <Camera className="size-6" />
-            <span className="text-center text-xs font-medium">{t(lang, "scannerEnableCamera")}</span>
+            <span className="text-center text-xs font-medium">
+              {t(lang, "scannerEnableCamera")}
+            </span>
           </button>
         )}
 
@@ -127,8 +142,12 @@ export function LiveCameraCapture({ onCapture, disabled, active, lang, onExpandC
             {state === "denied" && (
               <>
                 <CameraOff className="size-6" />
-                <span className="text-center text-xs font-semibold">{t(lang, "cameraBlockedTitle")}</span>
-                <span className="text-center text-[11px] leading-relaxed">{t(lang, BLOCKED_INSTRUCTION_KEY[detectCameraBrowser()])}</span>
+                <span className="text-center text-xs font-semibold">
+                  {t(lang, "cameraBlockedTitle")}
+                </span>
+                <span className="text-center text-[11px] leading-relaxed">
+                  {t(lang, BLOCKED_INSTRUCTION_KEY[detectCameraBrowser()])}
+                </span>
               </>
             )}
           </div>
@@ -203,4 +222,4 @@ export function LiveCameraCapture({ onCapture, disabled, active, lang, onExpandC
       )}
     </div>
   );
-}
+};

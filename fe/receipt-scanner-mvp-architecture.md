@@ -54,22 +54,22 @@ The MVP intentionally does not include authentication, database storage, receipt
 
 ## 2. Technology Stack
 
-| Area | Technology |
-|---|---|
-| Runtime / package manager | Bun |
-| Build tool | Vite |
-| Language | TypeScript |
-| UI | React |
-| OCR | PaddleOCR.js |
-| OCR model | PP-OCRv5 |
-| OCR runtime | ONNX Runtime Web |
-| OCR execution | Web Worker |
-| Validation | Zod |
-| HTTP client | Native `fetch()` |
-| Camera | Browser MediaDevices API / file input |
-| Deployment | Static hosting |
-| Parser backend | Cloudflare Worker |
-| API format | JSON |
+| Area                      | Technology                            |
+| ------------------------- | ------------------------------------- |
+| Runtime / package manager | Bun                                   |
+| Build tool                | Vite                                  |
+| Language                  | TypeScript                            |
+| UI                        | React                                 |
+| OCR                       | PaddleOCR.js                          |
+| OCR model                 | PP-OCRv5                              |
+| OCR runtime               | ONNX Runtime Web                      |
+| OCR execution             | Web Worker                            |
+| Validation                | Zod                                   |
+| HTTP client               | Native `fetch()`                      |
+| Camera                    | Browser MediaDevices API / file input |
+| Deployment                | Static hosting                        |
+| Parser backend            | Cloudflare Worker                     |
+| API format                | JSON                                  |
 
 No Axios, React Query, Redux, or Zustand is required for this MVP.
 
@@ -299,23 +299,18 @@ import { receiptResponseSchema } from "./receipt.schema";
 const API_URL = import.meta.env.VITE_RECEIPT_API_URL;
 
 export async function parseReceipt(text: string) {
-  const response = await fetch(
-    `${API_URL}/v1/receipts/parse`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text,
-      }),
+  const response = await fetch(`${API_URL}/v1/receipts/parse`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify({
+      text,
+    }),
+  });
 
   if (!response.ok) {
-    throw new Error(
-      `Receipt parser failed: ${response.status}`,
-    );
+    throw new Error(`Receipt parser failed: ${response.status}`);
   }
 
   const json: unknown = await response.json();
@@ -391,9 +386,7 @@ export const receiptResponseSchema = z.object({
 });
 
 export type Receipt = z.infer<typeof receiptSchema>;
-export type ReceiptResponse = z.infer<
-  typeof receiptResponseSchema
->;
+export type ReceiptResponse = z.infer<typeof receiptResponseSchema>;
 ```
 
 Zod provides runtime validation and TypeScript inference.
@@ -495,7 +488,7 @@ export interface OcrDocument {
 The parser primarily consumes:
 
 ```ts
-document.text
+document.text;
 ```
 
 Example:
@@ -568,11 +561,7 @@ Do not retain multiple large image copies unnecessarily, especially on iOS.
 Use the native browser camera picker:
 
 ```tsx
-<input
-  type="file"
-  accept="image/*"
-  capture="environment"
-/>
+<input type="file" accept="image/*" capture="environment" />
 ```
 
 Advantages:
@@ -1158,13 +1147,13 @@ React state is sufficient.
 The important application state is:
 
 ```ts
-Receipt | null
+Receipt | null;
 ```
 
 and:
 
 ```ts
-ScannerStatus
+ScannerStatus;
 ```
 
 The scanner hook can own this state.
@@ -1188,7 +1177,7 @@ Only this module knows about PaddleOCR.
 Components should use:
 
 ```ts
-recognizeReceipt(image)
+recognizeReceipt(image);
 ```
 
 not:
@@ -1211,13 +1200,13 @@ Only this module knows the parser endpoint.
 Components should use:
 
 ```ts
-parseReceipt(text)
+parseReceipt(text);
 ```
 
 not:
 
 ```ts
-fetch("https://receipt-parser...")
+fetch("https://receipt-parser...");
 ```
 
 ---
@@ -1473,25 +1462,25 @@ Architecture:
 
 # 38. Core Design Decisions
 
-| Decision | MVP choice |
-|---|---|
-| OCR location | Client-side browser |
-| OCR model | PP-OCRv5 |
-| OCR runtime | ONNX Runtime Web |
-| OCR execution | Web Worker |
-| Image source | Camera / file |
-| Receipt parsing | Cloudflare Worker |
-| Authentication | None |
-| API client | Native fetch |
-| API validation | Zod |
-| State management | React state |
-| HTTP library | None |
-| Database | None |
-| Receipt storage | None |
-| Server-side OCR | None |
-| Original image upload | None |
-| PWA | Optional |
-| Backend image processing | None |
+| Decision                 | MVP choice          |
+| ------------------------ | ------------------- |
+| OCR location             | Client-side browser |
+| OCR model                | PP-OCRv5            |
+| OCR runtime              | ONNX Runtime Web    |
+| OCR execution            | Web Worker          |
+| Image source             | Camera / file       |
+| Receipt parsing          | Cloudflare Worker   |
+| Authentication           | None                |
+| API client               | Native fetch        |
+| API validation           | Zod                 |
+| State management         | React state         |
+| HTTP library             | None                |
+| Database                 | None                |
+| Receipt storage          | None                |
+| Server-side OCR          | None                |
+| Original image upload    | None                |
+| PWA                      | Optional            |
+| Backend image processing | None                |
 
 ---
 

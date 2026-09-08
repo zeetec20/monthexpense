@@ -10,31 +10,42 @@ import {
 } from "../controllers/helpers";
 import type { Env } from "../../src/types/env";
 
-function postReceipt(env: Env, headers: Record<string, string> = {}) {
+const postReceipt = (env: Env, headers: Record<string, string> = {}) => {
   return app.fetch(
     new Request("http://localhost/v1/receipts/parse", {
       method: "POST",
-      headers: { Authorization: "Bearer test-api-key", "Content-Type": "application/json", ...headers },
+      headers: {
+        Authorization: "Bearer test-api-key",
+        "Content-Type": "application/json",
+        ...headers,
+      },
       body: JSON.stringify({ text: "some receipt text" }),
     }),
     env,
     testCtx,
   );
-}
+};
 
-function postReceiptText(env: Env, headers: Record<string, string> = {}) {
+const postReceiptText = (env: Env, headers: Record<string, string> = {}) => {
   return app.fetch(
     new Request("http://localhost/v1/receipts/parse-text", {
       method: "POST",
-      headers: { Authorization: "Bearer test-api-key", "Content-Type": "application/json", ...headers },
+      headers: {
+        Authorization: "Bearer test-api-key",
+        "Content-Type": "application/json",
+        ...headers,
+      },
       body: JSON.stringify({ text: "some pasted chat receipt text" }),
     }),
     env,
     testCtx,
   );
-}
+};
 
-const validHeaders = { "X-Sheet-Secret": TEST_SHEET_SECRET, "X-Spreadsheet-Id": TEST_SPREADSHEET_ID };
+const validHeaders = {
+  "X-Sheet-Secret": TEST_SHEET_SECRET,
+  "X-Spreadsheet-Id": TEST_SPREADSHEET_ID,
+};
 
 describe("identityQuota (/v1/receipts/parse)", () => {
   it("rejects a request missing the sheet identity headers", async () => {
@@ -46,14 +57,18 @@ describe("identityQuota (/v1/receipts/parse)", () => {
     const env = envWithModel(createFakeReceiptModel());
     expect((await postReceipt(env, validHeaders)).status).toBe(200); // sanity: the valid pair works
 
-    const wrong = await postReceipt(env, { "X-Sheet-Secret": "not-a-real-secret", "X-Spreadsheet-Id": TEST_SPREADSHEET_ID });
+    const wrong = await postReceipt(env, {
+      "X-Sheet-Secret": "not-a-real-secret",
+      "X-Spreadsheet-Id": TEST_SPREADSHEET_ID,
+    });
     expect(wrong.status).toBe(401);
   });
 
   it("recognizes a premium-signed secret as premium tier with no backend record lookup", async () => {
     const env = envWithModel(createFakeReceiptModel(), {
       __testIdentity: fakeIdentityBackend({
-        verify: async (secret) => (secret === TEST_SHEET_SECRET ? { uuid: "premium-uuid", tier: "premium" } : null),
+        verify: async (secret) =>
+          secret === TEST_SHEET_SECRET ? { uuid: "premium-uuid", tier: "premium" } : null,
         incrementUsage: async () => 45, // well past the standard cap (20), still under premium's (80)
       }),
     });
@@ -62,16 +77,25 @@ describe("identityQuota (/v1/receipts/parse)", () => {
 
   it("locks onto the first spreadsheetId it sees for a uuid", async () => {
     const env = envWithModel(createFakeReceiptModel(), { __testIdentity: fakeIdentityBackend() });
-    const res = await postReceipt(env, { "X-Sheet-Secret": TEST_SHEET_SECRET, "X-Spreadsheet-Id": "first-sheet" });
+    const res = await postReceipt(env, {
+      "X-Sheet-Secret": TEST_SHEET_SECRET,
+      "X-Spreadsheet-Id": "first-sheet",
+    });
     expect(res.status).toBe(200);
   });
 
   it("rejects a second, different spreadsheetId for the same uuid (one uuid, one sheet — the real backend also bans the uuid for 2 days on this path)", async () => {
     const env = envWithModel(createFakeReceiptModel(), { __testIdentity: fakeIdentityBackend() });
-    const first = await postReceipt(env, { "X-Sheet-Secret": TEST_SHEET_SECRET, "X-Spreadsheet-Id": "first-sheet" });
+    const first = await postReceipt(env, {
+      "X-Sheet-Secret": TEST_SHEET_SECRET,
+      "X-Spreadsheet-Id": "first-sheet",
+    });
     expect(first.status).toBe(200);
 
-    const second = await postReceipt(env, { "X-Sheet-Secret": TEST_SHEET_SECRET, "X-Spreadsheet-Id": "a-different-sheet" });
+    const second = await postReceipt(env, {
+      "X-Sheet-Secret": TEST_SHEET_SECRET,
+      "X-Spreadsheet-Id": "a-different-sheet",
+    });
     expect(second.status).toBe(401);
   });
 
@@ -88,7 +112,7 @@ describe("identityQuota (/v1/receipts/parse)", () => {
     });
     const res = await postReceipt(env, validHeaders);
     expect(res.status).toBe(429);
-    expect((await res.json() as { error: { code: string } }).error.code).toBe("RATE_LIMITED");
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe("RATE_LIMITED");
   });
 
   it("includes the remaining/limit quota in a successful response", async () => {

@@ -26,22 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  isCountedExpense,
-  upcomingScheduleItems,
-} from "@/features/expense/schedule";
+import { isCountedExpense, upcomingScheduleItems } from "@/features/expense/schedule";
 import { useSeenReminders } from "@/hooks/useSeenReminders";
 import { useEntryQuota } from "@/hooks/useEntryQuota";
-import {
-  categoryColor,
-  categoryIcon,
-  categoryLabel,
-} from "@/features/expense/category-visuals";
+import { categoryColor, categoryIcon, categoryLabel } from "@/features/expense/category-visuals";
 import { t, type Lang } from "@/i18n/translations";
-import {
-  EXPENSE_CATEGORIES,
-  type Expense,
-} from "@/features/expense/expense.schema";
+import { EXPENSE_CATEGORIES, type Expense } from "@/features/expense/expense.schema";
 import type { Wallet } from "@/features/wallet/wallet.schema";
 
 const monthKey = localMonthKey;
@@ -57,7 +47,7 @@ const monthLabel = (key: string, lang: Lang) =>
  * profile — the one deliberate content swap); everything else (wallet
  * carousel, quick actions, spending summary) matches structure/classes.
  */
-export function HomeDashboard({
+export const HomeDashboard = ({
   expenses,
   wallets,
   onManageRecurring,
@@ -95,7 +85,7 @@ export function HomeDashboard({
    * internet" panel inside its own drawer when offline (see Scanner.tsx/
    * VoiceEntry.tsx/TextReceiptEntry.tsx). Manual entry unaffected. */
   online: boolean;
-}) {
+}) => {
   const months = useMemo(() => {
     const keys = new Set(expenses.map((e) => e.date.slice(0, 7)));
     keys.add(monthKey(new Date()));
@@ -121,9 +111,7 @@ export function HomeDashboard({
   // month" — the picker can view a past month) — same zero-previous-data-
   // defaults-to-up rule as AnalyticsPage.tsx's real trend.
   const walletCards = useMemo(() => {
-    const prevMonthKey = localMonthKey(
-      subMonths(parseISO(`${selectedMonth}-01`), 1),
-    );
+    const prevMonthKey = localMonthKey(subMonths(parseISO(`${selectedMonth}-01`), 1));
     const prevMonthExpenses = expenses.filter(
       (e) => e.date.startsWith(prevMonthKey) && isCountedExpense(e),
     );
@@ -145,20 +133,15 @@ export function HomeDashboard({
     });
   }, [wallets, monthExpenses, expenses, selectedMonth]);
 
-  function handleCardsScroll() {
+  const handleCardsScroll = () => {
     const el = scrollRef.current;
     if (!el || el.children.length === 0) return;
     const card = el.children[0] as HTMLElement;
     const step = card.offsetWidth + 12;
-    setActiveCard(
-      Math.min(
-        walletCards.length - 1,
-        Math.max(0, Math.round(el.scrollLeft / step)),
-      ),
-    );
-  }
+    setActiveCard(Math.min(walletCards.length - 1, Math.max(0, Math.round(el.scrollLeft / step))));
+  };
 
-  function scrollToCard(i: number) {
+  const scrollToCard = (i: number) => {
     const el = scrollRef.current;
     const card = el?.children[i] as HTMLElement | undefined;
     if (!el || !card) return;
@@ -166,7 +149,7 @@ export function HomeDashboard({
       left: card.offsetLeft - (el.offsetWidth - card.offsetWidth) / 2,
       behavior: "smooth",
     });
-  }
+  };
 
   // Always the full 8-category list (defaults to 0) — the breakdown rows
   // below need every category visible, not just ones with spend. The
@@ -181,8 +164,7 @@ export function HomeDashboard({
       .filter((e) => (e.category ?? "food_snack") === value)
       .reduce((sum, e) => sum + e.amount, 0),
   }));
-  const totalSpentThisMonth =
-    categoryTotals.reduce((sum, c) => sum + c.total, 0) || 1;
+  const totalSpentThisMonth = categoryTotals.reduce((sum, c) => sum + c.total, 0) || 1;
 
   const upcoming = upcomingScheduleItems(expenses);
   const { markSeen, isUnread } = useSeenReminders();
@@ -195,9 +177,7 @@ export function HomeDashboard({
       <div className="flex items-center justify-between py-1">
         <div>
           <p className="text-[10px] text-ink-faint font-medium">MonthExpense</p>
-          <p className="text-xs font-bold text-ink leading-none">
-            {t(lang, "homeTagline")}
-          </p>
+          <p className="text-xs font-bold text-ink leading-none">{t(lang, "homeTagline")}</p>
           <a
             href="/about"
             className="text-[10px] text-ink-faint hover:text-brand underline underline-offset-2"
@@ -256,11 +236,7 @@ export function HomeDashboard({
         lang={lang}
       />
 
-      <ReminderBanner
-        expenses={expenses}
-        onManage={onManageRecurring}
-        lang={lang}
-      />
+      <ReminderBanner expenses={expenses} onManage={onManageRecurring} lang={lang} />
 
       {/* Swipeable wallet cards */}
       {walletCards.length > 0 && (
@@ -444,9 +420,7 @@ export function HomeDashboard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <ChartColumnStacked className="w-4 h-4 text-brand" />
-            <h3 className="text-xs font-bold text-ink">
-              {t(lang, "spendingSummary")}
-            </h3>
+            <h3 className="text-xs font-bold text-ink">{t(lang, "spendingSummary")}</h3>
           </div>
           <Select value={selectedMonth} onValueChange={setSelectedMonth}>
             <SelectTrigger className="w-auto shrink-0">
@@ -480,10 +454,7 @@ export function HomeDashboard({
 
         <div className="space-y-2.5 pt-1">
           {categoryTotals.map((cat) => (
-            <div
-              key={cat.value}
-              className="flex items-center justify-between py-0.5 text-xs"
-            >
+            <div key={cat.value} className="flex items-center justify-between py-0.5 text-xs">
               <div className="flex items-center gap-2.5">
                 <span
                   className="w-5 h-5 rounded-full shrink-0 grid place-items-center"
@@ -505,4 +476,4 @@ export function HomeDashboard({
       </div>
     </div>
   );
-}
+};

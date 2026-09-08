@@ -29,11 +29,13 @@ export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number]["value"];
  * doing a strict slug match. Passes an already-valid slug through
  * unchanged; anything unrecognized (blank cell, manual edit in the sheet)
  * becomes null rather than guessing. */
-export function normalizeExpenseCategory(value: string | null | undefined): ExpenseCategory | null {
+export const normalizeExpenseCategory = (
+  value: string | null | undefined,
+): ExpenseCategory | null => {
   if (!value) return null;
   if (EXPENSE_CATEGORIES.some((c) => c.value === value)) return value as ExpenseCategory;
   return EXPENSE_CATEGORIES.find((c) => c.label === value)?.value ?? null;
-}
+};
 
 // The itemized parts of a scan/voice result beyond title/amount/date/currency
 // — kept as a snapshot at save-time so a detail view has something to show.
@@ -142,10 +144,10 @@ export const BLANK_RECEIPT_DETAIL: ExpenseReceiptDetail = {
 };
 
 /** An item's total is derived from quantity × unit price, never its own typed fact. */
-export function computeItemTotal(item: ExpenseReceiptItem): number | null {
+export const computeItemTotal = (item: ExpenseReceiptItem): number | null => {
   if (item.quantity === null || item.unitPrice === null) return null;
   return item.quantity * item.unitPrice;
-}
+};
 
 /**
  * Subtotal is derived (sum of item totals). Grand total prefers the
@@ -159,7 +161,9 @@ export function computeItemTotal(item: ExpenseReceiptItem): number | null {
  * actually edits an item/tax/discount/service value, invalidating the
  * originally-extracted total.
  */
-export function computeExpenseTotals(detail: ExpenseReceiptDetail): { subtotal: number | null; total: number | null } {
+export const computeExpenseTotals = (
+  detail: ExpenseReceiptDetail,
+): { subtotal: number | null; total: number | null } => {
   const itemTotals = detail.items.map(computeItemTotal);
   // length check first: .every() is vacuously true on an empty array, which
   // would otherwise compute subtotal 0 for "no items" instead of "nothing
@@ -179,7 +183,7 @@ export function computeExpenseTotals(detail: ExpenseReceiptDetail): { subtotal: 
 
   const total = subtotal - (detail.discount ?? 0) + (detail.tax ?? 0) + (detail.serviceCharge ?? 0);
   return { subtotal, total };
-}
+};
 
 /**
  * Condenses a parsed Receipt into the same shape manual entries use — shared
@@ -189,11 +193,11 @@ export function computeExpenseTotals(detail: ExpenseReceiptDetail): { subtotal: 
  * merchant name came back — "Receipt" reads oddly for a voice-sourced
  * "taxi 50 ribu" with no named place, so VoiceEntry passes "Expense" instead.
  */
-export function receiptToExpenseInput(
+export const receiptToExpenseInput = (
   receipt: Receipt,
   imageId: string | null = null,
   fallbackTitle = "Receipt",
-): ExpenseInput {
+): ExpenseInput => {
   const itemCount = receipt.items.length;
   return {
     title: receipt.suggested_title || receipt.merchant.name || fallbackTitle,
@@ -227,5 +231,4 @@ export function receiptToExpenseInput(
       change: receipt.payment.change ?? null,
     },
   };
-}
-
+};

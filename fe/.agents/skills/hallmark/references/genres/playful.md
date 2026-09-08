@@ -4,7 +4,7 @@ For the consumer / friendly / onboarding-led page. Soft surfaces, mild colour, m
 
 ## When to pick it
 
-Brief mentions any of: *fun, consumer, casual, family, kids, friendly, approachable, onboarding-heavy, community, social, tactile-but-soft, post-Linear-soft*. Pick playful sparingly — most consumer briefs still belong to editorial (warm-paper, hand-set) unless the user explicitly asks for *softer* and *friendlier*.
+Brief mentions any of: _fun, consumer, casual, family, kids, friendly, approachable, onboarding-heavy, community, social, tactile-but-soft, post-Linear-soft_. Pick playful sparingly — most consumer briefs still belong to editorial (warm-paper, hand-set) unless the user explicitly asks for _softer_ and _friendlier_.
 
 ## Themes that belong
 
@@ -19,7 +19,7 @@ Brief mentions any of: *fun, consumer, casual, family, kids, friendly, approacha
 - **Accent** — soft indigo, warm coral, or muted rose at low chroma. Always low — never the saturated consumer-app pop.
 - **Layout** — slightly rounded surfaces, soft drop shadows, friendlier card edges (12 px radius is the upper bound).
 - **Motion** — responsive on hover (cards lift slightly). One small bounce-free reveal per section. No spring physics on UI state.
-- **Copy tone** — warm, direct, specific. Avoid quirk for quirk's sake. *"Made for teams who write together."* over *"For the squad ✨"*.
+- **Copy tone** — warm, direct, specific. Avoid quirk for quirk's sake. _"Made for teams who write together."_ over _"For the squad ✨"_.
 
 ## What this genre allows
 
@@ -40,14 +40,14 @@ Brief mentions any of: *fun, consumer, casual, family, kids, friendly, approacha
 
 ## Voice fixtures
 
-- *"Made for teams who write together."* — Hum voice
-- *"Soft, but exact."* — Hum voice
-- *"Software can be soft and exact at once. That's the trick."* — Hum voice
-- *"A small tool, gently opinionated."* — Hum voice
-- *"Your daily 30-second curio."* — Hum voice
-- *"Get really good at one thing this quarter."* — Hum voice
-- *"Notice yourself, in 30 seconds."* — Hum voice
-- *"Learn something genuinely new today."* — Hum voice
+- _"Made for teams who write together."_ — Hum voice
+- _"Soft, but exact."_ — Hum voice
+- _"Software can be soft and exact at once. That's the trick."_ — Hum voice
+- _"A small tool, gently opinionated."_ — Hum voice
+- _"Your daily 30-second curio."_ — Hum voice
+- _"Get really good at one thing this quarter."_ — Hum voice
+- _"Notice yourself, in 30 seconds."_ — Hum voice
+- _"Learn something genuinely new today."_ — Hum voice
 
 ## Nav and footer voice
 

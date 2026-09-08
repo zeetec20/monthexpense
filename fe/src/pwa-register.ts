@@ -14,18 +14,18 @@ import { registerSW } from "virtual:pwa-register";
 type Listener = () => void;
 let updating = false;
 const listeners = new Set<Listener>();
-function setUpdating(next: boolean) {
+const setUpdating = (next: boolean) => {
   if (updating === next) return;
   updating = next;
   listeners.forEach((l) => l());
-}
-export function subscribePwaUpdate(cb: Listener) {
+};
+export const subscribePwaUpdate = (cb: Listener) => {
   listeners.add(cb);
   return () => listeners.delete(cb);
-}
-export function getPwaUpdating() {
+};
+export const getPwaUpdating = () => {
   return updating;
-}
+};
 
 // Set right before the update-triggered reload fires; read once on the
 // next boot (PwaUpdateModal.tsx) to show a one-time "Updated!" modal — the
@@ -43,7 +43,7 @@ export const PWA_UPDATE_MARKER = "pwa-just-updated";
  * racing a multi-megabyte background download: on a mismatch, drop this
  * SW registration and its caches entirely so the reload is a fresh,
  * uncontrolled network fetch of everything. */
-async function checkBuildVersion() {
+const checkBuildVersion = async () => {
   try {
     const res = await fetch("/version.json", { cache: "no-store" });
     if (!res.ok) return;
@@ -62,7 +62,7 @@ async function checkBuildVersion() {
   } catch {
     // Offline or blocked fetch — best-effort, next trigger tries again.
   }
-}
+};
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -88,10 +88,13 @@ const updateSW = registerSW({
     // a backgrounding cycle.
     void checkBuildVersion();
     // Covers a tab left open for a long time without a full revisit.
-    setInterval(() => {
-      void registration.update();
-      void checkBuildVersion();
-    }, 60 * 60 * 1000);
+    setInterval(
+      () => {
+        void registration.update();
+        void checkBuildVersion();
+      },
+      60 * 60 * 1000,
+    );
     // Covers a tab switched away from and back to — a hard refresh alone
     // doesn't get a desktop tab current any faster than this: once a SW
     // controls the page, every navigation (hard refresh included) is

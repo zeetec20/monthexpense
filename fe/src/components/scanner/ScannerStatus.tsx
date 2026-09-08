@@ -6,7 +6,15 @@ const LABEL_KEY: Partial<Record<Status, TKey>> = {
   parsing: "scannerParsingReceipt",
 };
 
-export function ScannerStatus({ status, firstRun, lang }: { status: Status; firstRun: boolean; lang: Lang }) {
+export const ScannerStatus = ({
+  status,
+  firstRun,
+  lang,
+}: {
+  status: Status;
+  firstRun: boolean;
+  lang: Lang;
+}) => {
   if (status !== "ocr" && status !== "parsing") return null;
 
   const key = status === "ocr" && firstRun ? "scannerLoadingEngine" : LABEL_KEY[status];
@@ -20,4 +28,4 @@ export function ScannerStatus({ status, firstRun, lang }: { status: Status; firs
       <span>{key && t(lang, key)}</span>
     </div>
   );
-}
+};

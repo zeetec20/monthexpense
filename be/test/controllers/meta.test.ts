@@ -19,6 +19,10 @@ describe("GET /v1/meta", () => {
     );
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toEqual({ service: "receipt-parser", version: env.SERVICE_VERSION, model: env.MODEL_NAME });
+    expect(body).toEqual({
+      service: "receipt-parser",
+      version: env.SERVICE_VERSION,
+      model: env.MODEL_NAME,
+    });
   });
 });

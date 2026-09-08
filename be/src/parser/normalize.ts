@@ -9,15 +9,17 @@ import { withinTolerance } from "./validate";
  * (e.g. "ITEM  QTY  PRICE" rows) is preserved because it helps the model.
  */
 export const normalizeOcrText = (input: string): string => {
-  return input
-    .normalize("NFC")
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    // collapse 3+ blank lines down to a single blank line
-    .replace(/\n{3,}/g, "\n\n")
-    // trim trailing whitespace on each line, keep leading (column alignment)
-    .replace(/[ \t]+$/gm, "")
-    .trim();
+  return (
+    input
+      .normalize("NFC")
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      // collapse 3+ blank lines down to a single blank line
+      .replace(/\n{3,}/g, "\n\n")
+      // trim trailing whitespace on each line, keep leading (column alignment)
+      .replace(/[ \t]+$/gm, "")
+      .trim()
+  );
 };
 
 const MONEY_CHARS = /[^\d.,-]/g;
@@ -58,7 +60,9 @@ export const coerceNumber = (value: unknown): number | null => {
         : stripped.replace(/,/g, "");
   } else if (lastComma > -1) {
     // single comma: treat as thousands separator unless it looks decimal (2 trailing digits)
-    normalized = /,\d{1,2}$/.test(stripped) ? stripped.replace(",", ".") : stripped.replace(/,/g, "");
+    normalized = /,\d{1,2}$/.test(stripped)
+      ? stripped.replace(",", ".")
+      : stripped.replace(/,/g, "");
   } else if (lastDot > -1) {
     // dot(s), no comma: real money amounts never have exactly 3 fractional
     // digits, so one-or-more 3-digit groups after a dot ("26.000",
@@ -74,8 +78,18 @@ export const coerceNumber = (value: unknown): number | null => {
 };
 
 const MONTHS: Record<string, string> = {
-  jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06",
-  jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12",
+  jan: "01",
+  feb: "02",
+  mar: "03",
+  apr: "04",
+  may: "05",
+  jun: "06",
+  jul: "07",
+  aug: "08",
+  sep: "09",
+  oct: "10",
+  nov: "11",
+  dec: "12",
 };
 
 /** Best-effort normalize a date string to ISO YYYY-MM-DD; null if not confidently parseable. */
@@ -112,7 +126,12 @@ const coerceCurrency = (value: unknown): string | null => {
   const s = value.trim();
   if (/^[A-Za-z]{3}$/.test(s)) return s.toUpperCase();
   const symbolMap: Record<string, string> = {
-    "rp": "IDR", "$": "USD", "us$": "USD", "€": "EUR", "£": "GBP", "¥": "JPY",
+    rp: "IDR",
+    $: "USD",
+    us$: "USD",
+    "€": "EUR",
+    "£": "GBP",
+    "¥": "JPY",
   };
   return symbolMap[s.toLowerCase()] ?? null;
 };
@@ -124,7 +143,8 @@ const coerceCurrency = (value: unknown): string | null => {
  */
 const deriveItemDefaults = (item: Record<string, unknown>): Record<string, unknown> => {
   const unit_price = "unit_price" in item ? coerceNumber(item.unit_price) : null;
-  const quantity = ("quantity" in item ? coerceNumber(item.quantity) : null) ?? (unit_price !== null ? 1 : null);
+  const quantity =
+    ("quantity" in item ? coerceNumber(item.quantity) : null) ?? (unit_price !== null ? 1 : null);
   const total =
     ("total" in item ? coerceNumber(item.total) : null) ??
     (quantity !== null && unit_price !== null ? quantity * unit_price : null);
@@ -146,9 +166,29 @@ const deriveItemDefaults = (item: Record<string, unknown>): Record<string, unkno
 // casing isn't consistent. Covers both RECEIPT_JSON_SCHEMA's own field
 // names and the old flat voice-only ones (harmless overlap).
 const SCHEMA_KEYWORDS = new Set([
-  "title", "amount", "date", "note", "items", "unit_price", "quantity", "name", "total",
-  "merchant", "transaction", "subtotal", "tax", "discount", "service_charge", "payment",
-  "metadata", "method", "cash_received", "change", "currency", "confidence", "category",
+  "title",
+  "amount",
+  "date",
+  "note",
+  "items",
+  "unit_price",
+  "quantity",
+  "name",
+  "total",
+  "merchant",
+  "transaction",
+  "subtotal",
+  "tax",
+  "discount",
+  "service_charge",
+  "payment",
+  "metadata",
+  "method",
+  "cash_received",
+  "change",
+  "currency",
+  "confidence",
+  "category",
   "receipt_number",
 ]);
 
@@ -160,8 +200,30 @@ const SCHEMA_KEYWORDS = new Set([
 // these are ever a real purchased item's name. Applies to receipts too —
 // no legitimate printed receipt item is named "di" or "the" either.
 const ITEM_STOPWORDS = new Set([
-  "di", "ke", "dan", "yang", "dengan", "dari", "untuk", "atau", "pada", "itu", "ini",
-  "the", "a", "an", "at", "in", "on", "of", "and", "or", "to", "for", "with", "from",
+  "di",
+  "ke",
+  "dan",
+  "yang",
+  "dengan",
+  "dari",
+  "untuk",
+  "atau",
+  "pada",
+  "itu",
+  "ini",
+  "the",
+  "a",
+  "an",
+  "at",
+  "in",
+  "on",
+  "of",
+  "and",
+  "or",
+  "to",
+  "for",
+  "with",
+  "from",
 ]);
 
 // A bare number/price string ("Rp20.000", "20000", "1") is never itself an
@@ -191,10 +253,15 @@ const isJunkItemName = (name: unknown): boolean => {
 // null (rule 3) when it's genuinely unsure, it doesn't fabricate a literal
 // 0. An item priced exactly 0/0 is the same hallucination-loop noise as the
 // name-based junk above, just not catchable by name alone (e.g. "hari ini").
-const isZeroValueJunk = (item: Record<string, unknown>): boolean => item.unit_price === 0 && item.total === 0;
+const isZeroValueJunk = (item: Record<string, unknown>): boolean =>
+  item.unit_price === 0 && item.total === 0;
 
 const itemDedupeKey = (item: Record<string, unknown>): string =>
-  JSON.stringify([typeof item.name === "string" ? item.name.trim().toLowerCase() : item.name, item.unit_price, item.total]);
+  JSON.stringify([
+    typeof item.name === "string" ? item.name.trim().toLowerCase() : item.name,
+    item.unit_price,
+    item.total,
+  ]);
 
 /**
  * Filters junk items, coerces numeric fields, and dedupes exact-repeat
@@ -244,7 +311,11 @@ export const normalizeReceiptCandidate = (candidate: unknown): unknown => {
   // Subtotal is often only implied (e.g. an "ITEMS: n  <sum>" line the model
   // didn't map to subtotal) — compute it from item totals when every item
   // has one, rather than leave a derivable value null.
-  if ((out.subtotal === null || out.subtotal === undefined) && Array.isArray(out.items) && out.items.length > 0) {
+  if (
+    (out.subtotal === null || out.subtotal === undefined) &&
+    Array.isArray(out.items) &&
+    out.items.length > 0
+  ) {
     const totals = (out.items as Array<Record<string, unknown>>).map((i) => i.total);
     if (totals.every((t) => typeof t === "number")) {
       out.subtotal = (totals as number[]).reduce((sum, t) => sum + t, 0);
@@ -259,7 +330,8 @@ export const normalizeReceiptCandidate = (candidate: unknown): unknown => {
   let totalRecoveredFromZero = false;
   if (out.total === 0 && typeof out.subtotal === "number" && out.subtotal > 0) {
     const discountForZeroTotal = typeof out.discount === "number" ? out.discount : 0;
-    const serviceChargeForZeroTotal = typeof out.service_charge === "number" ? out.service_charge : 0;
+    const serviceChargeForZeroTotal =
+      typeof out.service_charge === "number" ? out.service_charge : 0;
     // Deliberately not adding tax back on: this app's receipts are
     // predominantly tax-inclusive (see rule 22) — subtotal alone is
     // usually already the real payable amount, and adding tax here would
@@ -318,16 +390,14 @@ export const normalizeReceiptCandidate = (candidate: unknown): unknown => {
   // call — if merchant.name is literally one of the item names, it's wrong.
   // Null it (buildSuggestedTitle falls back cleanly) rather than title the
   // expense after an item.
-  if (
-    typeof out.merchant === "object" &&
-    out.merchant !== null &&
-    Array.isArray(out.items)
-  ) {
+  if (typeof out.merchant === "object" && out.merchant !== null && Array.isArray(out.items)) {
     const merchant = out.merchant as Record<string, unknown>;
     const name = typeof merchant.name === "string" ? merchant.name.trim().toLowerCase() : null;
-    const isItemName = name !== null && (out.items as Array<Record<string, unknown>>).some(
-      (item) => typeof item.name === "string" && item.name.trim().toLowerCase() === name,
-    );
+    const isItemName =
+      name !== null &&
+      (out.items as Array<Record<string, unknown>>).some(
+        (item) => typeof item.name === "string" && item.name.trim().toLowerCase() === name,
+      );
     if (isItemName) {
       out.merchant = { ...merchant, name: null };
     }
@@ -364,11 +434,7 @@ export const normalizeReceiptCandidate = (candidate: unknown): unknown => {
   // model's own (possibly summed-wrong) total, but a single signal alone
   // isn't enough grounds to overwrite it (the payment fields could be the
   // wrong ones instead).
-  if (
-    typeof out.total === "number" &&
-    typeof out.payment === "object" &&
-    out.payment !== null
-  ) {
+  if (typeof out.total === "number" && typeof out.payment === "object" && out.payment !== null) {
     const { cash_received, change } = out.payment as Record<string, unknown>;
     if (typeof cash_received === "number" && typeof change === "number") {
       const expectedFromCash = cash_received - change;
@@ -417,11 +483,7 @@ export const normalizeReceiptCandidate = (candidate: unknown): unknown => {
   // one wrong (e.g. the same summing bug above can hit amount too) — once
   // total is known/corrected, trust it over a disagreeing payment.amount
   // rather than show two different numbers for the same thing in the UI.
-  if (
-    typeof out.total === "number" &&
-    typeof out.payment === "object" &&
-    out.payment !== null
-  ) {
+  if (typeof out.total === "number" && typeof out.payment === "object" && out.payment !== null) {
     const p = out.payment as Record<string, unknown>;
     if (typeof p.amount !== "number" || !withinTolerance(p.amount, out.total)) {
       out.payment = { ...p, amount: out.total };

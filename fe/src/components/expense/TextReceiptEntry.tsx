@@ -27,7 +27,7 @@ type ParseLang = (typeof PARSE_LANGS)[number]["code"];
  * through receiptToExpenseInput, hand off to the shared ExpenseReviewModal.
  * `onSubmit` is App.tsx's addExpense(input, "manual") — no dedicated
  * source value, this is just another way to produce the same ExpenseInput. */
-export function TextReceiptEntry({
+export const TextReceiptEntry = ({
   onSubmit,
   wallets,
   defaultWalletId,
@@ -37,7 +37,7 @@ export function TextReceiptEntry({
   wallets: Wallet[];
   defaultWalletId: string;
   lang?: Lang;
-}) {
+}) => {
   const [text, setText] = useState("");
   // Defaults to the app's own current UI language, same as VoiceEntry's
   // sttLang default following its own convention — here there's no fixed
@@ -89,7 +89,9 @@ export function TextReceiptEntry({
             aria-pressed={parseLang === code}
             className={
               "h-7 w-10 flex items-center justify-center rounded-xl text-xs font-bold transition-all " +
-              (parseLang === code ? "bg-emerald-600 text-white shadow-sm" : "text-ink-faint hover:text-ink")
+              (parseLang === code
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "text-ink-faint hover:text-ink")
             }
           >
             {label}
@@ -119,4 +121,4 @@ export function TextReceiptEntry({
       </Button>
     </div>
   );
-}
+};

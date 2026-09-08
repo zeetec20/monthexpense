@@ -5,15 +5,18 @@
 import { RECEIPT_API_URL, RECEIPT_API_KEY } from "@/config/env";
 import { sheetIdentityHeaders } from "@/features/sync/sheets-sync.api";
 
-async function blobToBase64(blob: Blob): Promise<string> {
+const blobToBase64 = async (blob: Blob): Promise<string> => {
   const buffer = await blob.arrayBuffer();
   let binary = "";
   for (const byte of new Uint8Array(buffer)) binary += String.fromCharCode(byte);
   return btoa(binary);
-}
+};
 
 /** POSTs a recorded clip to /v1/voice/transcribe; throws on any non-2xx (caller falls through to WASM). */
-export async function transcribeViaCloudflare(blob: Blob, language: "english" | "indonesian"): Promise<string> {
+export const transcribeViaCloudflare = async (
+  blob: Blob,
+  language: "english" | "indonesian",
+): Promise<string> => {
   const audio = await blobToBase64(blob);
   const response = await fetch(`${RECEIPT_API_URL}/v1/voice/transcribe`, {
     method: "POST",
@@ -31,4 +34,4 @@ export async function transcribeViaCloudflare(blob: Blob, language: "english" | 
 
   const json = (await response.json()) as { data: { text: string } };
   return json.data.text.trim();
-}
+};

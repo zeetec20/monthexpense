@@ -43,7 +43,7 @@ interface PositionedLine {
  * EXIF-rotation). Upgrade to deskew-aware clustering if angled photos start
  * misclustering rows.
  */
-export function reconstructLayout(document: OcrDocument): string {
+export const reconstructLayout = (document: OcrDocument): string => {
   const lines: PositionedLine[] = document.lines
     .filter((line) => line.confidence === null || line.confidence >= MIN_CONFIDENCE)
     .map((line) => {
@@ -81,7 +81,7 @@ export function reconstructLayout(document: OcrDocument): string {
     prevRow = row;
   }
   return out.join("\n");
-}
+};
 
 /**
  * Column anchors: gap-cluster every non-name token's xLeft across all rows
@@ -90,7 +90,7 @@ export function reconstructLayout(document: OcrDocument): string {
  * always the name/label column, which doesn't need snapping since nothing
  * else shares its position.
  */
-function detectColumns(rows: PositionedLine[][], imageWidth: number): number[] {
+const detectColumns = (rows: PositionedLine[][], imageWidth: number): number[] => {
   const candidates = rows
     .filter((row) => row.length >= 2)
     .flatMap((row) => row.slice(1).map((token) => token.xLeft))
@@ -105,19 +105,25 @@ function detectColumns(rows: PositionedLine[][], imageWidth: number): number[] {
     else clusters.push([x]);
   }
   return clusters.map((c) => c.reduce((sum, x) => sum + x, 0) / c.length);
-}
+};
 
-function nearestAnchor(x: number, anchors: number[]): number {
+const nearestAnchor = (x: number, anchors: number[]): number => {
   return anchors.reduce((best, a) => (Math.abs(a - x) < Math.abs(best - x) ? a : best), anchors[0]);
-}
+};
 
-function layoutRow(row: PositionedLine[], scale: number, originX: number, anchors: number[]): string {
+const layoutRow = (
+  row: PositionedLine[],
+  scale: number,
+  originX: number,
+  anchors: number[],
+): string => {
   let out = "";
   row.forEach((token, index) => {
     // First token is the name/label column — keep its own position (nothing
     // else shares it). Later tokens snap to the nearest shared column anchor
     // so the same field lines up at the same character offset every row.
-    const x = index === 0 || anchors.length === 0 ? token.xLeft : nearestAnchor(token.xLeft, anchors);
+    const x =
+      index === 0 || anchors.length === 0 ? token.xLeft : nearestAnchor(token.xLeft, anchors);
     const targetCol = Math.round((x - originX) * scale);
     // +1 (not just out.length) guarantees at least one separating space even
     // when a long name overflows past the target column — otherwise the
@@ -126,9 +132,13 @@ function layoutRow(row: PositionedLine[], scale: number, originX: number, anchor
     out = out.padEnd(Math.max(minCol, targetCol), " ") + token.text;
   });
   return out;
-}
+};
 
-function needsSectionBreak(row: PositionedLine[], prevRow: PositionedLine[], medianHeight: number): boolean {
+const needsSectionBreak = (
+  row: PositionedLine[],
+  prevRow: PositionedLine[],
+  medianHeight: number,
+): boolean => {
   const gap = row[0].yCenter - prevRow[0].yCenter;
   const bigGap = gap > medianHeight * 2.2;
 
@@ -137,4 +147,4 @@ function needsSectionBreak(row: PositionedLine[], prevRow: PositionedLine[], med
   const enteringLabeledBlock = rowIsLabeled && !prevWasLabeled;
 
   return bigGap || enteringLabeledBlock;
-}
+};

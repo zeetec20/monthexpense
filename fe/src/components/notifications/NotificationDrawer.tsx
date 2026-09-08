@@ -5,12 +5,12 @@ import { upcomingScheduleItems } from "@/features/expense/schedule";
 import { t, type Lang } from "@/i18n/translations";
 import type { Expense } from "@/features/expense/expense.schema";
 
-function dueLabel(daysUntil: number, lang: Lang) {
+const dueLabel = (daysUntil: number, lang: Lang) => {
   if (daysUntil < 0) return t(lang, "overdueByDays", { days: -daysUntil });
   if (daysUntil === 0) return t(lang, "dueToday");
   if (daysUntil === 1) return t(lang, "dueTomorrow");
   return t(lang, "dueInDays", { days: daysUntil });
-}
+};
 
 /**
  * Real notification view for the bell icon — every unpaid scheduled
@@ -19,7 +19,7 @@ function dueLabel(daysUntil: number, lang: Lang) {
  * explicit Manage button at the bottom, which switches to the full
  * schedule page.
  */
-export function NotificationDrawer({
+export const NotificationDrawer = ({
   open,
   expenses,
   onManage,
@@ -31,11 +31,16 @@ export function NotificationDrawer({
   onManage: () => void;
   onClose: () => void;
   lang: Lang;
-}) {
+}) => {
   const items = upcomingScheduleItems(expenses);
 
   return (
-    <BottomSheet open={open} onClose={onClose} title={t(lang, "reminders")} className="max-h-[85vh] flex flex-col">
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      title={t(lang, "reminders")}
+      className="max-h-[85vh] flex flex-col"
+    >
       <>
         <h3 className="shrink-0 text-sm font-bold text-ink">{t(lang, "reminders")}</h3>
 
@@ -81,4 +86,4 @@ export function NotificationDrawer({
       </>
     </BottomSheet>
   );
-}
+};

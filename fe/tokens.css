@@ -46,8 +46,10 @@
   --color-focus: var(--color-accent);
 
   /* Fonts — expense-tracker loads no webfont, system stack falls back to it */
-  --font-display: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+  --font-body:
+    -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
   /* Type scale */

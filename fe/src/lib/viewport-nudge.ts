@@ -16,7 +16,7 @@
  * `behavior: smooth`), 2px is imperceptible, and it's a harmless bounce
  * even when nothing was actually stuck.
  */
-export function nudgeViewport(): void {
+export const nudgeViewport = (): void => {
   if (typeof document === "undefined") return;
   const { body, documentElement: html } = document;
   const prevBodyMinHeight = body.style.minHeight;
@@ -39,4 +39,4 @@ export function nudgeViewport(): void {
       }, 200);
     }, 100);
   }, 50);
-}
+};

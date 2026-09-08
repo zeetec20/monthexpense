@@ -15,7 +15,7 @@ import type { Expense } from "@/features/expense/expense.schema";
  * Icon is editable the same way: tap it to expand the same AnimalPicker
  * grid the add-wallet form uses, right below the row — no separate
  * dialog, matching this sheet's "everything happens inline" pattern. */
-function WalletRow({
+const WalletRow = ({
   wallet,
   blockReason,
   onRename,
@@ -27,7 +27,7 @@ function WalletRow({
   onRename: (name: string) => void;
   onChangeAnimal: (animal: WalletAnimal) => void;
   onRemove: () => void;
-}) {
+}) => {
   const [name, setName] = useState(wallet.name);
   const [pickingAnimal, setPickingAnimal] = useState(false);
 
@@ -78,9 +78,9 @@ function WalletRow({
       )}
     </li>
   );
-}
+};
 
-export function WalletSettingsPage({
+export const WalletSettingsPage = ({
   open,
   onClose,
   wallets,
@@ -98,22 +98,27 @@ export function WalletSettingsPage({
   onRename: (id: string, name: string) => void;
   onUpdateAnimal: (id: string, animal: WalletAnimal) => void;
   onRemove: (id: string) => void;
-}) {
+}) => {
   const [newName, setNewName] = useState("");
   const [newAnimal, setNewAnimal] = useState<WalletAnimal>(() => randomAnimal());
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
   const atCap = wallets.length >= WALLET_MAX;
 
-  function handleAdd() {
+  const handleAdd = () => {
     const trimmed = newName.trim();
     if (!trimmed || atCap) return;
     onAdd(trimmed, newAnimal);
     setNewName("");
     setNewAnimal(randomAnimal());
-  }
+  };
 
   return (
-    <BottomSheet open={open} onClose={onClose} title="Wallets" className="max-h-[85dvh] flex flex-col">
+    <BottomSheet
+      open={open}
+      onClose={onClose}
+      title="Wallets"
+      className="max-h-[85dvh] flex flex-col"
+    >
       <div className="shrink-0 flex items-baseline gap-2 pb-2">
         <h3 className="text-sm font-bold text-ink">Wallets</h3>
         <span className="font-mono text-xs text-ink-faint">
@@ -146,7 +151,13 @@ export function WalletSettingsPage({
               disabled={atCap}
               className="h-9"
             />
-            <Button type="button" variant="outline" size="icon-sm" disabled={atCap || !newName.trim()} onClick={handleAdd}>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              disabled={atCap || !newName.trim()}
+              onClick={handleAdd}
+            >
               <Plus className="size-4" />
             </Button>
           </div>
@@ -165,4 +176,4 @@ export function WalletSettingsPage({
       />
     </BottomSheet>
   );
-}
+};

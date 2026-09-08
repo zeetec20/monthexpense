@@ -4,7 +4,10 @@ import { z } from "zod";
 // per-request rather than as a static module-level export.
 export const buildParseRequestSchema = (maxLength: number) => {
   return z.object({
-    text: z.string().min(1, "text must not be empty").max(maxLength, `text exceeds max length of ${maxLength}`),
+    text: z
+      .string()
+      .min(1, "text must not be empty")
+      .max(maxLength, `text exceeds max length of ${maxLength}`),
     // Optional hint from the client's own EN/ID toggle — same one
     // buildExpenseParseRequestSchema already has for the voice path.
     // Omitted entirely is fine; the model already handles EN/ID/mixed text
@@ -19,7 +22,10 @@ export type ParseRequest = z.infer<ReturnType<typeof buildParseRequestSchema>>;
 // actual day, not the Worker's UTC day.
 export const buildExpenseParseRequestSchema = (maxLength: number) => {
   return z.object({
-    text: z.string().min(1, "text must not be empty").max(maxLength, `text exceeds max length of ${maxLength}`),
+    text: z
+      .string()
+      .min(1, "text must not be empty")
+      .max(maxLength, `text exceeds max length of ${maxLength}`),
     referenceDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "referenceDate must be YYYY-MM-DD"),
     // Optional hint from the client's own EN/ID toggle — same one that
     // already drives STT. Omitted entirely is fine; the model already
@@ -35,7 +41,10 @@ export type ExpenseParseRequest = z.infer<ReturnType<typeof buildExpenseParseReq
 export const buildVoiceTranscribeRequestSchema = (maxAudioBytes: number) => {
   const maxBase64Length = Math.ceil(maxAudioBytes / 3) * 4;
   return z.object({
-    audio: z.string().min(1, "audio must not be empty").max(maxBase64Length, "audio exceeds max allowed size"),
+    audio: z
+      .string()
+      .min(1, "audio must not be empty")
+      .max(maxBase64Length, "audio exceeds max allowed size"),
     language: z.enum(["en", "id"]).optional(),
   });
 };

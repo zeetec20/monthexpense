@@ -23,9 +23,9 @@ export interface AudioRecording {
   stop(): Promise<Blob | null>;
 }
 
-export function isMicRecordingSupported(): boolean {
+export const isMicRecordingSupported = (): boolean => {
   return !!navigator.mediaDevices?.getUserMedia;
-}
+};
 
 /** Requests mic permission once, up front, and immediately releases it —
  * call this as soon as the voice-entry UI opens (not from the record
@@ -34,7 +34,7 @@ export function isMicRecordingSupported(): boolean {
  * finger to respond to it, orphaning whatever was being held) —
  * pre-warming here means that dialog, if any, appears before the user
  * ever starts holding, not during. */
-export async function warmUpMicPermission(): Promise<void> {
+export const warmUpMicPermission = async (): Promise<void> => {
   if (!isMicRecordingSupported()) return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -43,10 +43,10 @@ export async function warmUpMicPermission(): Promise<void> {
     // Denied/unavailable — surfaces properly later via the real
     // recording attempt's own error handling; nothing to do here.
   }
-}
+};
 
 /** Starts recording the mic; call stop() to get back the recorded clip. */
-export async function startRecording(): Promise<AudioRecording> {
+export const startRecording = async (): Promise<AudioRecording> => {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   await new Promise((resolve) => setTimeout(resolve, MIC_SETTLE_DELAY_MS));
 
@@ -69,4 +69,4 @@ export async function startRecording(): Promise<AudioRecording> {
         recorder.stop();
       }),
   };
-}
+};

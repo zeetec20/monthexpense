@@ -90,71 +90,120 @@ Rational, plainspoken, institutional. Name the system, the place, the year concr
 
 ## How Grid differs from its neighbours
 
-| vs | difference |
-|---|---|
-| **Manifesto** | Manifesto is a **dark** ground (`oklch(10% 0.005 60)`), Anton 400 **uppercase** at `--lh-tight: 0.86`, red `#E51A1A`. Grid is a **light** sheet (`oklch(99% 0.003 255)`), Archivo **800 lowercase**; its one plate is a band inside a light page, never the page itself. Same "one ink, type carries it" DNA, opposite value and case. |
-| **Cobalt** | Cobalt is modern-minimal: electric cobalt `oklch(58% 0.20 256)`, Familjen Grotesk plus JetBrains Mono, graphite code surfaces, 6-10px radii. Grid is editorial: a chosen signal ink, single-family Archivo, an exposed 12-column grid, zero radius, no code. Even on ultramarine the difference holds: Grid's blue is a flat poster ink on a ruled sheet, not an interface accent on soft surfaces. |
-| **Brutal** | Both are light near-neutral sheets with red available and zero radius, but Brutal draws with **3px** black rules (`--color-rule: oklch(12%)`) boxing solid inverted blocks in Albert Sans 700 **uppercase**. Grid draws with **1px** hairlines (`--color-rule: oklch(88%)`) painting a **visible column grid**, Archivo 800 **lowercase**, and at most one flooded plate. Marker vs pencil; shout vs quiet with one loud move. |
+| vs            | difference                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Manifesto** | Manifesto is a **dark** ground (`oklch(10% 0.005 60)`), Anton 400 **uppercase** at `--lh-tight: 0.86`, red `#E51A1A`. Grid is a **light** sheet (`oklch(99% 0.003 255)`), Archivo **800 lowercase**; its one plate is a band inside a light page, never the page itself. Same "one ink, type carries it" DNA, opposite value and case.                                                                                         |
+| **Cobalt**    | Cobalt is modern-minimal: electric cobalt `oklch(58% 0.20 256)`, Familjen Grotesk plus JetBrains Mono, graphite code surfaces, 6-10px radii. Grid is editorial: a chosen signal ink, single-family Archivo, an exposed 12-column grid, zero radius, no code. Even on ultramarine the difference holds: Grid's blue is a flat poster ink on a ruled sheet, not an interface accent on soft surfaces.                            |
+| **Brutal**    | Both are light near-neutral sheets with red available and zero radius, but Brutal draws with **3px** black rules (`--color-rule: oklch(12%)`) boxing solid inverted blocks in Albert Sans 700 **uppercase**. Grid draws with **1px** hairlines (`--color-rule: oklch(88%)`) painting a **visible column grid**, Archivo 800 **lowercase**, and at most one flooded plate. Marker vs pencil; shout vs quiet with one loud move. |
 
 ## When the brief routes here
 
-*identity · brand system · wayfinding · signage · design studio · type specimen · editorial grid · institution · museum · archive · index · directory · systems · modular · Swiss · grotesque · manual · programme · poster*. Categories: design and branding studios, cultural institutions, publishers, specimens and catalogs, portfolio indexes, archives and logistics. Tone: rational, systematic, precise, institutional, disciplined, timeless, calm-authoritative.
+_identity · brand system · wayfinding · signage · design studio · type specimen · editorial grid · institution · museum · archive · index · directory · systems · modular · Swiss · grotesque · manual · programme · poster_. Categories: design and branding studios, cultural institutions, publishers, specimens and catalogs, portfolio indexes, archives and logistics. Tone: rational, systematic, precise, institutional, disciplined, timeless, calm-authoritative.
 
 Warm, consumer, image-led, or serif-editorial briefs route elsewhere. When the brief wants a visible grid, one grotesk, and one signal ink spent on geometry, it is Grid.
 
 ## Build hint
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 ```css
-html, body { overflow-x: clip; }
-body { background: var(--color-paper); color: var(--color-ink);
-       font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+html,
+body {
+  overflow-x: clip;
+}
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
 
 /* THE ground: the exposed 12-column hairline grid, painted behind the content */
 .rails {
-  position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  max-width: 1280px; margin-inline: auto;
-  background-image: repeating-linear-gradient(to right,
-    var(--color-rule) 0, var(--color-rule) 1px,
-    transparent 1px, transparent calc(100% / 12));
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  max-width: 1280px;
+  margin-inline: auto;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-rule) 0,
+    var(--color-rule) 1px,
+    transparent 1px,
+    transparent calc(100% / 12)
+  );
 }
 
-h1, h2 { font-family: var(--font-display); font-weight: var(--display-weight);
-  font-size: clamp(52px, 10.5vw, 136px); letter-spacing: var(--tracking-display);
-  line-height: 0.9; text-transform: lowercase; }
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  font-size: clamp(52px, 10.5vw, 136px);
+  letter-spacing: var(--tracking-display);
+  line-height: 0.9;
+  text-transform: lowercase;
+}
 
-.period {                              /* the smallest mark in the kit */
-  display: inline-block; width: 0.52em; height: 0.52em;
+.period {
+  /* the smallest mark in the kit */
+  display: inline-block;
+  width: 0.52em;
+  height: 0.52em;
   background: var(--color-accent);
 }
 
-.plate {                               /* the one poster moment */
-  background: var(--color-accent); color: var(--color-paper);
-  position: relative; overflow: clip;
+.plate {
+  /* the one poster moment */
+  background: var(--color-accent);
+  color: var(--color-paper);
+  position: relative;
+  overflow: clip;
 }
-.plate::before {                       /* rails continue across the plate */
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background-image: repeating-linear-gradient(to right,
+.plate::before {
+  /* rails continue across the plate */
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to right,
     color-mix(in oklab, var(--color-paper) 15%, transparent) 0,
     color-mix(in oklab, var(--color-paper) 15%, transparent) 1px,
-    transparent 1px, transparent calc(100% / 12));
+    transparent 1px,
+    transparent calc(100% / 12)
+  );
 }
 
-.numeral {                             /* the cropped section numeral */
-  font-weight: 800; font-size: clamp(120px, 22vw, 320px);
-  line-height: 0.8; letter-spacing: -0.05em;
+.numeral {
+  /* the cropped section numeral */
+  font-weight: 800;
+  font-size: clamp(120px, 22vw, 320px);
+  line-height: 0.8;
+  letter-spacing: -0.05em;
   color: color-mix(in oklab, var(--color-ink) 8%, transparent);
   user-select: none;
 }
 
-::selection { background: var(--color-accent); color: var(--color-accent-ink); }
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  * { transition-duration: 0.01ms !important; animation: none !important; }
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
 }
 ```
 

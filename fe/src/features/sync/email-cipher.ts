@@ -11,18 +11,25 @@
 // holding RECEIPT_API_KEY (i.e. anyone with this app's bundle) could
 // decrypt or forge one too. Accepted tradeoff for the current free tier.
 
-function bytesToBase64(bytes: Uint8Array): string {
+const bytesToBase64 = (bytes: Uint8Array): string => {
   return btoa(String.fromCharCode(...bytes));
-}
+};
 
-async function deriveKey(apiKey: string): Promise<CryptoKey> {
+const deriveKey = async (apiKey: string): Promise<CryptoKey> => {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(apiKey));
   return crypto.subtle.importKey("raw", digest, { name: "AES-GCM" }, false, ["encrypt"]);
-}
+};
 
-export async function encryptEmail(email: string, apiKey: string): Promise<{ ciphertext: string; iv: string }> {
+export const encryptEmail = async (
+  email: string,
+  apiKey: string,
+): Promise<{ ciphertext: string; iv: string }> => {
   const key = await deriveKey(apiKey);
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(email));
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    new TextEncoder().encode(email),
+  );
   return { ciphertext: bytesToBase64(new Uint8Array(ciphertext)), iv: bytesToBase64(iv) };
-}
+};

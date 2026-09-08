@@ -15,7 +15,7 @@ const storedListSchema = z.array(expenseSchema);
 
 // Exported (not just used by the hook below) so the persistence logic can be
 // unit-tested without mounting a component.
-export function readAll(): Expense[] {
+export const readAll = (): Expense[] => {
   try {
     migrateLegacyKey(STORAGE_KEY);
     const raw = localStorage.getItem(scopedKey(STORAGE_KEY));
@@ -25,13 +25,13 @@ export function readAll(): Expense[] {
     // ponytail: corrupt/foreign localStorage data just resets the list, never crashes the app
     return [];
   }
-}
+};
 
-export function writeAll(expenses: Expense[]) {
+export const writeAll = (expenses: Expense[]) => {
   localStorage.setItem(scopedKey(STORAGE_KEY), JSON.stringify(expenses));
-}
+};
 
-export function useExpenses() {
+export const useExpenses = () => {
   const [expenses, setExpenses] = useState<Expense[]>(() => readAll());
 
   const addExpense = useCallback((input: ExpenseInput, source: ExpenseSource) => {
@@ -74,4 +74,4 @@ export function useExpenses() {
   }, []);
 
   return { expenses, addExpense, removeExpense, updateExpense, setExpenses };
-}
+};

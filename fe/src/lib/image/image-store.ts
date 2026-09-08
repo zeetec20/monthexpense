@@ -13,7 +13,7 @@ interface StoredImage {
   savedAt: number;
 }
 
-function openDb(): Promise<IDBDatabase> {
+const openDb = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
     req.onupgradeneeded = () => {
@@ -23,9 +23,12 @@ function openDb(): Promise<IDBDatabase> {
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
-}
+};
 
-async function withStore<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+const withStore = async <T>(
+  mode: IDBTransactionMode,
+  fn: (store: IDBObjectStore) => IDBRequest<T>,
+): Promise<T> => {
   const db = await openDb();
   try {
     return await new Promise<T>((resolve, reject) => {
@@ -37,24 +40,24 @@ async function withStore<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore
   } finally {
     db.close();
   }
-}
+};
 
-export async function saveImage(id: string, blob: Blob): Promise<void> {
+export const saveImage = async (id: string, blob: Blob): Promise<void> => {
   const record: StoredImage = { id, blob, savedAt: Date.now() };
   await withStore("readwrite", (store) => store.put(record));
-}
+};
 
-export async function getImage(id: string): Promise<Blob | null> {
+export const getImage = async (id: string): Promise<Blob | null> => {
   const record = await withStore<StoredImage | undefined>("readonly", (store) => store.get(id));
   return record?.blob ?? null;
-}
+};
 
-export async function deleteImage(id: string): Promise<void> {
+export const deleteImage = async (id: string): Promise<void> => {
   await withStore("readwrite", (store) => store.delete(id));
-}
+};
 
 /** Deletes every stored image last saved more than `maxAgeDays` ago. */
-export async function purgeExpiredImages(maxAgeDays: number = MAX_AGE_DAYS): Promise<void> {
+export const purgeExpiredImages = async (maxAgeDays: number = MAX_AGE_DAYS): Promise<void> => {
   const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
   const db = await openDb();
   try {
@@ -73,4 +76,4 @@ export async function purgeExpiredImages(maxAgeDays: number = MAX_AGE_DAYS): Pro
   } finally {
     db.close();
   }
-}
+};

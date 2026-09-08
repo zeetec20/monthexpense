@@ -57,7 +57,8 @@ const toWhisperLanguage = (lang: string): "english" | "indonesian" =>
   lang.toLowerCase().startsWith("id") ? "indonesian" : "english";
 
 /** Same toggle value, but the short code the expense-parse endpoint's `language` hint expects. */
-const toLanguageCode = (lang: string): "en" | "id" => (toWhisperLanguage(lang) === "indonesian" ? "id" : "en");
+const toLanguageCode = (lang: string): "en" | "id" =>
+  toWhisperLanguage(lang) === "indonesian" ? "id" : "en";
 
 /**
  * Orchestration layer for voice entry, same shape as useReceiptScanner —
@@ -66,7 +67,7 @@ const toLanguageCode = (lang: string): "en" | "id" => (toWhisperLanguage(lang) =
  * "aborted"), record once and transcribe via Cloudflare Workers AI Whisper.
  * Both hand a plain transcript to the same parseVoiceExpense.
  */
-export function useVoiceExpense(lang: string) {
+export const useVoiceExpense = (lang: string) => {
   const [state, setState] = useState<VoiceState>(IDLE);
   const recognizerRef = useRef<SpeechRecognizer | null>(null);
   const fallbackRecordingRef = useRef<AudioRecording | null>(null);
@@ -128,7 +129,12 @@ export function useVoiceExpense(lang: string) {
     fallingBackRef.current = true;
     if (!isMicRecordingSupported()) {
       fallingBackRef.current = false;
-      setState({ status: "error", result: null, message: "voiceErrorUnsupported", detail: "getUserMedia not available" });
+      setState({
+        status: "error",
+        result: null,
+        message: "voiceErrorUnsupported",
+        detail: "getUserMedia not available",
+      });
       return;
     }
     try {
@@ -158,7 +164,12 @@ export function useVoiceExpense(lang: string) {
     });
     if (!clip) {
       // Too little was captured (near-instant tap/no real speech).
-      setState({ status: "error", result: null, message: "voiceErrorGeneric", detail: "clip: null (stop() rejected or under 300ms)" });
+      setState({
+        status: "error",
+        result: null,
+        message: "voiceErrorGeneric",
+        detail: "clip: null (stop() rejected or under 300ms)",
+      });
       return;
     }
 
@@ -223,7 +234,12 @@ export function useVoiceExpense(lang: string) {
       onEnd: () =>
         setState((prev) =>
           prev.status === "recording" && !fallingBackRef.current
-            ? { status: "error", result: null, message: "voiceErrorNoSpeech", detail: "native recognition ended with no result" }
+            ? {
+                status: "error",
+                result: null,
+                message: "voiceErrorNoSpeech",
+                detail: "native recognition ended with no result",
+              }
             : prev,
         ),
     });
@@ -259,4 +275,4 @@ export function useVoiceExpense(lang: string) {
     supported: isSpeechRecognitionSupported() || isMicRecordingSupported(),
     nativeSupported: isSpeechRecognitionSupported(),
   };
-}
+};

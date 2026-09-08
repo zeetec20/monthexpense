@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { LegalPageShell } from "./LegalPageShell";
 
-export function NotFoundPage() {
+export const NotFoundPage = () => {
   return (
     <LegalPageShell title="Page not found">
       <p>There's nothing at this address — it may be mistyped or no longer exists.</p>
@@ -10,4 +10,4 @@ export function NotFoundPage() {
       </Button>
     </LegalPageShell>
   );
-}
+};

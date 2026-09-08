@@ -1,4 +1,14 @@
-import { Utensils, ShoppingBag, Car, FileText, RefreshCw, TrendingUp, Film, Globe, type LucideIcon } from "lucide-react";
+import {
+  Utensils,
+  ShoppingBag,
+  Car,
+  FileText,
+  RefreshCw,
+  TrendingUp,
+  Film,
+  Globe,
+  type LucideIcon,
+} from "lucide-react";
 import { t, type Lang, type TKey } from "@/i18n/translations";
 import type { ExpenseCategory } from "./expense.schema";
 
@@ -38,22 +48,22 @@ const CATEGORY_LABEL_KEY: Record<ExpenseCategory, TKey> = {
   other: "catOther",
 };
 
-function toCategory(value: string | null | undefined): ExpenseCategory {
+const toCategory = (value: string | null | undefined): ExpenseCategory => {
   return (value && value in CATEGORY_COLOR ? value : "food_snack") as ExpenseCategory;
-}
+};
 
-export function categoryColor(value: string | null | undefined): string {
+export const categoryColor = (value: string | null | undefined): string => {
   return CATEGORY_COLOR[toCategory(value)];
-}
+};
 
-export function categoryIcon(value: string | null | undefined): LucideIcon {
+export const categoryIcon = (value: string | null | undefined): LucideIcon => {
   return CATEGORY_ICON[toCategory(value)];
-}
+};
 
 /** Localized category label for the reskinned screens (TransactionsPage/
  * HomeDashboard/AnalyticsPage) — EXPENSE_CATEGORIES's own labels stay
  * English, they back CategoryPicker on the still-English scan/voice/manual
  * review screens. */
-export function categoryLabel(value: string | null | undefined, lang: Lang): string {
+export const categoryLabel = (value: string | null | undefined, lang: Lang): string => {
   return t(lang, CATEGORY_LABEL_KEY[toCategory(value)]);
-}
+};

@@ -14,7 +14,7 @@ const quotaStatusResponseSchema = z.object({
  * reached" state instead of a generic parse-failure message. */
 export class QuotaExceededError extends Error {}
 
-async function post(endpoint: string, text: string, language?: "en" | "id") {
+const post = async (endpoint: string, text: string, language?: "en" | "id") => {
   const response = await fetch(`${RECEIPT_API_URL}${endpoint}`, {
     method: "POST",
     headers: {
@@ -35,11 +35,11 @@ async function post(endpoint: string, text: string, language?: "en" | "id") {
   const json: unknown = await response.json();
 
   return receiptResponseSchema.parse(json);
-}
+};
 
-export function parseReceipt(text: string) {
+export const parseReceipt = (text: string) => {
   return post("/v1/receipts/parse", text);
-}
+};
 
 /** Same endpoint/response shape as parseReceipt — a pasted receipt/chat
  * text blob is just another source of the same `{ text }` input BE already
@@ -47,19 +47,19 @@ export function parseReceipt(text: string) {
  * "text" daily quota bucket, separate from photo scans. `language` is an
  * optional hint from TextReceiptEntry's ID/EN toggle, same one Voice
  * already sends. */
-export function parseReceiptText(text: string, language?: "en" | "id") {
+export const parseReceiptText = (text: string, language?: "en" | "id") => {
   return post("/v1/receipts/parse-text", text, language);
-}
+};
 
 /** Read-only usage status, no unit spent (BE's identityCheck, not
  * identityQuota) — lets the FE show real remaining/limit numbers on load
  * instead of only after a first scan/voice/text call. Best-effort: callers
  * should catch and ignore failures, this is a nice-to-have prefetch. */
-export async function getQuotaStatus() {
+export const getQuotaStatus = async () => {
   const response = await fetch(`${RECEIPT_API_URL}/v1/quota`, {
     headers: { Authorization: `Bearer ${RECEIPT_API_KEY}`, ...sheetIdentityHeaders() },
   });
   if (!response.ok) throw new Error(`Quota status failed: ${response.status}`);
   const json: unknown = await response.json();
   return quotaStatusResponseSchema.parse(json).data;
-}
+};

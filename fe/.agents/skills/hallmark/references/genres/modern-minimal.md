@@ -4,7 +4,7 @@ For the polished enterprise / dev-tool / API page. Stripe / Linear / ElevenLabs 
 
 ## When to pick it
 
-Brief mentions any of: *SaaS, enterprise, API, platform, developer tool, infra, B2B, dashboard, billing, Stripe-like, Linear-like, ElevenLabs-like, dev experience, ship fast*. Also pick when the user names a brand colour but the rest of the brief is restrained.
+Brief mentions any of: _SaaS, enterprise, API, platform, developer tool, infra, B2B, dashboard, billing, Stripe-like, Linear-like, ElevenLabs-like, dev experience, ship fast_. Also pick when the user names a brand colour but the rest of the brief is restrained.
 
 ## Themes that belong
 
@@ -44,11 +44,11 @@ The two differ on every axis a glance registers: Coral is warm-grey + coral + Ge
 
 ## Voice fixtures
 
-- *"Built to ship."*
-- *"The platform that scales with you."*
-- *"From idea to production in an afternoon."*
-- *"Thirty thousand teams build with X."*
-- *"One API. Every channel."*
+- _"Built to ship."_
+- _"The platform that scales with you."_
+- _"From idea to production in an afternoon."_
+- _"Thirty thousand teams build with X."_
+- _"One API. Every channel."_
 
 ## Nav and footer voice
 

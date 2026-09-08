@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
  * needs a working public link, not a mobile-app-style view), reusing the
  * app's color tokens/fonts so it still reads as the same product.
  */
-export function LegalPageShell({
+export const LegalPageShell = ({
   title,
   updated,
   children,
@@ -16,11 +16,14 @@ export function LegalPageShell({
   title: string;
   updated?: string;
   children: ReactNode;
-}) {
+}) => {
   return (
     <div className="min-h-dvh bg-surface text-ink">
       <div className="mx-auto max-w-2xl px-6 pt-[max(2.5rem,env(safe-area-inset-top))] pb-10">
-        <a href="/" className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink">
+        <a
+          href="/"
+          className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-soft hover:text-ink"
+        >
           <ArrowLeft className="w-4 h-4" /> Back to MonthExpense
         </a>
         <h1 className="mb-1 text-2xl font-bold">{title}</h1>
@@ -31,4 +34,4 @@ export function LegalPageShell({
       </div>
     </div>
   );
-}
+};

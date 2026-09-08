@@ -77,10 +77,10 @@ export function MonthCalendar({
   const firstWeekday = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = getDaysInMonth(new Date(viewYear, viewMonth, 1));
   const locale = lang === "id" ? "id-ID" : "en-US";
-  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(
-    locale,
-    { month: "long", year: "numeric" },
-  );
+  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(locale, {
+    month: "long",
+    year: "numeric",
+  });
   const weekdayLabels = Array.from({ length: 7 }, (_, i) =>
     new Date(2024, 0, 7 + i).toLocaleDateString(locale, { weekday: "narrow" }),
   );
@@ -88,8 +88,7 @@ export function MonthCalendar({
     ...Array(firstWeekday).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-  const dateKey = (day: number) =>
-    `${viewYear}-${pad(viewMonth + 1)}-${pad(day)}`;
+  const dateKey = (day: number) => `${viewYear}-${pad(viewMonth + 1)}-${pad(day)}`;
   const today = todayKey();
 
   return (
@@ -126,8 +125,7 @@ export function MonthCalendar({
           const isSelected = key === selected;
           const mark = dayMarks?.[day];
           const isDisabled =
-            (minDate !== undefined && key < minDate) ||
-            (disabledDates?.includes(key) ?? false);
+            (minDate !== undefined && key < minDate) || (disabledDates?.includes(key) ?? false);
           return (
             <button
               key={i}
@@ -141,24 +139,14 @@ export function MonthCalendar({
                   : isToday
                     ? "bg-brand/15 text-brand font-bold"
                     : "bg-elevated text-ink-soft hover:bg-card-hover") +
-                (isSelected
-                  ? " ring-[1.5px] ring-brand ring-offset-1 ring-offset-card"
-                  : "")
+                (isSelected ? " ring-[1.5px] ring-brand ring-offset-1 ring-offset-card" : "")
               }
             >
-              <span
-                className={"text-[10px] " + (isSelected ? "font-bold" : "")}
-              >
-                {day}
-              </span>
+              <span className={"text-[10px] " + (isSelected ? "font-bold" : "")}>{day}</span>
               {(mark?.hasScheduled || mark?.hasDebt) && (
                 <span className="flex items-center gap-0.5">
-                  {mark?.hasScheduled && (
-                    <span className="w-1 h-1 rounded-full bg-sky-500" />
-                  )}
-                  {mark?.hasDebt && (
-                    <span className="w-1 h-1 rounded-full bg-rose-500" />
-                  )}
+                  {mark?.hasScheduled && <span className="w-1 h-1 rounded-full bg-sky-500" />}
+                  {mark?.hasDebt && <span className="w-1 h-1 rounded-full bg-rose-500" />}
                 </span>
               )}
               {!!mark?.normalCount && (

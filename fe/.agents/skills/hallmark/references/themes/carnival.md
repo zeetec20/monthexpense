@@ -14,7 +14,7 @@ Loaded eagerly by SKILL.md Step 3 whenever the catalog pick is `carnival`. The d
 
 A drop is a named duo-tone palette that preserves Carnival's structural signature (saturated accent-1 + complementary accent-2 + tinted paper + deep ink) while rotating hue. **Every Carnival build picks one drop.** The catalog of six:
 
-### Drop 01 · Cold Snap *(default)*
+### Drop 01 · Cold Snap _(default)_
 
 Warm + warm. Indie record-label, winter, scrappy. The canonical Carnival.
 
@@ -137,11 +137,11 @@ Match the brief's **domain** before reaching for the loudest palette:
 - zine / skate / DIY / deliberately chaotic → **Citrus Riot**
 - journalism / newsletter / editorial → **Pressroom**
 
-Citrus Riot and Aqua Park are the highest-chroma drops — reach for them when the brief genuinely *wants* maximum loudness, not as a default. A food market reads better in Diner Sign than in lime-on-magenta.
+Citrus Riot and Aqua Park are the highest-chroma drops — reach for them when the brief genuinely _wants_ maximum loudness, not as a default. A food market reads better in Diner Sign than in lime-on-magenta.
 
 ### When to construct a custom drop instead
 
-If the brief explicitly names a brand colour that doesn't fit any catalog drop — e.g. *"our brand is teal and beige"* — route to the **custom theme** branch (see `custom-theme.md`) instead of stretching a Carnival drop. Drops are curated, not infinite. Six is the right number for now.
+If the brief explicitly names a brand colour that doesn't fit any catalog drop — e.g. _"our brand is teal and beige"_ — route to the **custom theme** branch (see `custom-theme.md`) instead of stretching a Carnival drop. Drops are curated, not infinite. Six is the right number for now.
 
 ## Reference register
 
@@ -149,17 +149,21 @@ Dropout TV · Fly.io · Stones Throw Records · Third Man Records · Drag City �
 
 The aesthetic: independent music labels, comedy networks, illustrator portfolios, hot-sauce brands, indie game studios. Things with **character**. Things that print posters as a side hustle. Things that sound loud out loud.
 
-**Patron-saint reference (internal):** *Dropout TV homepage* + *Stones Throw artist pages*. When in doubt about decorative density, ask "would Dropout or Stones Throw run this much density?" If less, add ornaments. If more, you've gone too far.
+**Patron-saint reference (internal):** _Dropout TV homepage_ + _Stones Throw artist pages_. When in doubt about decorative density, ask "would Dropout or Stones Throw run this much density?" If less, add ornaments. If more, you've gone too far.
 
 ## Signature moves
 
 The theme's seven tics. A Carnival build should exhibit at least five of them.
 
-1. **Duo-tone accent system.** Sections alternate which accent fills them. Section 1 fills with `--color-accent` (mustard); section 2 fills with `--color-accent-2` (oxblood); section 3 mustard again; etc. One section never shows both — they are *competing*, not blended.
+1. **Duo-tone accent system.** Sections alternate which accent fills them. Section 1 fills with `--color-accent` (mustard); section 2 fills with `--color-accent-2` (oxblood); section 3 mustard again; etc. One section never shows both — they are _competing_, not blended.
 
    ```css
-   .section:nth-of-type(odd)  { --section-fill: var(--color-accent); }
-   .section:nth-of-type(even) { --section-fill: var(--color-accent-2); }
+   .section:nth-of-type(odd) {
+     --section-fill: var(--color-accent);
+   }
+   .section:nth-of-type(even) {
+     --section-fill: var(--color-accent-2);
+   }
    ```
 
 2. **Decorative ornaments.** Use `✱` (asterisk operator), `❋` (heavy six-petalled), `◆` (black diamond) as bullets, section dividers, and rhythmic spacers. Patterns:
@@ -170,7 +174,10 @@ The theme's seven tics. A Carnival build should exhibit at least five of them.
 3. **Layered colour blocks that bleed off the page edge.** Accent fills extend 24px past the page max-width on the left or right, so they read as **posters pinned to the wall**, not as buttons.
 
    ```css
-   .colour-block { margin-inline: calc(var(--page-gutter) * -1); padding-inline: var(--page-gutter); }
+   .colour-block {
+     margin-inline: calc(var(--page-gutter) * -1);
+     padding-inline: var(--page-gutter);
+   }
    ```
 
 4. **Hard-offset drop shadow.** Every card, CTA, and image gets `box-shadow: 4px 4px 0 var(--color-ink)`. No soft shadows ever. The shadow is **flat ink, offset**. This is the single most-recognisable Carnival move.
@@ -188,7 +195,7 @@ The theme's seven tics. A Carnival build should exhibit at least five of them.
 
    Used wherever the page would otherwise have a photo placeholder.
 
-7. **Marquee scroll** on banner OR footer with decorative dot separators. *"NEW EP ◆ OUT NOW ◆ ON CASSETTE ◆ BLUE VINYL ◆ NEW EP ◆..."* — horizontal scroll, honours `prefers-reduced-motion: reduce` (freeze at static state).
+7. **Marquee scroll** on banner OR footer with decorative dot separators. _"NEW EP ◆ OUT NOW ◆ ON CASSETTE ◆ BLUE VINYL ◆ NEW EP ◆..."_ — horizontal scroll, honours `prefers-reduced-motion: reduce` (freeze at static state).
 
 ## Layout pitfalls (must avoid)
 
@@ -211,7 +218,7 @@ Carnival's dense visual language has known traps. Read this list **before** writ
 
 6. **Section head detached from, or mis-centred over, its body.** The section head (heading + any lede) sits **tight above** the content it names — about `1.25rem` (`--section-head-gap`) — and **shares that content's alignment**. Don't cap the head at a narrow `max-width` / `ch` and then `margin-inline: auto` it: that strands a centred head over a full-width, left-flush grid (the classic accidental mismatch). Left-flush grid → left-flush head. (See the alignment-coherence note in `layout-and-space.md`.)
 
-7. **Newsletter / CTA button not aligned with the input beside it.** When a button sits next to a form input in one row, they must share the **same height, vertical padding, and border width**, and the row must use `align-items: center` — otherwise the button floats above the input's baseline. If a label is stacked above the input it makes that column taller; centre the row on the *control*, not the column (give the field `align-items: center` or pull the label out of the flex row).
+7. **Newsletter / CTA button not aligned with the input beside it.** When a button sits next to a form input in one row, they must share the **same height, vertical padding, and border width**, and the row must use `align-items: center` — otherwise the button floats above the input's baseline. If a label is stacked above the input it makes that column taller; centre the row on the _control_, not the column (give the field `align-items: center` or pull the label out of the flex row).
 
 ## Macrostructure affinity
 
@@ -238,26 +245,27 @@ If the brief would otherwise land in one of these, redirect to Marquee Hero or M
 
 ## Voice fixtures
 
-Sample lines the Carnival voice should *read like*. Short. Loud. Declarative. Caps on the headlines, not on the body.
+Sample lines the Carnival voice should _read like_. Short. Loud. Declarative. Caps on the headlines, not on the body.
 
-- *"FIVE NEW FLAVORS. ALL TOO HOT."*
-- *"WE PRESS RECORDS. THAT'S IT."*
-- *"NEW SEASON. NEW SHOWS. SAME CHAOS."*
-- *"ONE EP. THREE ARTISTS. NO REGRETS."*
-- *"THE GAME IS PIXEL ART. THE GAME IS HARD."*
+- _"FIVE NEW FLAVORS. ALL TOO HOT."_
+- _"WE PRESS RECORDS. THAT'S IT."_
+- _"NEW SEASON. NEW SHOWS. SAME CHAOS."_
+- _"ONE EP. THREE ARTISTS. NO REGRETS."_
+- _"THE GAME IS PIXEL ART. THE GAME IS HARD."_
 
 Body copy is **shorter than other themes**. 1–2 short sentences per paragraph. Paragraphs separated by ornament dividers, not whitespace alone.
 
 **Voice rules:**
+
 - Headlines: ALL CAPS, ≤ 6 words, period at end (not exclamation — the loudness is in the type, not the punctuation).
 - Body: sentence case, short, present-tense.
-- Numerals over words always (*5* not *five*).
+- Numerals over words always (_5_ not _five_).
 - Never any of: "experience", "journey", "elevate", "curate", "platform", "ecosystem", "transform". These are SaaS-default AI tells; Carnival is independent, not platformed.
 
 ## Anti-patterns (theme-specific)
 
 - **Never soft shadows.** Carnival is hard-offset (`4px 4px 0`) or no shadow. If you find yourself reaching for `0 8px 24px`, redirect.
-- **Never both accents in one block.** Mustard *or* oxblood per section, never blended.
+- **Never both accents in one block.** Mustard _or_ oxblood per section, never blended.
 - **Never sentence-case headlines.** Headlines are ALL CAPS or `font-variant: all-petite-caps`.
 - **Never light-grey text.** Body text is full-ink. Carnival doesn't do "subtle".
 - **Never long paragraphs.** If a paragraph exceeds 3 sentences, break it with an ornament divider or split into two blocks.
@@ -267,35 +275,62 @@ Body copy is **shorter than other themes**. 1–2 short sentences per paragraph.
 
 ## How Carnival differs from neighbouring themes
 
-| vs | difference |
-|---|---|
-| **Riso** | Riso is risograph print-craft (peach paper, CMYK misregistration on display, cyan + yellow). Carnival is *editorial maximalism* — duo-tone, oxblood-on-pink, decorative ornaments, variable-width type. Different parent tradition. |
-| **Manifesto** | Manifesto is BLACK paper + ALL CAPS red Anton. Carnival is *tinted warm paper* + duo accents + ornaments. Inverted polarity — Manifesto is dark, Carnival is light. |
-| **Brutal** | Brutal is raw graphic-design brutalism (heavy borders, slab type, no ornaments). Carnival is **decorative** — ornaments, layered blocks, variable type, character. |
-| **Sport** | Sport is athletic italic uppercase (Inter Tight italic 700). Carnival is poster-art expressive (Big Shoulders 800 with width axis). Sport feels Nike; Carnival feels Drag City. |
+| vs            | difference                                                                                                                                                                                                                          |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Riso**      | Riso is risograph print-craft (peach paper, CMYK misregistration on display, cyan + yellow). Carnival is _editorial maximalism_ — duo-tone, oxblood-on-pink, decorative ornaments, variable-width type. Different parent tradition. |
+| **Manifesto** | Manifesto is BLACK paper + ALL CAPS red Anton. Carnival is _tinted warm paper_ + duo accents + ornaments. Inverted polarity — Manifesto is dark, Carnival is light.                                                                 |
+| **Brutal**    | Brutal is raw graphic-design brutalism (heavy borders, slab type, no ornaments). Carnival is **decorative** — ornaments, layered blocks, variable type, character.                                                                  |
+| **Sport**     | Sport is athletic italic uppercase (Inter Tight italic 700). Carnival is poster-art expressive (Big Shoulders 800 with width axis). Sport feels Nike; Carnival feels Drag City.                                                     |
 
 ## Test brief expectations
 
 Carnival should be a candidate when the brief mentions:
 
-- *record label · podcast · comedy · indie · zine · poster · illustrator · games · hot sauce · merch · streetwear · cassette · vinyl · cassettes · live show · zine · brand of one*
+- _record label · podcast · comedy · indie · zine · poster · illustrator · games · hot sauce · merch · streetwear · cassette · vinyl · cassettes · live show · zine · brand of one_
 - product categories: music · comedy · games · illustration · hot sauce · merch · skateboards · gig posters
-- emotional tone: *loud, fun, scrappy, chaotic, layered, character-led, decorative*
+- emotional tone: _loud, fun, scrappy, chaotic, layered, character-led, decorative_
 
-Briefs that say *enterprise / scale / API / B2B / dashboard* never route to Carnival.
+Briefs that say _enterprise / scale / API / B2B / dashboard_ never route to Carnival.
 
 ## Build hint
 
 When emitting a Carnival page, the first 12 lines of CSS should establish the four most important tells:
 
 ```css
-body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); }
-h1, h2 { font-family: var(--font-display); font-weight: 800; font-variation-settings: "wdth" 110; letter-spacing: 0.02em; line-height: 0.92; text-transform: uppercase; } /* hero word goes tighter: letter-spacing: -0.005em; line-height: 0.82 */
-.card, .cta { box-shadow: 4px 4px 0 var(--color-ink); border: 2px solid var(--color-ink); }
-.section:nth-of-type(odd)  { background: var(--color-accent);   color: var(--color-accent-ink); }
-.section:nth-of-type(even) { background: var(--color-accent-2); color: var(--color-paper); }
-.ornament { color: var(--color-accent); }
-.halftone { background-image: radial-gradient(var(--color-ink) 1.5px, transparent 1.5px); background-size: 12px 12px; }
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 110;
+  letter-spacing: 0.02em;
+  line-height: 0.92;
+  text-transform: uppercase;
+} /* hero word goes tighter: letter-spacing: -0.005em; line-height: 0.82 */
+.card,
+.cta {
+  box-shadow: 4px 4px 0 var(--color-ink);
+  border: 2px solid var(--color-ink);
+}
+.section:nth-of-type(odd) {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+.section:nth-of-type(even) {
+  background: var(--color-accent-2);
+  color: var(--color-paper);
+}
+.ornament {
+  color: var(--color-accent);
+}
+.halftone {
+  background-image: radial-gradient(var(--color-ink) 1.5px, transparent 1.5px);
+  background-size: 12px 12px;
+}
 ```
 
 Those rules carry 70 % of the theme's identity. The rest is content fit.

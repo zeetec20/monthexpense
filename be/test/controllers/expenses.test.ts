@@ -19,18 +19,21 @@ const VALID_JSON = JSON.stringify({
   metadata: { currency: "IDR", confidence: 0.9, category: "food_snack" },
 });
 
-function post(body: unknown, headers: Record<string, string> = authHeaders()) {
+const post = (body: unknown, headers: Record<string, string> = authHeaders()) => {
   return new Request("http://localhost/v1/expenses/parse", {
     method: "POST",
     headers,
     body: JSON.stringify(body),
   });
-}
+};
 
 describe("POST /v1/expenses/parse", () => {
   it("rejects requests without a valid API key", async () => {
     const res = await app.fetch(
-      post({ text: "coffee 50k", referenceDate: "2024-03-14" }, { "Content-Type": "application/json" }),
+      post(
+        { text: "coffee 50k", referenceDate: "2024-03-14" },
+        { "Content-Type": "application/json" },
+      ),
       buildTestEnv(),
       testCtx,
     );
@@ -51,7 +54,11 @@ describe("POST /v1/expenses/parse", () => {
   });
 
   it("rejects empty text", async () => {
-    const res = await app.fetch(post({ text: "", referenceDate: "2024-03-14" }), buildTestEnv(), testCtx);
+    const res = await app.fetch(
+      post({ text: "", referenceDate: "2024-03-14" }),
+      buildTestEnv(),
+      testCtx,
+    );
     expect(res.status).toBe(400);
   });
 
@@ -59,7 +66,11 @@ describe("POST /v1/expenses/parse", () => {
     const res = await app.fetch(post({ text: "coffee 50k" }), buildTestEnv(), testCtx);
     expect(res.status).toBe(400);
 
-    const res2 = await app.fetch(post({ text: "coffee 50k", referenceDate: "14-03-2024" }), buildTestEnv(), testCtx);
+    const res2 = await app.fetch(
+      post({ text: "coffee 50k", referenceDate: "14-03-2024" }),
+      buildTestEnv(),
+      testCtx,
+    );
     expect(res2.status).toBe(400);
   });
 
@@ -68,9 +79,15 @@ describe("POST /v1/expenses/parse", () => {
     model.parseImpl = async () => VALID_JSON;
     const env = envWithExpenseModel(model);
 
-    const res = await app.fetch(post({ text: "coffee 50k at starbucks", referenceDate: "2024-03-14" }), env, testCtx);
+    const res = await app.fetch(
+      post({ text: "coffee 50k at starbucks", referenceDate: "2024-03-14" }),
+      env,
+      testCtx,
+    );
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { data: { merchant: { name: string }; total: number; suggested_title: string | null } };
+    const body = (await res.json()) as {
+      data: { merchant: { name: string }; total: number; suggested_title: string | null };
+    };
     expect(body.data.merchant.name).toBe("Starbucks");
     expect(body.data.total).toBe(50000);
     // buildSuggestedTitle runs server-side now that voice has merchant.name — same as receipts.
@@ -94,9 +111,15 @@ describe("POST /v1/expenses/parse", () => {
       });
     const env = envWithExpenseModel(model);
 
-    const res = await app.fetch(post({ text: "beli sesuatu", referenceDate: "2024-03-14" }), env, testCtx);
+    const res = await app.fetch(
+      post({ text: "beli sesuatu", referenceDate: "2024-03-14" }),
+      env,
+      testCtx,
+    );
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { data: { metadata: { validation_warning: { en: string; id: string } | null } } };
+    const body = (await res.json()) as {
+      data: { metadata: { validation_warning: { en: string; id: string } | null } };
+    };
     expect(body.data.metadata.validation_warning?.en).toMatch(/amount wasn't clear/);
   });
 
@@ -105,8 +128,14 @@ describe("POST /v1/expenses/parse", () => {
     model.parseImpl = async () => VALID_JSON;
     const env = envWithExpenseModel(model);
 
-    const res = await app.fetch(post({ text: "coffee 50k at starbucks", referenceDate: "2024-03-14" }), env, testCtx);
-    const body = (await res.json()) as { data: { metadata: { validation_warning: { en: string; id: string } | null } } };
+    const res = await app.fetch(
+      post({ text: "coffee 50k at starbucks", referenceDate: "2024-03-14" }),
+      env,
+      testCtx,
+    );
+    const body = (await res.json()) as {
+      data: { metadata: { validation_warning: { en: string; id: string } | null } };
+    };
     expect(body.data.metadata.validation_warning).toBeNull();
   });
 
@@ -176,7 +205,11 @@ describe("POST /v1/expenses/parse", () => {
       });
     const env = envWithExpenseModel(model);
 
-    const res = await app.fetch(post({ text: "coffee 50k", referenceDate: "2024-03-14" }), env, testCtx);
+    const res = await app.fetch(
+      post({ text: "coffee 50k", referenceDate: "2024-03-14" }),
+      env,
+      testCtx,
+    );
     const body = (await res.json()) as { data: { items: unknown[] } };
     expect(body.data.items).toEqual([]);
   });
@@ -187,7 +220,11 @@ describe("POST /v1/expenses/parse", () => {
     model.repairImpl = async () => VALID_JSON;
     const env = envWithExpenseModel(model);
 
-    const res = await app.fetch(post({ text: "coffee 50k", referenceDate: "2024-03-14" }), env, testCtx);
+    const res = await app.fetch(
+      post({ text: "coffee 50k", referenceDate: "2024-03-14" }),
+      env,
+      testCtx,
+    );
     expect(res.status).toBe(200);
     const body = (await res.json()) as { data: { total: number } };
     expect(body.data.total).toBe(50000);
@@ -199,7 +236,11 @@ describe("POST /v1/expenses/parse", () => {
     model.repairImpl = async () => "still not json";
     const env = envWithExpenseModel(model);
 
-    const res = await app.fetch(post({ text: "coffee 50k", referenceDate: "2024-03-14" }), env, testCtx);
+    const res = await app.fetch(
+      post({ text: "coffee 50k", referenceDate: "2024-03-14" }),
+      env,
+      testCtx,
+    );
     expect(res.status).toBe(502);
     const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("INVALID_MODEL_OUTPUT");

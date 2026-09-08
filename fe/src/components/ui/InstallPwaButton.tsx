@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Download, MoreVertical, Share, PlusSquare, CheckCircle2, ChevronDown, type LucideIcon } from "lucide-react";
+import {
+  Download,
+  MoreVertical,
+  Share,
+  PlusSquare,
+  CheckCircle2,
+  ChevronDown,
+  type LucideIcon,
+} from "lucide-react";
 import { usePwaInstall, type InstallVariant } from "@/hooks/usePwaInstall";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { t, type Lang, type TKey } from "@/i18n/translations";
@@ -79,11 +87,17 @@ export function InstallPwaButton({ lang }: { lang: Lang }) {
         <span className="text-xs font-bold max-[380px]:hidden">{t(lang, "installApp")}</span>
       </button>
 
-      <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={t(lang, "installInstructionsTitle")}>
+      <BottomSheet
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        title={t(lang, "installInstructionsTitle")}
+      >
         <h3 className="text-sm font-bold text-ink pb-1">
           {t(lang, mode === "auto" ? "installWelcomeTitle" : "installInstructionsTitle")}
         </h3>
-        {mode === "auto" && <p className="text-sm text-ink-soft pb-3">{t(lang, "installWelcomeBody")}</p>}
+        {mode === "auto" && (
+          <p className="text-sm text-ink-soft pb-3">{t(lang, "installWelcomeBody")}</p>
+        )}
         <ul className="list-disc pl-5 space-y-1 text-sm text-ink-soft pb-3">
           <li>{t(lang, "installBenefitOffline")}</li>
           <li>{t(lang, "installBenefitPersistent")}</li>
@@ -105,7 +119,9 @@ export function InstallPwaButton({ lang }: { lang: Lang }) {
                   </div>
                   <p className="text-sm text-ink-soft">{t(lang, key)}</p>
                 </div>
-                {i < steps.length - 1 && <ChevronDown className="w-4 h-4 ml-3 my-1 text-ink-faint" />}
+                {i < steps.length - 1 && (
+                  <ChevronDown className="w-4 h-4 ml-3 my-1 text-ink-faint" />
+                )}
               </div>
             ))}
           </div>

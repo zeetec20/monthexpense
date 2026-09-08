@@ -5,13 +5,13 @@ import { testCtx, authHeaders, envWithTranscribeModel, buildTestEnv } from "./he
 
 const SHORT_BASE64 = Buffer.from("fake audio bytes").toString("base64");
 
-function post(body: unknown, headers: Record<string, string> = authHeaders()) {
+const post = (body: unknown, headers: Record<string, string> = authHeaders()) => {
   return new Request("http://localhost/v1/voice/transcribe", {
     method: "POST",
     headers,
     body: JSON.stringify(body),
   });
-}
+};
 
 describe("POST /v1/voice/transcribe", () => {
   it("rejects requests without a valid API key", async () => {
@@ -42,7 +42,11 @@ describe("POST /v1/voice/transcribe", () => {
   });
 
   it("rejects an invalid language", async () => {
-    const res = await app.fetch(post({ audio: SHORT_BASE64, language: "fr" }), buildTestEnv(), testCtx);
+    const res = await app.fetch(
+      post({ audio: SHORT_BASE64, language: "fr" }),
+      buildTestEnv(),
+      testCtx,
+    );
     expect(res.status).toBe(400);
   });
 

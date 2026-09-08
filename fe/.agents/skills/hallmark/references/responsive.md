@@ -19,17 +19,23 @@ This is a hard floor, not a wish list. A page that fails any of these on any of 
 ## Principles
 
 - Base styles are for the smallest viewport. `min-width` media queries add as you go up. Never `max-width` as the primary direction.
-- Breakpoints are where the *content* breaks, not where a device sits. If the headline reflows awkwardly at 720px, that's a breakpoint — regardless of what the Tailwind defaults say.
-- Use `pointer` and `hover` media queries instead of width to detect *interaction capability*.
+- Breakpoints are where the _content_ breaks, not where a device sits. If the headline reflows awkwardly at 720px, that's a breakpoint — regardless of what the Tailwind defaults say.
+- Use `pointer` and `hover` media queries instead of width to detect _interaction capability_.
 
 ## Breakpoints
 
 Three or four, content-driven. As a default:
 
 ```css
-@media (min-width: 40rem) { /* ~640px — tablet, small laptop */ }
-@media (min-width: 60rem) { /* ~960px — desktop baseline */ }
-@media (min-width: 90rem) { /* ~1440px — wide */ }
+@media (min-width: 40rem) {
+  /* ~640px — tablet, small laptop */
+}
+@media (min-width: 60rem) {
+  /* ~960px — desktop baseline */
+}
+@media (min-width: 90rem) {
+  /* ~1440px — wide */
+}
 ```
 
 Use `rem` so the breakpoints respect the user's font size.
@@ -39,18 +45,26 @@ Use `rem` so the breakpoints respect the user's font size.
 Prefer `clamp()` for sizes that change continuously; use media queries for layouts that change discretely.
 
 ```css
-h1 { font-size: clamp(2.5rem, 4vw + 1rem, 6rem); }
-.container { padding-inline: clamp(1rem, 4vw, 4rem); }
+h1 {
+  font-size: clamp(2.5rem, 4vw + 1rem, 6rem);
+}
+.container {
+  padding-inline: clamp(1rem, 4vw, 4rem);
+}
 ```
 
 ## Pointer and hover queries
 
 ```css
 @media (hover: hover) and (pointer: fine) {
-  .card:hover { transform: translateY(-2px); }
+  .card:hover {
+    transform: translateY(-2px);
+  }
 }
 @media (pointer: coarse) {
-  .btn { min-height: 48px; }
+  .btn {
+    min-height: 48px;
+  }
 }
 ```
 
@@ -73,19 +87,23 @@ Buttons, primary nav links, footer links, tab labels, breadcrumbs, and CTAs must
 ```css
 /* When the row can't fit, collapse the row, not the labels. */
 @media (max-width: 40rem) {
-  .nav__rail { display: none; }      /* desktop nav hides */
-  .nav__sheet-toggle { display: grid; } /* mobile menu shows */
+  .nav__rail {
+    display: none;
+  } /* desktop nav hides */
+  .nav__sheet-toggle {
+    display: grid;
+  } /* mobile menu shows */
 }
 ```
 
 **Order of fixes**, when something does wrap:
 
-1. **Shorten the label.** *"Get started free"* → *"Start free"*. *"Read the documentation"* → *"Read docs"*. *"Schedule a demo"* → *"Book demo"*. Most CTA labels are 30–40 % longer than they need to be.
+1. **Shorten the label.** _"Get started free"_ → _"Start free"_. _"Read the documentation"_ → _"Read docs"_. _"Schedule a demo"_ → _"Book demo"_. Most CTA labels are 30–40 % longer than they need to be.
 2. **`white-space: nowrap`** on the affordance, let the parent flex/grid reflow.
 3. **`hidden=until-found`** the lowest-priority nav item at narrow widths (it remains in DOM for find-in-page and SEO).
 4. **Collapse the nav** into a sheet / off-canvas / disclosure menu below a content-driven breakpoint.
 
-**Never:** let a primary CTA or top-level nav link wrap. Long footer-link labels can wrap *only* in a footer column where wrapping is part of the column's rhythm — not in the inline footer link strip (Ft2).
+**Never:** let a primary CTA or top-level nav link wrap. Long footer-link labels can wrap _only_ in a footer column where wrapping is part of the column's rhythm — not in the inline footer link strip (Ft2).
 
 This is gate **49** in [`slop-test.md`](slop-test.md). Audit any output that ships interactive affordances and confirm none wrap at the breakpoints listed above.
 
@@ -99,7 +117,7 @@ This is gate **49** in [`slop-test.md`](slop-test.md). Audit any output that shi
 For iOS notch / Android navigation bars:
 
 ```html
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 ```
 
 ```css

@@ -17,10 +17,18 @@ const classify = (err: unknown): { status: number; code: ErrorCode; message: str
     return { status, code, message: err.message };
   }
   if (err instanceof ZodError) {
-    return { status: 400, code: ERROR_CODES.SCHEMA_VALIDATION_FAILED, message: "Request validation failed" };
+    return {
+      status: 400,
+      code: ERROR_CODES.SCHEMA_VALIDATION_FAILED,
+      message: "Request validation failed",
+    };
   }
   if (isJsonExtractionError(err)) {
-    return { status: 502, code: ERROR_CODES.INVALID_MODEL_OUTPUT, message: "The input could not be parsed." };
+    return {
+      status: 502,
+      code: ERROR_CODES.INVALID_MODEL_OUTPUT,
+      message: "The input could not be parsed.",
+    };
   }
   if (isInvalidOutputError(err)) {
     // err.message is already the caller-set, user-safe string (see
@@ -31,9 +39,17 @@ const classify = (err: unknown): { status: number; code: ErrorCode; message: str
     return { status: 504, code: ERROR_CODES.AI_TIMEOUT, message: "The AI request timed out." };
   }
   if (isAiUnavailableError(err)) {
-    return { status: 502, code: ERROR_CODES.AI_UNAVAILABLE, message: "The AI service is unavailable." };
+    return {
+      status: 502,
+      code: ERROR_CODES.AI_UNAVAILABLE,
+      message: "The AI service is unavailable.",
+    };
   }
-  return { status: 500, code: ERROR_CODES.INTERNAL_ERROR, message: "An unexpected error occurred." };
+  return {
+    status: 500,
+    code: ERROR_CODES.INTERNAL_ERROR,
+    message: "An unexpected error occurred.",
+  };
 };
 
 // Never logs full OCR text, receipt data, auth headers, or API keys — only

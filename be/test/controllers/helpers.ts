@@ -16,10 +16,11 @@ export const TEST_UUID = "test-uuid";
  * HMAC verification isn't exercised here (that's
  * src/lib/sheet-identity.test.ts's job) — the Workers test pool has no
  * node:crypto to pre-mint a real signed secret as a sync fixture. */
-export function fakeIdentityBackend(overrides: Partial<IdentityBackend> = {}): IdentityBackend {
+export const fakeIdentityBackend = (overrides: Partial<IdentityBackend> = {}): IdentityBackend => {
   const locked = new Map<string, string>();
   return {
-    verify: async (secret) => (secret === TEST_SHEET_SECRET ? { uuid: TEST_UUID, tier: "standard" } : null),
+    verify: async (secret) =>
+      secret === TEST_SHEET_SECRET ? { uuid: TEST_UUID, tier: "standard" } : null,
     isBanned: async () => false,
     lockSpreadsheetId: async (uuid, spreadsheetId) => {
       const existing = locked.get(uuid);
@@ -33,14 +34,14 @@ export function fakeIdentityBackend(overrides: Partial<IdentityBackend> = {}): I
     peekUsage: async () => 0,
     ...overrides,
   };
-}
+};
 
 /** Always-succeeds double by default — most controller tests aren't
  * exercising rate limiting, they just need the binding to exist. See
  * middleware/rate-limit.test.ts for a double that actually enforces a cap. */
-export function fakeRateLimiter(alwaysSucceed = true): Env["RATE_LIMITER"] {
+export const fakeRateLimiter = (alwaysSucceed = true): Env["RATE_LIMITER"] => {
   return { limit: async () => ({ success: alwaysSucceed }) };
-}
+};
 
 /** Minimal executionCtx double sufficient for app.fetch(request, env, ctx). */
 export const testCtx = {
@@ -49,7 +50,7 @@ export const testCtx = {
   props: {},
 } as unknown as ExecutionContext;
 
-export function buildTestEnv(overrides: Partial<Env> = {}): Env {
+export const buildTestEnv = (overrides: Partial<Env> = {}): Env => {
   return {
     AI: {} as Ai,
     MODEL_NAME: "@cf/meta/llama-3.1-8b-instruct",
@@ -69,25 +70,28 @@ export function buildTestEnv(overrides: Partial<Env> = {}): Env {
     __testIdentity: fakeIdentityBackend(),
     ...overrides,
   };
-}
+};
 
-export function authHeaders(): Record<string, string> {
+export const authHeaders = (): Record<string, string> => {
   return {
     Authorization: `Bearer ${TEST_API_KEY}`,
     "Content-Type": "application/json",
     "X-Sheet-Secret": TEST_SHEET_SECRET,
     "X-Spreadsheet-Id": TEST_SPREADSHEET_ID,
   };
-}
+};
 
-export function envWithModel(model: ReceiptModel, overrides: Partial<Env> = {}): Env {
+export const envWithModel = (model: ReceiptModel, overrides: Partial<Env> = {}): Env => {
   return buildTestEnv({ __testReceiptModel: model, ...overrides });
-}
+};
 
-export function envWithExpenseModel(model: ExpenseModel, overrides: Partial<Env> = {}): Env {
+export const envWithExpenseModel = (model: ExpenseModel, overrides: Partial<Env> = {}): Env => {
   return buildTestEnv({ __testExpenseModel: model, ...overrides });
-}
+};
 
-export function envWithTranscribeModel(model: TranscribeModel, overrides: Partial<Env> = {}): Env {
+export const envWithTranscribeModel = (
+  model: TranscribeModel,
+  overrides: Partial<Env> = {},
+): Env => {
   return buildTestEnv({ __testTranscribeModel: model, ...overrides });
-}
+};

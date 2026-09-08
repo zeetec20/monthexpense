@@ -25,7 +25,11 @@ interface GoogleIdentityServices {
       initTokenClient(config: {
         client_id: string;
         scope: string;
-        callback: (response: { access_token?: string; error?: string; expires_in?: number }) => void;
+        callback: (response: {
+          access_token?: string;
+          error?: string;
+          expires_in?: number;
+        }) => void;
       }): { requestAccessToken(overrideConfig?: { prompt?: string }): void };
     };
   };
@@ -38,7 +42,7 @@ declare global {
 
 /** index.html loads GIS with `async defer` — it may not be ready the
  * instant a user clicks "Continue with Google" on a slow connection. */
-function waitForGis(): Promise<GoogleIdentityServices> {
+const waitForGis = (): Promise<GoogleIdentityServices> => {
   return new Promise((resolve, reject) => {
     const start = Date.now();
     (function poll() {
@@ -53,7 +57,7 @@ function waitForGis(): Promise<GoogleIdentityServices> {
       setTimeout(poll, 100);
     })();
   });
-}
+};
 
 /** Tags a failure as "silent Google token renewal didn't work" — same
  * `.code` pattern sheets-sync.api.ts's sheetGoneError uses for
@@ -61,21 +65,28 @@ function waitForGis(): Promise<GoogleIdentityServices> {
  * the app back to disconnected/ConnectGate instead of retrying forever
  * against a session that's actually gone (guarded there by `online`, so
  * a plain network outage isn't mistaken for an expired session). */
-function googleAuthError(message: string): Error & { code: string } {
+const googleAuthError = (message: string): Error & { code: string } => {
   const err = new Error(message) as Error & { code: string };
   err.code = "GOOGLE_AUTH_FAILED";
   return err;
-}
+};
 
 /** The GIS call below opens a popup whose callback is the only way its
  * Promise settles — if the browser (or an extension) silently blocks the
  * popup, that callback never fires and the Promise hangs forever with no
  * error. Race it against a timeout so that always turns into an
  * actionable rejection instead of a dead spinner. */
-function withPopupTimeout<T>(executor: (resolve: (value: T) => void, reject: (reason: Error) => void) => void): Promise<T> {
+const withPopupTimeout = <T>(
+  executor: (resolve: (value: T) => void, reject: (reason: Error) => void) => void,
+): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(
-      () => reject(googleAuthError("Google sign-in popup didn't respond. Allow popups for this site and try again.")),
+      () =>
+        reject(
+          googleAuthError(
+            "Google sign-in popup didn't respond. Allow popups for this site and try again.",
+          ),
+        ),
       15_000,
     );
     executor(
@@ -89,14 +100,14 @@ function withPopupTimeout<T>(executor: (resolve: (value: T) => void, reject: (re
       },
     );
   });
-}
+};
 
 interface TokenResult {
   accessToken: string;
   expiresIn: number;
 }
 
-function requestToken(): Promise<TokenResult> {
+const requestToken = (): Promise<TokenResult> => {
   return waitForGis().then((google) =>
     withPopupTimeout<TokenResult>((resolve, reject) => {
       const client = google.accounts.oauth2.initTokenClient({
@@ -122,7 +133,7 @@ function requestToken(): Promise<TokenResult> {
       client.requestAccessToken({ prompt: "" });
     }),
   );
-}
+};
 
 // localStorage, not sessionStorage: still short-lived (~1hr, self-expiring
 // via its own stored expiresAt below regardless of storage lifetime) but
@@ -133,24 +144,27 @@ function requestToken(): Promise<TokenResult> {
 // spreadsheetId this app already keeps in localStorage.
 const TOKEN_CACHE_KEY = "expense-notes.google-token.v1";
 
-function readCachedToken(): { accessToken: string; expiresAt: number } | null {
+const readCachedToken = (): { accessToken: string; expiresAt: number } | null => {
   try {
     const raw = localStorage.getItem(TOKEN_CACHE_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
-}
+};
 
-function cache(result: TokenResult): string {
-  const entry = { accessToken: result.accessToken, expiresAt: Date.now() + result.expiresIn * 1000 };
+const cache = (result: TokenResult): string => {
+  const entry = {
+    accessToken: result.accessToken,
+    expiresAt: Date.now() + result.expiresIn * 1000,
+  };
   try {
     localStorage.setItem(TOKEN_CACHE_KEY, JSON.stringify(entry));
   } catch {
     // ponytail: best-effort — worst case this reload needs one more silent renew
   }
   return entry.accessToken;
-}
+};
 
 /** OAuth token client — the one and only Google popup in this flow.
  * Resolves an access_token scoped to Drive/Sheets + email, used directly
@@ -158,9 +172,9 @@ function cache(result: TokenResult): string {
  * and by fetchGoogleEmail below. Never sent to BE. Also seeds the token
  * cache (see getFreshAccessToken) so the very first Sheets API call right
  * after login doesn't need a second round trip. */
-export async function requestGoogleAccessToken(): Promise<string> {
+export const requestGoogleAccessToken = async (): Promise<string> => {
   return cache(await requestToken());
-}
+};
 
 /** Every direct Sheets API call (sheets-sync.api.ts) routes through this
  * instead of requestGoogleAccessToken directly — returns the cached token
@@ -175,29 +189,30 @@ export async function requestGoogleAccessToken(): Promise<string> {
  * (GOOGLE_AUTH_FAILED) and shows a modal asking the user to click
  * "Continue with Google" themselves, which calls requestGoogleAccessToken
  * directly from that click and gets a real, allowed popup. */
-export async function getFreshAccessToken(): Promise<string> {
+export const getFreshAccessToken = async (): Promise<string> => {
   const cachedToken = readCachedToken();
   if (cachedToken && cachedToken.expiresAt - Date.now() > 60_000) return cachedToken.accessToken;
   throw googleAuthError("Google sign-in needs to be refreshed.");
-}
+};
 
 /** Reads the signed-in account's own email directly from Google using the
  * access_token — replaces the separate id_token/One Tap step that used to
  * supply this. */
-export async function fetchGoogleEmail(accessToken: string): Promise<string> {
+export const fetchGoogleEmail = async (accessToken: string): Promise<string> => {
   const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
-  if (!response.ok) throw new Error(`Could not read your Google account's email (${response.status}).`);
+  if (!response.ok)
+    throw new Error(`Could not read your Google account's email (${response.status}).`);
   const { email } = (await response.json()) as { email?: string };
   if (!email) throw new Error("Google didn't return an email for this account.");
   return email;
-}
+};
 
 /** Encrypts the email (see email-cipher.ts) and sends it to BE, which
  * decrypts it and mints the deterministic sync secret — see
  * text-processing-slm's controllers/auth.ts. */
-export async function exchangeEmailForSecret(email: string): Promise<string> {
+export const exchangeEmailForSecret = async (email: string): Promise<string> => {
   const { ciphertext, iv } = await encryptEmail(email, RECEIPT_API_KEY);
   const response = await fetch(`${RECEIPT_API_URL}/v1/auth/google/connect`, {
     method: "POST",
@@ -210,9 +225,11 @@ export async function exchangeEmailForSecret(email: string): Promise<string> {
     // already-actionable messages through — show whatever it sent,
     // falling back to a generic string only if the body itself didn't
     // parse (network failure, non-JSON response, etc.).
-    const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
+    const body = (await response.json().catch(() => null)) as {
+      error?: { message?: string };
+    } | null;
     throw new Error(body?.error?.message || "Google sign-in failed. Please try again.");
   }
   const { data } = (await response.json()) as { data: { secret: string } };
   return data.secret;
-}
+};

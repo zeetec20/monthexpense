@@ -60,14 +60,22 @@ const WALLET = { id: "w1", name: "Main Wallet", animal: "cat" as const };
 test("readCredentials/writeCredentials/clearCredentials round-trip", () => {
   expect(readCredentials()).toBeNull();
   writeCredentials({ secret: "s3cret", spreadsheetId: SPREADSHEET_ID });
-  expect(readCredentials()).toEqual({ secret: "s3cret", spreadsheetId: SPREADSHEET_ID, email: undefined });
+  expect(readCredentials()).toEqual({
+    secret: "s3cret",
+    spreadsheetId: SPREADSHEET_ID,
+    email: undefined,
+  });
   clearCredentials();
   expect(readCredentials()).toBeNull();
 });
 
 test("writeCredentials/readCredentials/getConnectedEmail round-trip the connected account's email", () => {
   writeCredentials({ secret: "s3cret", spreadsheetId: SPREADSHEET_ID, email: "me@example.com" });
-  expect(readCredentials()).toEqual({ secret: "s3cret", spreadsheetId: SPREADSHEET_ID, email: "me@example.com" });
+  expect(readCredentials()).toEqual({
+    secret: "s3cret",
+    spreadsheetId: SPREADSHEET_ID,
+    email: "me@example.com",
+  });
   expect(getConnectedEmail()).toBe("me@example.com");
 });
 
@@ -81,7 +89,10 @@ test("sheetIdentityHeaders is empty with no stored credentials", () => {
 
 test("sheetIdentityHeaders sends secret/spreadsheetId once connected", () => {
   writeCredentials({ secret: "s3cret", spreadsheetId: SPREADSHEET_ID });
-  expect(sheetIdentityHeaders()).toEqual({ "X-Sheet-Secret": "s3cret", "X-Spreadsheet-Id": SPREADSHEET_ID });
+  expect(sheetIdentityHeaders()).toEqual({
+    "X-Sheet-Secret": "s3cret",
+    "X-Spreadsheet-Id": SPREADSHEET_ID,
+  });
 });
 
 test("validateSheetSecret posts to BE's /v1/sheets/validate with the sheet identity headers, resolves on 2xx", async () => {
@@ -101,7 +112,10 @@ test("validateSheetSecret posts to BE's /v1/sheets/validate with the sheet ident
 });
 
 test("validateSheetSecret rejects on a non-2xx (secret wasn't minted by this app, or is banned/mismatched)", async () => {
-  globalThis.fetch = (async () => new Response(JSON.stringify({ error: { code: "UNAUTHORIZED" } }), { status: 401 })) as unknown as typeof fetch;
+  globalThis.fetch = (async () =>
+    new Response(JSON.stringify({ error: { code: "UNAUTHORIZED" } }), {
+      status: 401,
+    })) as unknown as typeof fetch;
   await expect(validateSheetSecret("bad", SPREADSHEET_ID)).rejects.toThrow();
 });
 
@@ -110,7 +124,26 @@ test("pullAll maps Transactions/Wallets rows, converting the Date serial back to
     new Response(
       JSON.stringify({
         valueRanges: [
-          { values: [["1", 46255, "Main Wallet", "w1", "Coffee", 20000, "IDR", "manual", "", "", 1, "2026-08", "2026-08-21T00:00:00.000Z", "Food & Snack"]] },
+          {
+            values: [
+              [
+                "1",
+                46255,
+                "Main Wallet",
+                "w1",
+                "Coffee",
+                20000,
+                "IDR",
+                "manual",
+                "",
+                "",
+                1,
+                "2026-08",
+                "2026-08-21T00:00:00.000Z",
+                "Food & Snack",
+              ],
+            ],
+          },
           { values: [["w1", "Main Wallet"]] },
         ],
       }),
@@ -120,7 +153,18 @@ test("pullAll maps Transactions/Wallets rows, converting the Date serial back to
   const result = await pullAll(SPREADSHEET_ID);
 
   expect(result.expenses).toEqual([
-    { id: "1", date: "2026-08-21", walletId: "w1", title: "Coffee", amount: 20000, currency: "IDR", source: "manual", note: null, createdAt: "2026-08-21T00:00:00.000Z", category: "food_snack" },
+    {
+      id: "1",
+      date: "2026-08-21",
+      walletId: "w1",
+      title: "Coffee",
+      amount: 20000,
+      currency: "IDR",
+      source: "manual",
+      note: null,
+      createdAt: "2026-08-21T00:00:00.000Z",
+      category: "food_snack",
+    },
   ]);
   expect(result.wallets).toEqual([{ id: "w1", name: "Main Wallet", animal: "cat" }]);
 });
@@ -132,8 +176,38 @@ test("pullRecent filters the mapped expenses to the trailing window client-side"
         valueRanges: [
           {
             values: [
-              ["old", 45000, "", "w1", "Old", 1000, "IDR", "manual", "", "", 1, "2023-03", "2023-03-01T00:00:00.000Z", ""],
-              ["recent", 46255, "", "w1", "Recent", 1000, "IDR", "manual", "", "", 1, "2026-08", "2026-08-21T00:00:00.000Z", ""],
+              [
+                "old",
+                45000,
+                "",
+                "w1",
+                "Old",
+                1000,
+                "IDR",
+                "manual",
+                "",
+                "",
+                1,
+                "2023-03",
+                "2023-03-01T00:00:00.000Z",
+                "",
+              ],
+              [
+                "recent",
+                46255,
+                "",
+                "w1",
+                "Recent",
+                1000,
+                "IDR",
+                "manual",
+                "",
+                "",
+                1,
+                "2026-08",
+                "2026-08-21T00:00:00.000Z",
+                "",
+              ],
             ],
           },
           { values: [] },
@@ -151,35 +225,46 @@ test("applySyncOp upsertExpense appends when the id isn't found, using RAW input
   const calledUrls: string[] = [];
   globalThis.fetch = (async (url: RequestInfo | URL) => {
     calledUrls.push(String(url));
-    if (String(url).includes("/values/Transactions!A2:A")) return new Response(JSON.stringify({ values: [] }), { status: 200 });
-    if (String(url).includes("/values/Config!A2:B")) return new Response(JSON.stringify({ values: [["w1", "Main Wallet"]] }), { status: 200 });
+    if (String(url).includes("/values/Transactions!A2:A"))
+      return new Response(JSON.stringify({ values: [] }), { status: 200 });
+    if (String(url).includes("/values/Config!A2:B"))
+      return new Response(JSON.stringify({ values: [["w1", "Main Wallet"]] }), { status: 200 });
     if (String(url).includes(":append")) return new Response(JSON.stringify({}), { status: 200 });
     return new Response(JSON.stringify({}), { status: 200 }); // :batchUpdate for the date-format pass
   }) as unknown as typeof fetch;
 
   await applySyncOp(SPREADSHEET_ID, { type: "upsertExpense", expense: EXPENSE });
 
-  expect(calledUrls.some((u) => u.includes(":append") && u.includes("valueInputOption=RAW"))).toBe(true);
+  expect(calledUrls.some((u) => u.includes(":append") && u.includes("valueInputOption=RAW"))).toBe(
+    true,
+  );
 });
 
 test("applySyncOp upsertExpense updates the existing row in place when the id is found", async () => {
   const calledUrls: string[] = [];
   globalThis.fetch = (async (url: RequestInfo | URL) => {
     calledUrls.push(String(url));
-    if (String(url).includes("/values/Transactions!A2:A")) return new Response(JSON.stringify({ values: [["1"]] }), { status: 200 });
-    if (String(url).includes("/values/Config!A2:B")) return new Response(JSON.stringify({ values: [["w1", "Main Wallet"]] }), { status: 200 });
+    if (String(url).includes("/values/Transactions!A2:A"))
+      return new Response(JSON.stringify({ values: [["1"]] }), { status: 200 });
+    if (String(url).includes("/values/Config!A2:B"))
+      return new Response(JSON.stringify({ values: [["w1", "Main Wallet"]] }), { status: 200 });
     return new Response(JSON.stringify({}), { status: 200 });
   }) as unknown as typeof fetch;
 
   await applySyncOp(SPREADSHEET_ID, { type: "upsertExpense", expense: EXPENSE });
 
-  expect(calledUrls.some((u) => u.includes("/values/Transactions!A2:O2") && u.includes("valueInputOption=RAW"))).toBe(true);
+  expect(
+    calledUrls.some(
+      (u) => u.includes("/values/Transactions!A2:O2") && u.includes("valueInputOption=RAW"),
+    ),
+  ).toBe(true);
 });
 
 test("applySyncOp deleteExpense deletes the row via batchUpdate when found, no-ops when not found", async () => {
   let batchUpdateCalled = false;
   globalThis.fetch = (async (url: RequestInfo | URL) => {
-    if (String(url).includes("/values/Transactions!A2:A")) return new Response(JSON.stringify({ values: [["1"]] }), { status: 200 });
+    if (String(url).includes("/values/Transactions!A2:A"))
+      return new Response(JSON.stringify({ values: [["1"]] }), { status: 200 });
     if (String(url).endsWith(`${SPREADSHEET_ID}:batchUpdate`)) {
       batchUpdateCalled = true;
       return new Response(JSON.stringify({}), { status: 200 });
@@ -192,7 +277,8 @@ test("applySyncOp deleteExpense deletes the row via batchUpdate when found, no-o
 
   batchUpdateCalled = false;
   globalThis.fetch = (async (url: RequestInfo | URL) => {
-    if (String(url).includes("/values/Transactions!A2:A")) return new Response(JSON.stringify({ values: [] }), { status: 200 });
+    if (String(url).includes("/values/Transactions!A2:A"))
+      return new Response(JSON.stringify({ values: [] }), { status: 200 });
     if (String(url).endsWith(`${SPREADSHEET_ID}:batchUpdate`)) batchUpdateCalled = true;
     return new Response(JSON.stringify({}), { status: 200 });
   }) as unknown as typeof fetch;
@@ -203,14 +289,24 @@ test("applySyncOp deleteExpense deletes the row via batchUpdate when found, no-o
 test("pushAll clears both ranges then writes the full arrays with RAW input", async () => {
   const calls: { url: string; body: unknown }[] = [];
   globalThis.fetch = (async (url: RequestInfo | URL, init?: RequestInit) => {
-    calls.push({ url: String(url), body: init?.body ? JSON.parse(init.body as string) : undefined });
+    calls.push({
+      url: String(url),
+      body: init?.body ? JSON.parse(init.body as string) : undefined,
+    });
     return new Response(JSON.stringify({}), { status: 200 });
   }) as unknown as typeof fetch;
 
   await pushAll(SPREADSHEET_ID, [EXPENSE], [WALLET]);
 
   expect(calls[0]!.url).toContain(":batchClear");
-  expect(calls.some((c) => c.url.includes(":batchUpdate") && !c.url.includes("sheets.googleapis.com/v4/spreadsheets/sheet-123:batchUpdate") && (c.body as any)?.valueInputOption === "RAW")).toBe(true);
+  expect(
+    calls.some(
+      (c) =>
+        c.url.includes(":batchUpdate") &&
+        !c.url.includes("sheets.googleapis.com/v4/spreadsheets/sheet-123:batchUpdate") &&
+        (c.body as any)?.valueInputOption === "RAW",
+    ),
+  ).toBe(true);
 });
 
 test("upsertExpense then pullAll round-trips receiptDetail (items included) and scheduleType through the Detail column", async () => {
@@ -238,8 +334,10 @@ test("upsertExpense then pullAll round-trips receiptDetail (items included) and 
   let pushedRow: unknown[] | undefined;
   globalThis.fetch = (async (url: RequestInfo | URL, init?: RequestInit) => {
     const u = String(url);
-    if (u.includes("/values/Transactions!A2:A")) return new Response(JSON.stringify({ values: [] }), { status: 200 });
-    if (u.includes("/values/Config!A2:B")) return new Response(JSON.stringify({ values: [["w1", "Main Wallet"]] }), { status: 200 });
+    if (u.includes("/values/Transactions!A2:A"))
+      return new Response(JSON.stringify({ values: [] }), { status: 200 });
+    if (u.includes("/values/Config!A2:B"))
+      return new Response(JSON.stringify({ values: [["w1", "Main Wallet"]] }), { status: 200 });
     if (u.includes(":append")) {
       pushedRow = (JSON.parse(init!.body as string).values as unknown[][])[0];
       return new Response(JSON.stringify({}), { status: 200 });
@@ -251,7 +349,9 @@ test("upsertExpense then pullAll round-trips receiptDetail (items included) and 
   expect(pushedRow).toBeDefined();
 
   globalThis.fetch = (async () =>
-    new Response(JSON.stringify({ valueRanges: [{ values: [pushedRow] }, { values: [] }] }), { status: 200 })) as unknown as typeof fetch;
+    new Response(JSON.stringify({ valueRanges: [{ values: [pushedRow] }, { values: [] }] }), {
+      status: 200,
+    })) as unknown as typeof fetch;
 
   const { expenses } = await pullAll(SPREADSHEET_ID);
   expect(expenses[0]!.receiptDetail).toEqual(expenseWithDetail.receiptDetail);

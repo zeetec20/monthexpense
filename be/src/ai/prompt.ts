@@ -121,7 +121,18 @@ export const RECEIPT_JSON_SCHEMA = {
       required: ["currency", "confidence", "category"],
     },
   },
-  required: ["merchant", "transaction", "items", "subtotal", "tax", "discount", "service_charge", "total", "payment", "metadata"],
+  required: [
+    "merchant",
+    "transaction",
+    "items",
+    "subtotal",
+    "tax",
+    "discount",
+    "service_charge",
+    "total",
+    "payment",
+    "metadata",
+  ],
 } as const;
 
 export interface ChatMessage {
@@ -147,7 +158,11 @@ export const buildExtractionPrompt = (ocrText: string, language?: "en" | "id"): 
  * of what failed, not the whole schema again, per spec's "avoid unnecessarily
  * large prompts."
  */
-export const buildRepairPrompt = (rawOutput: string, errorSummary: string, language?: "en" | "id"): ChatMessage[] => {
+export const buildRepairPrompt = (
+  rawOutput: string,
+  errorSummary: string,
+  language?: "en" | "id",
+): ChatMessage[] => {
   return [
     { role: "system", content: SYSTEM_PROMPT },
     {
@@ -196,7 +211,10 @@ export const buildExpenseExtractionPrompt = (
   language?: "en" | "id",
 ): ChatMessage[] => {
   return [
-    { role: "system", content: EXPENSE_SYSTEM_PROMPT.replaceAll("{{REFERENCE_DATE}}", referenceDate) },
+    {
+      role: "system",
+      content: EXPENSE_SYSTEM_PROMPT.replaceAll("{{REFERENCE_DATE}}", referenceDate),
+    },
     { role: "user", content: `${languageHint(language)}Transcript:\n\n${transcript}` },
   ];
 };
@@ -208,7 +226,10 @@ export const buildExpenseRepairPrompt = (
   language?: "en" | "id",
 ): ChatMessage[] => {
   return [
-    { role: "system", content: EXPENSE_SYSTEM_PROMPT.replaceAll("{{REFERENCE_DATE}}", referenceDate) },
+    {
+      role: "system",
+      content: EXPENSE_SYSTEM_PROMPT.replaceAll("{{REFERENCE_DATE}}", referenceDate),
+    },
     {
       role: "user",
       content: `${languageHint(language)}Your previous JSON output was invalid: ${errorSummary}\n\nPrevious output:\n${rawOutput}\n\nReturn a corrected JSON object only.`,

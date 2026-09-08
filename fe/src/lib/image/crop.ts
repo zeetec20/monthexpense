@@ -29,13 +29,13 @@ export interface BoundingBox {
  * pixel), `width`/`height` in pixels. Returns null when detection doesn't
  * look trustworthy enough to act on.
  */
-export function findPaperBoundingBox(
+export const findPaperBoundingBox = (
   data: Uint8ClampedArray,
   width: number,
   height: number,
-): BoundingBox | null {
-  const rowBrightCount = new Array<number>(height).fill(0);
-  const colBrightCount = new Array<number>(width).fill(0);
+): BoundingBox | null => {
+  const rowBrightCount = Array.from({ length: height }, () => 0);
+  const colBrightCount = Array.from({ length: width }, () => 0);
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -51,7 +51,10 @@ export function findPaperBoundingBox(
   const rowThreshold = width * ROW_COL_FRACTION;
   const colThreshold = height * ROW_COL_FRACTION;
 
-  let top = -1, bottom = -1, left = -1, right = -1;
+  let top = -1,
+    bottom = -1,
+    left = -1,
+    right = -1;
   for (let y = 0; y < height; y++) {
     if (rowBrightCount[y] >= rowThreshold) {
       if (top === -1) top = y;
@@ -72,13 +75,13 @@ export function findPaperBoundingBox(
   if (areaFraction < MIN_AREA_FRACTION || areaFraction > MAX_AREA_FRACTION) return null;
 
   return box;
-}
+};
 
 /** Crops to the detected paper region (with a small margin), or passes the
  * image through unchanged if detection isn't confident enough. Takes
  * ownership of `image` — closes it once consumed, same convention as
  * resizeImage. */
-export async function cropToPaper(image: ImageBitmap): Promise<ImageBitmap> {
+export const cropToPaper = async (image: ImageBitmap): Promise<ImageBitmap> => {
   const canvas = new OffscreenCanvas(image.width, image.height);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas 2D context unavailable");
@@ -101,4 +104,4 @@ export async function cropToPaper(image: ImageBitmap): Promise<ImageBitmap> {
   image.close();
 
   return cropCanvas.transferToImageBitmap();
-}
+};

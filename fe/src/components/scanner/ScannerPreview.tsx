@@ -1,7 +1,7 @@
 import { Receipt } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function ScannerPreview({ imageUrl }: { imageUrl: string | null }) {
+export const ScannerPreview = ({ imageUrl }: { imageUrl: string | null }) => {
   return (
     <div className="relative aspect-[3/4] w-full max-w-64 overflow-hidden rounded-[var(--radius-card)] border border-[var(--color-rule)] bg-[var(--color-paper-2)]">
       {imageUrl ? (
@@ -14,4 +14,4 @@ export function ScannerPreview({ imageUrl }: { imageUrl: string | null }) {
       )}
     </div>
   );
-}
+};

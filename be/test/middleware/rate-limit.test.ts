@@ -3,14 +3,14 @@ import app from "../../src/index";
 import { testCtx, authHeaders, buildTestEnv } from "../controllers/helpers";
 import type { Env } from "../../src/types/env";
 
-function getMeta(env: Env, headers: Record<string, string> = authHeaders()) {
+const getMeta = (env: Env, headers: Record<string, string> = authHeaders()) => {
   return app.fetch(new Request("http://localhost/v1/meta", { headers }), env, testCtx);
-}
+};
 
 /** Counts calls and enforces a real cap, keyed the same way the middleware
  * builds its key (ip:userAgent) — lets a test verify two different
  * User-Agents on the same IP get independent buckets. */
-function cappedRateLimiter(limit: number): Env["RATE_LIMITER"] {
+const cappedRateLimiter = (limit: number): Env["RATE_LIMITER"] => {
   const counts = new Map<string, number>();
   return {
     limit: async ({ key }) => {
@@ -19,7 +19,7 @@ function cappedRateLimiter(limit: number): Env["RATE_LIMITER"] {
       return { success: count <= limit };
     },
   };
-}
+};
 
 describe("rate limiting (/v1/*)", () => {
   it("allows requests within the limit", async () => {
@@ -34,7 +34,7 @@ describe("rate limiting (/v1/*)", () => {
 
     const res = await getMeta(env);
     expect(res.status).toBe(429);
-    expect((await res.json() as { error: { code: string } }).error.code).toBe("RATE_LIMITED");
+    expect(((await res.json()) as { error: { code: string } }).error.code).toBe("RATE_LIMITED");
   });
 
   it("runs before auth — a flood of bad API keys is throttled too, not just valid ones", async () => {

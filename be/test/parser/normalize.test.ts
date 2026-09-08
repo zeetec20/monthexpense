@@ -154,7 +154,13 @@ describe("normalizeReceiptCandidate", () => {
     const result = normalizeReceiptCandidate({
       items: [{ name: "Aqua", quantity: "2", unit_price: "4,000", discount: null, total: "8000" }],
     }) as { items: Array<Record<string, unknown>> };
-    expect(result.items[0]).toEqual({ name: "Aqua", quantity: 2, unit_price: 4000, discount: null, total: 8000 });
+    expect(result.items[0]).toEqual({
+      name: "Aqua",
+      quantity: 2,
+      unit_price: 4000,
+      discount: null,
+      total: 8000,
+    });
   });
 
   it("normalizes DD/MM/YYYY dates to ISO", () => {
@@ -185,7 +191,9 @@ describe("normalizeReceiptCandidate", () => {
 
   it("defaults item quantity to 1 when a price is given without a quantity, and derives total", () => {
     const result = normalizeReceiptCandidate({
-      items: [{ name: "Nasi Goreng", quantity: null, unit_price: 30001, discount: null, total: null }],
+      items: [
+        { name: "Nasi Goreng", quantity: null, unit_price: 30001, discount: null, total: null },
+      ],
     }) as { items: Array<Record<string, unknown>> };
     expect(result.items[0]).toEqual({
       name: "Nasi Goreng",
@@ -296,8 +304,20 @@ describe("normalizeReceiptCandidate", () => {
     const result = normalizeReceiptCandidate({
       merchant: { name: "IDM RAMOS SUPER 5KG", address: null, phone: null },
       items: [
-        { name: "IDM RAMOS SUPER 5KG", quantity: 1, unit_price: 62500, discount: null, total: 62500 },
-        { name: "IDM UFO MIE GR IND88", quantity: 1, unit_price: 8000, discount: null, total: 8000 },
+        {
+          name: "IDM RAMOS SUPER 5KG",
+          quantity: 1,
+          unit_price: 62500,
+          discount: null,
+          total: 62500,
+        },
+        {
+          name: "IDM UFO MIE GR IND88",
+          quantity: 1,
+          unit_price: 8000,
+          discount: null,
+          total: 8000,
+        },
       ],
     }) as { merchant: Record<string, unknown> };
     expect(result.merchant.name).toBeNull();
@@ -306,7 +326,15 @@ describe("normalizeReceiptCandidate", () => {
   it("leaves merchant.name alone when it's a real store name, not an item", () => {
     const result = normalizeReceiptCandidate({
       merchant: { name: "Indomaret", address: null, phone: null },
-      items: [{ name: "IDM RAMOS SUPER 5KG", quantity: 1, unit_price: 62500, discount: null, total: 62500 }],
+      items: [
+        {
+          name: "IDM RAMOS SUPER 5KG",
+          quantity: 1,
+          unit_price: 62500,
+          discount: null,
+          total: 62500,
+        },
+      ],
     }) as { merchant: Record<string, unknown> };
     expect(result.merchant.name).toBe("Indomaret");
   });
@@ -348,8 +376,20 @@ describe("normalizeReceiptCandidate", () => {
       subtotal: 48000,
       total: 48000,
       items: [
-        { name: "Strawberry Americano", quantity: 1, unit_price: 19000, discount: null, total: 19000 },
-        { name: "Matcha Jasmine Milk Tea", quantity: 1, unit_price: 29000, discount: null, total: 29000 },
+        {
+          name: "Strawberry Americano",
+          quantity: 1,
+          unit_price: 19000,
+          discount: null,
+          total: 19000,
+        },
+        {
+          name: "Matcha Jasmine Milk Tea",
+          quantity: 1,
+          unit_price: 29000,
+          discount: null,
+          total: 29000,
+        },
       ],
       payment: { method: "qris", amount: 48000, cash_received: null, change: 48000 },
     }) as { payment: Record<string, unknown> };
@@ -424,7 +464,9 @@ describe("normalizeReceiptCandidate", () => {
       ],
     }) as Record<string, unknown>;
 
-    expect(result.items).toEqual([{ name: "nasi goreng", quantity: 1, unit_price: null, discount: null, total: 10000 }]);
+    expect(result.items).toEqual([
+      { name: "nasi goreng", quantity: 1, unit_price: null, discount: null, total: 10000 },
+    ]);
   });
 
   it("drops an item named after a glued OCR quantity×price token (real report: SR'21 receipt)", () => {
@@ -439,7 +481,13 @@ describe("normalizeReceiptCandidate", () => {
     }) as Record<string, unknown>;
 
     expect(result.items).toEqual([
-      { name: "STOP MAP BIOLA KNG (50)", quantity: 3, unit_price: 2375, discount: null, total: 7125 },
+      {
+        name: "STOP MAP BIOLA KNG (50)",
+        quantity: 3,
+        unit_price: 2375,
+        discount: null,
+        total: 7125,
+      },
     ]);
   });
 
@@ -462,7 +510,9 @@ describe("normalizeReceiptCandidate", () => {
     }) as Record<string, unknown>;
 
     // Only the one real, non-duplicate item survives.
-    expect(result.items).toEqual([{ name: "Kopi", quantity: 1, unit_price: 20000, discount: null, total: 20000 }]);
+    expect(result.items).toEqual([
+      { name: "Kopi", quantity: 1, unit_price: 20000, discount: null, total: 20000 },
+    ]);
   });
 
   it("drops items priced exactly 0/0 (fabricated, never a genuine null-price item)", () => {
@@ -473,6 +523,8 @@ describe("normalizeReceiptCandidate", () => {
       ],
     }) as Record<string, unknown>;
 
-    expect(result.items).toEqual([{ name: "Bensin", quantity: 1, unit_price: 10000, discount: null, total: 10000 }]);
+    expect(result.items).toEqual([
+      { name: "Bensin", quantity: 1, unit_price: 10000, discount: null, total: 10000 },
+    ]);
   });
 });

@@ -20,11 +20,14 @@ globalThis.localStorage = new MemoryStorage() as unknown as Storage;
 // browser. Stub it — see sheets-sync.test.ts for the same reasoning.
 mock.module("./google-auth", () => ({ getFreshAccessToken: async () => "test-access-token" }));
 
-const { readAll: readExpenses, writeAll: writeAllExpenses } = await import("@/features/expense/expense.store");
-const { readAll: readWallets, writeAll: writeAllWallets } = await import("@/features/wallet/wallet.store");
+const { readAll: readExpenses, writeAll: writeAllExpenses } =
+  await import("@/features/expense/expense.store");
+const { readAll: readWallets, writeAll: writeAllWallets } =
+  await import("@/features/wallet/wallet.store");
 const { DEFAULT_WALLET_NAME } = await import("@/features/wallet/wallet.schema");
 const { writeCredentials } = await import("./sheets-sync.api");
-const { pullAndMergeRestore, mergeById, hasRealLocalData, dedupeWalletsByName } = await import("./sync.store");
+const { pullAndMergeRestore, mergeById, hasRealLocalData, dedupeWalletsByName } =
+  await import("./sync.store");
 const { mergeRecentWindow } = await import("./sync-merge");
 
 const SPREADSHEET_ID = "sheet-123";
@@ -65,7 +68,26 @@ test("pullAndMergeRestore reconciles the recent window (sheet wins in-window) bu
     new Response(
       JSON.stringify({
         valueRanges: [
-          { values: [["1", TODAY, "Main Wallet", "w1", "Coffee", 20000, "IDR", "manual", "", "", 1, TODAY.slice(0, 7), "2026-08-21T00:00:00.000Z", ""]] },
+          {
+            values: [
+              [
+                "1",
+                TODAY,
+                "Main Wallet",
+                "w1",
+                "Coffee",
+                20000,
+                "IDR",
+                "manual",
+                "",
+                "",
+                1,
+                TODAY.slice(0, 7),
+                "2026-08-21T00:00:00.000Z",
+                "",
+              ],
+            ],
+          },
           { values: [["w1", "Main Wallet"]] },
         ],
       }),
@@ -78,7 +100,10 @@ test("pullAndMergeRestore reconciles the recent window (sheet wins in-window) bu
   // in-window row is added/updated. category: null — an empty Category
   // cell normalizes to null. note: null — expenseFromRow always sets it
   // explicitly, even for a blank Note cell.
-  const expectedExpenses = [oldLocal, { ...VALID_EXPENSE, date: TODAY, category: null, note: null }];
+  const expectedExpenses = [
+    oldLocal,
+    { ...VALID_EXPENSE, date: TODAY, category: null, note: null },
+  ];
   expect(result.expenses).toEqual(expectedExpenses);
   expect(result.wallets).toEqual([VALID_WALLET]);
   // Also written straight to localStorage — flushQueue relies on this,
@@ -93,7 +118,10 @@ test("pullAndMergeRestore drops a local expense in-window that the sheet no long
   writeAllWallets([VALID_WALLET]);
 
   globalThis.fetch = (async () =>
-    new Response(JSON.stringify({ valueRanges: [{ values: [] }, { values: [["w1", "Main Wallet"]] }] }), { status: 200 })) as unknown as typeof fetch;
+    new Response(
+      JSON.stringify({ valueRanges: [{ values: [] }, { values: [["w1", "Main Wallet"]] }] }),
+      { status: 200 },
+    )) as unknown as typeof fetch;
 
   const result = await pullAndMergeRestore(SPREADSHEET_ID);
 
@@ -109,7 +137,26 @@ test("pullAndMergeRestore rejects and leaves local data untouched when the sheet
       // catches this before anything gets written locally.
       JSON.stringify({
         valueRanges: [
-          { values: [["1", TODAY, "", "w1", "", 0, "IDR", "manual", "", "", 1, TODAY.slice(0, 7), "2026-08-21T00:00:00.000Z", ""]] },
+          {
+            values: [
+              [
+                "1",
+                TODAY,
+                "",
+                "w1",
+                "",
+                0,
+                "IDR",
+                "manual",
+                "",
+                "",
+                1,
+                TODAY.slice(0, 7),
+                "2026-08-21T00:00:00.000Z",
+                "",
+              ],
+            ],
+          },
           { values: [] },
         ],
       }),
@@ -127,8 +174,14 @@ test("pullAndMergeRestore rejects and leaves local data untouched when the sheet
 // wallet.store.ts's addWalletPure/etc.).
 
 test("mergeById unions by id, keeping the sheet's copy on a collision", () => {
-  const sheet = [{ id: "1", v: "sheet" }, { id: "2", v: "sheet" }];
-  const local = [{ id: "1", v: "local" }, { id: "3", v: "local" }];
+  const sheet = [
+    { id: "1", v: "sheet" },
+    { id: "2", v: "sheet" },
+  ];
+  const local = [
+    { id: "1", v: "local" },
+    { id: "3", v: "local" },
+  ];
 
   expect(mergeById(sheet, local)).toEqual([
     { id: "1", v: "sheet" }, // collision: sheet wins
@@ -143,16 +196,29 @@ test("mergeById returns the sheet list unchanged when local has nothing new", ()
 });
 
 test("hasRealLocalData is false for an untouched fresh device (no expenses, only the default wallet)", () => {
-  expect(hasRealLocalData([], [{ id: "w1", name: DEFAULT_WALLET_NAME, animal: "cat" }])).toBe(false);
+  expect(hasRealLocalData([], [{ id: "w1", name: DEFAULT_WALLET_NAME, animal: "cat" }])).toBe(
+    false,
+  );
 });
 
 test("hasRealLocalData is true once there's at least one expense", () => {
-  expect(hasRealLocalData([{ id: "1" } as never], [{ id: "w1", name: DEFAULT_WALLET_NAME, animal: "cat" }])).toBe(true);
+  expect(
+    hasRealLocalData(
+      [{ id: "1" } as never],
+      [{ id: "w1", name: DEFAULT_WALLET_NAME, animal: "cat" }],
+    ),
+  ).toBe(true);
 });
 
 test("hasRealLocalData is true for more than one wallet, or a renamed single wallet", () => {
   expect(
-    hasRealLocalData([], [{ id: "w1", name: DEFAULT_WALLET_NAME, animal: "cat" }, { id: "w2", name: "Bank", animal: "dog" }]),
+    hasRealLocalData(
+      [],
+      [
+        { id: "w1", name: DEFAULT_WALLET_NAME, animal: "cat" },
+        { id: "w2", name: "Bank", animal: "dog" },
+      ],
+    ),
   ).toBe(true);
   expect(hasRealLocalData([], [{ id: "w1", name: "Renamed", animal: "cat" }])).toBe(true);
 });
@@ -178,12 +244,20 @@ test("dedupeWalletsByName collapses a same-name/different-id pair, keeping the f
 });
 
 test("dedupeWalletsByName is case/whitespace-insensitive on the name match", () => {
-  const wallets = [{ id: "a", name: "Main Wallet", animal: "cat" as const }, { id: "b", name: " main wallet ", animal: "dog" as const }];
-  expect(dedupeWalletsByName(wallets, []).wallets).toEqual([{ id: "a", name: "Main Wallet", animal: "cat" }]);
+  const wallets = [
+    { id: "a", name: "Main Wallet", animal: "cat" as const },
+    { id: "b", name: " main wallet ", animal: "dog" as const },
+  ];
+  expect(dedupeWalletsByName(wallets, []).wallets).toEqual([
+    { id: "a", name: "Main Wallet", animal: "cat" },
+  ]);
 });
 
 test("dedupeWalletsByName no-ops when names are already unique", () => {
-  const wallets = [{ id: "a", name: "Main Wallet", animal: "cat" as const }, { id: "b", name: "Bank", animal: "dog" as const }];
+  const wallets = [
+    { id: "a", name: "Main Wallet", animal: "cat" as const },
+    { id: "b", name: "Bank", animal: "dog" as const },
+  ];
   const expenses = [{ ...VALID_EXPENSE, id: "e1", walletId: "a" }];
   expect(dedupeWalletsByName(wallets, expenses)).toEqual({ wallets, expenses });
 });

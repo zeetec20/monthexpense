@@ -6,7 +6,10 @@ import type { Receipt } from "@/features/receipt/receipt.schema";
 // Same discriminated-union/translation-key convention as
 // useReceiptScanner.ts and useVoiceExpense.ts — this hook has no reactive
 // `lang`, the caller (TextReceiptEntry.tsx) translates the key.
-type TextReceiptErrorKey = "textReceiptErrorUnclear" | "textReceiptErrorParseFailed" | "textReceiptErrorQuotaExceeded";
+type TextReceiptErrorKey =
+  | "textReceiptErrorUnclear"
+  | "textReceiptErrorParseFailed"
+  | "textReceiptErrorQuotaExceeded";
 
 type TextReceiptState =
   | { status: "idle"; receipt: null; message?: undefined }
@@ -19,7 +22,7 @@ const IDLE: TextReceiptState = { status: "idle", receipt: null };
 /** Same shape as useReceiptScanner, minus the OCR step — the pasted text
  * *is* the input, no image/recognition phase before the parse call. Backs
  * ManualEntryForm's "paste receipt text" mode. */
-export function useTextReceipt() {
+export const useTextReceipt = () => {
   const [state, setState] = useState<TextReceiptState>(IDLE);
 
   const parse = useCallback(async (text: string, language?: "en" | "id") => {
@@ -50,4 +53,4 @@ export function useTextReceipt() {
   const reset = useCallback(() => setState(IDLE), []);
 
   return { ...state, parse, reset };
-}
+};

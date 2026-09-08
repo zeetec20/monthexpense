@@ -24,8 +24,11 @@ import { computeSecretForEmail, decryptEmail } from "../lib/email-cipher";
  * revisit before this ever gates anything paid or sensitive.
  */
 export const postGoogleConnect = async (c: Context<HonoEnv>) => {
-  const body = await c.req.json<{ emailCipher?: string; iv?: string }>().catch(() => ({}) as { emailCipher?: string; iv?: string });
-  if (!body.emailCipher || !body.iv) throw httpError(400, ERROR_CODES.INVALID_REQUEST, "Missing emailCipher/iv");
+  const body = await c.req
+    .json<{ emailCipher?: string; iv?: string }>()
+    .catch(() => ({}) as { emailCipher?: string; iv?: string });
+  if (!body.emailCipher || !body.iv)
+    throw httpError(400, ERROR_CODES.INVALID_REQUEST, "Missing emailCipher/iv");
 
   try {
     const email = await decryptEmail(c.env, { ciphertext: body.emailCipher, iv: body.iv });

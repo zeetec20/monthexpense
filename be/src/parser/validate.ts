@@ -27,7 +27,8 @@ export interface Bilingual {
  */
 export const checkArithmetic = (receipt: Receipt): Bilingual | null => {
   const itemTotals = receipt.items.map((item) => item.total);
-  const haveAllItemTotals = receipt.items.length > 0 && itemTotals.every((t): t is number => typeof t === "number");
+  const haveAllItemTotals =
+    receipt.items.length > 0 && itemTotals.every((t): t is number => typeof t === "number");
 
   if (haveAllItemTotals && receipt.subtotal !== null) {
     const sum = itemTotals.reduce((s, t) => s + (t as number), 0);

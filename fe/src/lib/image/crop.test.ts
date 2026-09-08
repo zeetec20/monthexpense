@@ -6,7 +6,7 @@ const BRIGHT = [220, 220, 220];
 
 /** Builds an RGBA buffer for a WxH image, dark everywhere except the given
  * [x0,y0,x1,y1] (inclusive) rectangle, which is bright. */
-function buildImage(width: number, height: number, rect?: [number, number, number, number]) {
+const buildImage = (width: number, height: number, rect?: [number, number, number, number]) => {
   const data = new Uint8ClampedArray(width * height * 4);
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -20,7 +20,7 @@ function buildImage(width: number, height: number, rect?: [number, number, numbe
     }
   }
   return data;
-}
+};
 
 test("finds the bounding box of a bright rectangle on a dark background", () => {
   const data = buildImage(10, 10, [2, 2, 7, 7]);

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { z } from "zod";
 import {
   pullAll,
@@ -12,7 +19,12 @@ import {
 } from "./sheets-sync.api";
 import { requestGoogleAccessToken } from "./google-auth";
 import { mergeById, hasRealLocalData, dedupeWalletsByName, mergeRecentWindow } from "./sync-merge";
-import { enqueue as enqueueOp, readQueue, writeQueue, STORAGE_KEY as SYNC_QUEUE_KEY } from "./sync-queue";
+import {
+  enqueue as enqueueOp,
+  readQueue,
+  writeQueue,
+  STORAGE_KEY as SYNC_QUEUE_KEY,
+} from "./sync-queue";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { localDateKey } from "@/lib/format";
 import { scopedKey, migrateLegacyKey, claimAccountSlot } from "@/lib/account-scope";
@@ -36,9 +48,9 @@ import {
 // stays identical to before.
 const RECENT_WINDOW_DAYS = 7;
 
-function recentCutoffKey(): string {
+const recentCutoffKey = (): string => {
   return localDateKey(new Date(Date.now() - (RECENT_WINDOW_DAYS - 1) * 24 * 60 * 60 * 1000));
-}
+};
 
 // Re-exported for existing callers/tests (sync.test.ts imports these from
 // here) — the actual implementations live in sync-merge.ts, kept dependency-free
@@ -57,9 +69,14 @@ const syncStateSchema = z.object({
 });
 type SyncState = z.infer<typeof syncStateSchema>;
 
-const IDLE: SyncState = { status: "idle", lastSyncedAt: null, lastError: null, spreadsheetUrl: null };
+const IDLE: SyncState = {
+  status: "idle",
+  lastSyncedAt: null,
+  lastError: null,
+  spreadsheetUrl: null,
+};
 
-function readState(): SyncState {
+const readState = (): SyncState => {
   try {
     migrateLegacyKey(STORAGE_KEY);
     const raw = localStorage.getItem(scopedKey(STORAGE_KEY));
@@ -68,11 +85,11 @@ function readState(): SyncState {
   } catch {
     return IDLE;
   }
-}
+};
 
-function writeState(state: SyncState) {
+const writeState = (state: SyncState) => {
   localStorage.setItem(scopedKey(STORAGE_KEY), JSON.stringify(state));
-}
+};
 
 export type SyncGateStatus = "connected" | "disconnected";
 
@@ -88,9 +105,14 @@ export type ConnectStep = "verifying" | "merging" | "saving" | null;
  * so "connected" is purely "does this device have credentials stored" —
  * synchronous, no network round-trip needed just to know that.
  */
-export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, setWallets: Dispatch<SetStateAction<Wallet[]>>) {
+export const useSheetsSync = (
+  setExpenses: Dispatch<SetStateAction<Expense[]>>,
+  setWallets: Dispatch<SetStateAction<Wallet[]>>,
+) => {
   const [state, setState] = useState<SyncState>(readState);
-  const [gateStatus, setGateStatus] = useState<SyncGateStatus>(() => (readCredentials() ? "connected" : "disconnected"));
+  const [gateStatus, setGateStatus] = useState<SyncGateStatus>(() =>
+    readCredentials() ? "connected" : "disconnected",
+  );
   const [syncing, setSyncing] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [connectStep, setConnectStep] = useState<ConnectStep>(null);
@@ -119,24 +141,27 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
   // to react the same way to a gone/inaccessible sheet. Returns whether it
   // recognized and already handled the code, so callers know whether to
   // fall through to their own generic-error handling.
-  const handleAuthError = useCallback((error: unknown): boolean => {
-    const code = error instanceof Error ? (error as Error & { code?: string }).code : undefined;
-    if (code === "SHEET_DELETED") {
-      clearCredentials();
-      setGateStatus("disconnected");
-      setSheetDeletedNotice(true);
-      return true;
-    }
-    // Only while online: a silent-renewal failure with no network just
-    // means "no network," not "your session is gone" — this app is
-    // local-first/offline-first by design, so it shouldn't kick the user
-    // to a reconnect screen just because they're on a subway.
-    if (code === "GOOGLE_AUTH_FAILED" && online) {
-      setNeedsReauth(true);
-      return true;
-    }
-    return false;
-  }, [online]);
+  const handleAuthError = useCallback(
+    (error: unknown): boolean => {
+      const code = error instanceof Error ? (error as Error & { code?: string }).code : undefined;
+      if (code === "SHEET_DELETED") {
+        clearCredentials();
+        setGateStatus("disconnected");
+        setSheetDeletedNotice(true);
+        return true;
+      }
+      // Only while online: a silent-renewal failure with no network just
+      // means "no network," not "your session is gone" — this app is
+      // local-first/offline-first by design, so it shouldn't kick the user
+      // to a reconnect screen just because they're on a subway.
+      if (code === "GOOGLE_AUTH_FAILED" && online) {
+        setNeedsReauth(true);
+        return true;
+      }
+      return false;
+    },
+    [online],
+  );
 
   /** Applies whatever's currently queued (sync-queue.ts) one op at a time,
    * removing each from the persisted queue only once it actually lands
@@ -170,7 +195,12 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
         }
         writeQueue(rest);
       }
-      const next: SyncState = { ...readState(), status: "synced", lastSyncedAt: new Date().toISOString(), lastError: null };
+      const next: SyncState = {
+        ...readState(),
+        status: "synced",
+        lastSyncedAt: new Date().toISOString(),
+        lastError: null,
+      };
       writeState(next);
       setState(next);
     } catch (error) {
@@ -241,7 +271,10 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
     const credentials = readCredentials();
     if (!credentials) return;
     try {
-      const { expenses: recent, wallets: sheetWallets } = await pullRecent(credentials.spreadsheetId, recentCutoffKey());
+      const { expenses: recent, wallets: sheetWallets } = await pullRecent(
+        credentials.spreadsheetId,
+        recentCutoffKey(),
+      );
       const cutoff = recentCutoffKey();
       setExpenses((prev) => {
         const merged = mergeRecentWindow(prev, recent, cutoff);
@@ -289,7 +322,9 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
       setReauthError(null);
       void verifyConnection();
     } catch (err) {
-      setReauthError(err instanceof Error ? err.message : "Google sign-in failed. Please try again.");
+      setReauthError(
+        err instanceof Error ? err.message : "Google sign-in failed. Please try again.",
+      );
     }
   }, [verifyConnection]);
 
@@ -302,54 +337,65 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
    * params, so this has no prop dependency. Throws on any failure —
    * ConnectGate shows it inline, gateStatus stays "disconnected".
    */
-  const connect = useCallback(async (spreadsheetId: string, spreadsheetUrl: string, secret: string, email: string) => {
-    setConnectStep("verifying");
-    // Confirms this secret was actually minted by our system (not made up
-    // by a user) before touching any local data — see sheets-sync.api.ts.
-    await validateSheetSecret(secret, spreadsheetId);
-    writeCredentials({ secret, spreadsheetId, email });
+  const connect = useCallback(
+    async (spreadsheetId: string, spreadsheetUrl: string, secret: string, email: string) => {
+      setConnectStep("verifying");
+      // Confirms this secret was actually minted by our system (not made up
+      // by a user) before touching any local data — see sheets-sync.api.ts.
+      await validateSheetSecret(secret, spreadsheetId);
+      writeCredentials({ secret, spreadsheetId, email });
 
-    // Claims this device's per-account local data slot for `email` BEFORE
-    // reading "local" expenses/wallets below — a different email than
-    // whatever was last claimed here starts from its own slot (empty, or
-    // its own previous data), never merging in a different account's
-    // leftover local data (see account-scope.ts).
-    claimAccountSlot(email, [EXPENSES_KEY, WALLETS_KEY, SYNC_QUEUE_KEY, STORAGE_KEY]);
+      // Claims this device's per-account local data slot for `email` BEFORE
+      // reading "local" expenses/wallets below — a different email than
+      // whatever was last claimed here starts from its own slot (empty, or
+      // its own previous data), never merging in a different account's
+      // leftover local data (see account-scope.ts).
+      claimAccountSlot(email, [EXPENSES_KEY, WALLETS_KEY, SYNC_QUEUE_KEY, STORAGE_KEY]);
 
-    setConnectStep("merging");
-    const { expenses: sheetExpenses, wallets: sheetWallets } = await pullAll(spreadsheetId);
-    const localExpenses = readExpenses();
-    const localWallets = readWallets();
-    const merging = hasRealLocalData(localExpenses, localWallets);
+      setConnectStep("merging");
+      const { expenses: sheetExpenses, wallets: sheetWallets } = await pullAll(spreadsheetId);
+      const localExpenses = readExpenses();
+      const localWallets = readWallets();
+      const merging = hasRealLocalData(localExpenses, localWallets);
 
-    const mergedExpenses = merging ? mergeById(sheetExpenses, localExpenses) : sheetExpenses;
-    const mergedWallets = merging
-      ? mergeById(sheetWallets, localWallets)
-      : sheetWallets.length > 0
-        ? sheetWallets
-        : localWallets;
-    // Each device auto-seeds its own default "Main Wallet" with its own
-    // id — mergeById alone would let two distinct-id, same-name wallets
-    // both survive here.
-    const { wallets: finalWallets, expenses: finalExpenses } = dedupeWalletsByName(mergedWallets, mergedExpenses);
+      const mergedExpenses = merging ? mergeById(sheetExpenses, localExpenses) : sheetExpenses;
+      const mergedWallets = merging
+        ? mergeById(sheetWallets, localWallets)
+        : sheetWallets.length > 0
+          ? sheetWallets
+          : localWallets;
+      // Each device auto-seeds its own default "Main Wallet" with its own
+      // id — mergeById alone would let two distinct-id, same-name wallets
+      // both survive here.
+      const { wallets: finalWallets, expenses: finalExpenses } = dedupeWalletsByName(
+        mergedWallets,
+        mergedExpenses,
+      );
 
-    writeAllExpenses(finalExpenses);
-    writeAllWallets(finalWallets);
+      writeAllExpenses(finalExpenses);
+      writeAllWallets(finalWallets);
 
-    setConnectStep("saving");
-    await pushAll(spreadsheetId, finalExpenses, finalWallets);
-    const next: SyncState = { status: "synced", lastSyncedAt: new Date().toISOString(), lastError: null, spreadsheetUrl };
-    writeState(next);
-    setState(next);
-    setGateStatus("connected");
+      setConnectStep("saving");
+      await pushAll(spreadsheetId, finalExpenses, finalWallets);
+      const next: SyncState = {
+        status: "synced",
+        lastSyncedAt: new Date().toISOString(),
+        lastError: null,
+        spreadsheetUrl,
+      };
+      writeState(next);
+      setState(next);
+      setGateStatus("connected");
 
-    // No setter to refresh useExpenses()/useWallets()'s own React state
-    // from here — reload is the simplest correct way every hook re-reads
-    // localStorage fresh. Unlike restoreFromSheets's old reload (now gone
-    // — see pullAndMergeRestore/flushQueue below, which update React state
-    // directly), this one only ever runs once, right after a fresh login.
-    if (typeof window !== "undefined") window.location.reload();
-  }, []);
+      // No setter to refresh useExpenses()/useWallets()'s own React state
+      // from here — reload is the simplest correct way every hook re-reads
+      // localStorage fresh. Unlike restoreFromSheets's old reload (now gone
+      // — see pullAndMergeRestore/flushQueue below, which update React state
+      // directly), this one only ever runs once, right after a fresh login.
+      if (typeof window !== "undefined") window.location.reload();
+    },
+    [],
+  );
 
   const connectWithCredentials = useCallback(
     async (spreadsheetId: string, spreadsheetUrl: string, secret: string, email: string) => {
@@ -435,7 +481,7 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
     },
     verifyConnection,
   };
-}
+};
 
 /**
  * Reconciles, doesn't nuke: same trailing-7-day-window logic as
@@ -452,12 +498,19 @@ export function useSheetsSync(setExpenses: Dispatch<SetStateAction<Expense[]>>, 
  * setWallets directly. Exported (not just called inline from flushQueue)
  * so it stays unit-testable on its own, same as mergeById/mergeRecentWindow.
  */
-export async function pullAndMergeRestore(spreadsheetId: string): Promise<{ expenses: Expense[]; wallets: Wallet[] }> {
+export const pullAndMergeRestore = async (
+  spreadsheetId: string,
+): Promise<{ expenses: Expense[]; wallets: Wallet[] }> => {
   const cutoff = recentCutoffKey();
-  const { expenses: recentExpenses, wallets: sheetWallets } = await pullRecent(spreadsheetId, cutoff);
-  const mergedExpenses = z.array(expenseSchema).parse(mergeRecentWindow(readExpenses(), recentExpenses, cutoff));
+  const { expenses: recentExpenses, wallets: sheetWallets } = await pullRecent(
+    spreadsheetId,
+    cutoff,
+  );
+  const mergedExpenses = z
+    .array(expenseSchema)
+    .parse(mergeRecentWindow(readExpenses(), recentExpenses, cutoff));
   const mergedWallets = z.array(walletSchema).parse(mergeById(sheetWallets, readWallets()));
   writeAllExpenses(mergedExpenses);
   writeAllWallets(mergedWallets);
   return { expenses: mergedExpenses, wallets: mergedWallets };
-}
+};

@@ -1,7 +1,8 @@
 ### Ft2 · Inline-rule single line
+
 A single horizontal line of credits, address, copyright. Hairline rule above. No columns.
-*Use when:* the page is editorial and the footer is afterthought.
-*Don't confuse with:* Ft4 Dense typographic (which packs more in).
+_Use when:_ the page is editorial and the footer is afterthought.
+_Don't confuse with:_ Ft4 Dense typographic (which packs more in).
 
 ```html
 <footer class="foot-line">

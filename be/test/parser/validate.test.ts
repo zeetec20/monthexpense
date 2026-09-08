@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { checkArithmetic, checkVoiceCompleteness } from "../../src/parser/validate";
 import type { Receipt } from "../../src/schemas/receipt";
 
-function receipt(overrides: Partial<Receipt> = {}): Receipt {
+const receipt = (overrides: Partial<Receipt> = {}): Receipt => {
   return {
     merchant: { name: "Solaria", address: null, phone: null },
     transaction: { date: "2022-11-13", time: "10:26", receipt_number: null },
@@ -17,7 +17,7 @@ function receipt(overrides: Partial<Receipt> = {}): Receipt {
     suggested_title: null,
     ...overrides,
   };
-}
+};
 
 describe("checkArithmetic", () => {
   it("returns null when there's not enough data to check", () => {
@@ -107,7 +107,7 @@ describe("checkArithmetic", () => {
   });
 });
 
-function expenseVoice(overrides: Partial<Receipt> = {}): Receipt {
+const expenseVoice = (overrides: Partial<Receipt> = {}): Receipt => {
   return receipt({
     merchant: { name: "Point Cafe", address: null, phone: null },
     transaction: { date: "2026-08-26", time: null, receipt_number: null },
@@ -115,7 +115,7 @@ function expenseVoice(overrides: Partial<Receipt> = {}): Receipt {
     total: 10000,
     ...overrides,
   });
-}
+};
 
 describe("checkVoiceCompleteness", () => {
   it("returns null when total, items, and merchant are all clear", () => {
@@ -123,34 +123,47 @@ describe("checkVoiceCompleteness", () => {
   });
 
   it("returns null for a plain expense with no items and no merchant", () => {
-    expect(checkVoiceCompleteness(expenseVoice({ items: [], merchant: { name: null, address: null, phone: null } }))).toBeNull();
+    expect(
+      checkVoiceCompleteness(
+        expenseVoice({ items: [], merchant: { name: null, address: null, phone: null } }),
+      ),
+    ).toBeNull();
   });
 
   it("flags a null total", () => {
-    expect(checkVoiceCompleteness(expenseVoice({ total: null }))?.en).toMatch(/amount wasn't clear/);
+    expect(checkVoiceCompleteness(expenseVoice({ total: null }))?.en).toMatch(
+      /amount wasn't clear/,
+    );
   });
 
   it("flags an item with a null name or price", () => {
     expect(
       checkVoiceCompleteness(
-        expenseVoice({ items: [{ name: null, quantity: 1, unit_price: 10000, discount: null, total: 10000 }] }),
+        expenseVoice({
+          items: [{ name: null, quantity: 1, unit_price: 10000, discount: null, total: 10000 }],
+        }),
       )?.en,
     ).toMatch(/item's name or price wasn't clear/);
     expect(
       checkVoiceCompleteness(
         expenseVoice({
-          items: [{ name: "Coffee latte", quantity: 1, unit_price: null, discount: null, total: null }],
+          items: [
+            { name: "Coffee latte", quantity: 1, unit_price: null, discount: null, total: null },
+          ],
         }),
       )?.en,
     ).toMatch(/item's name or price wasn't clear/);
   });
 
   it("flags a null merchant only when there are items to itemize", () => {
-    expect(checkVoiceCompleteness(expenseVoice({ merchant: { name: null, address: null, phone: null } }))?.en).toMatch(
-      /store or brand name/,
-    );
     expect(
-      checkVoiceCompleteness(expenseVoice({ items: [], merchant: { name: null, address: null, phone: null } })),
+      checkVoiceCompleteness(expenseVoice({ merchant: { name: null, address: null, phone: null } }))
+        ?.en,
+    ).toMatch(/store or brand name/);
+    expect(
+      checkVoiceCompleteness(
+        expenseVoice({ items: [], merchant: { name: null, address: null, phone: null } }),
+      ),
     ).toBeNull();
   });
 });

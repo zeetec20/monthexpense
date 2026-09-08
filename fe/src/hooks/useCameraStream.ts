@@ -19,7 +19,7 @@ const CAMERA_RETRY_LIMIT = 3;
 // iPhones expose every physical back lens (wide/ultra-wide/tele) as its own
 // device — more "cameras" than a front/back switch button should offer.
 // First match per bucket wins, which is consistently the main/wide lens.
-function dedupeFrontBack(devices: MediaDeviceInfo[]): CameraDevice[] {
+const dedupeFrontBack = (devices: MediaDeviceInfo[]): CameraDevice[] => {
   const seen = new Set<string>();
   const result: CameraDevice[] = [];
   for (const d of devices) {
@@ -37,7 +37,7 @@ function dedupeFrontBack(devices: MediaDeviceInfo[]): CameraDevice[] {
     return devices.slice(0, 2).map((d) => ({ id: d.deviceId, label: d.label }));
   }
   return result;
-}
+};
 
 type Source = { facingMode: "environment" | "user" } | string; // string = deviceId
 
@@ -52,7 +52,7 @@ type Source = { facingMode: "environment" | "user" } | string; // string = devic
  * resume. Front/back switching (switchCamera) is ported from
  * design-undangan-next's guest QR scanner, including its iOS black-frame
  * workaround. */
-export function useCameraStream(active: boolean) {
+export const useCameraStream = (active: boolean) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<CameraState>("idle");
   const [cameras, setCameras] = useState<CameraDevice[]>([]);
@@ -73,7 +73,7 @@ export function useCameraStream(active: boolean) {
   // does to its own state afterward.
   const generationRef = useRef(0);
 
-  function release() {
+  const release = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     if (videoRef.current) {
@@ -85,9 +85,9 @@ export function useCameraStream(active: boolean) {
       videoRef.current.srcObject = null;
       videoRef.current.load();
     }
-  }
+  };
 
-  async function ensureCameraList(gen: number) {
+  const ensureCameraList = async (gen: number) => {
     if (camerasRef.current.length > 0 || !navigator.mediaDevices?.enumerateDevices) return;
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
@@ -96,9 +96,9 @@ export function useCameraStream(active: boolean) {
     } catch {
       // leave empty — switch button stays hidden, the safe default
     }
-  }
+  };
 
-  async function acquire(source: Source = sourceRef.current, attempt = 0) {
+  const acquire = async (source: Source = sourceRef.current, attempt = 0) => {
     if (!navigator.mediaDevices?.getUserMedia) {
       setState("unavailable");
       return;
@@ -107,7 +107,9 @@ export function useCameraStream(active: boolean) {
     setState("requesting");
     try {
       const constraints: MediaTrackConstraints =
-        typeof source === "string" ? { deviceId: { exact: source } } : { facingMode: source.facingMode };
+        typeof source === "string"
+          ? { deviceId: { exact: source } }
+          : { facingMode: source.facingMode };
       const s = await navigator.mediaDevices.getUserMedia({ video: constraints });
       // Every call is now tap-triggered, so there's no "background
       // acquisition racing page focus" case to guard against anymore —
@@ -150,9 +152,11 @@ export function useCameraStream(active: boolean) {
     } catch (err: unknown) {
       if (gen !== generationRef.current) return;
       const name = err instanceof DOMException ? err.name : "";
-      setState(name === "NotAllowedError" || name === "PermissionDeniedError" ? "denied" : "unavailable");
+      setState(
+        name === "NotAllowedError" || name === "PermissionDeniedError" ? "denied" : "unavailable",
+      );
     }
-  }
+  };
 
   useEffect(() => {
     // Driven by `active`, not just mount/unmount — release() otherwise
@@ -164,6 +168,7 @@ export function useCameraStream(active: boolean) {
     if (!active) {
       generationRef.current++;
       release();
+      // eslint-disable-next-line react/set-state-in-effect -- paired with release() tearing down the actual camera hardware track, not a pure prop-derived value
       setState("idle");
       return;
     }
@@ -171,13 +176,13 @@ export function useCameraStream(active: boolean) {
     // Backgrounding the tab/app releases the camera too (privacy/battery)
     // — but deliberately does NOT auto-reacquire on return. Foregrounding
     // lands back on the "tap to enable" prompt, same as a fresh open.
-    function handleHidden() {
+    const handleHidden = () => {
       if (document.visibilityState !== "visible") {
         generationRef.current++;
         release();
         setState("idle");
       }
-    }
+    };
 
     document.addEventListener("visibilitychange", handleHidden);
 
@@ -188,9 +193,9 @@ export function useCameraStream(active: boolean) {
     };
   }, [active]);
 
-  function requestCamera() {
+  const requestCamera = () => {
     void acquire();
-  }
+  };
 
   const canSwitch = cameras.length > 1;
 
@@ -208,14 +213,14 @@ export function useCameraStream(active: boolean) {
 
   // Sequenced stop-then-start (not concurrent — two simultaneous
   // getUserMedia calls on the same device risk "camera already in use").
-  function switchCamera() {
+  const switchCamera = () => {
     if (!canSwitch || switching) return;
     const nextIndex = (activeIndex + 1) % cameras.length;
     setSwitching(true);
     release();
     void acquire(cameras[nextIndex].id).finally(() => setSwitching(false));
     setActiveIndex(nextIndex);
-  }
+  };
 
   return { videoRef, state, canSwitch, switching, switchCamera, requestCamera };
-}
+};

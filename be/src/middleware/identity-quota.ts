@@ -42,20 +42,21 @@ const LOCK_TTL_SECONDS = 24 * 60 * 60;
 // outright for this long, not just the one offending request.
 const BAN_TTL_SECONDS = 2 * 24 * 60 * 60;
 
-function todayUtc(): string {
+const todayUtc = (): string => {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-}
+};
 
 /** Same key convention used by both identityQuota (INCR) and GET /v1/quota
  * (peek) — keeping it in one place so they can never drift apart. */
-export function usageKey(uuid: string, group: Group, date = todayUtc()): string {
+export const usageKey = (uuid: string, group: Group, date = todayUtc()): string => {
   return `usage:${uuid}:${group}:${date}`;
-}
+};
 
-function realBackend(env: HonoEnv["Bindings"]): IdentityBackend {
+const realBackend = (env: HonoEnv["Bindings"]): IdentityBackend => {
   const redis = getRedis(env);
   return {
-    verify: (secret) => verifySheetSecret(secret, { standard: env.REGULAR_API_KEY, premium: env.PREMIUM_API_KEY }),
+    verify: (secret) =>
+      verifySheetSecret(secret, { standard: env.REGULAR_API_KEY, premium: env.PREMIUM_API_KEY }),
     isBanned: async (uuid) => (await redis.get(`ban:${uuid}`)) !== null,
     lockSpreadsheetId: async (uuid, spreadsheetId) => {
       const key = `sheet-lock:${uuid}`;
@@ -75,40 +76,48 @@ function realBackend(env: HonoEnv["Bindings"]): IdentityBackend {
     },
     peekUsage: async (key) => (await redis.get<number>(key)) ?? 0,
   };
-}
+};
 
-function readHeaders(c: Context<HonoEnv>): { secret: string; spreadsheetId: string } {
+const readHeaders = (c: Context<HonoEnv>): { secret: string; spreadsheetId: string } => {
   const secret = c.req.header("X-Sheet-Secret");
   const spreadsheetId = c.req.header("X-Spreadsheet-Id");
   if (!secret || !spreadsheetId) {
     throw httpError(401, ERROR_CODES.UNAUTHORIZED, "Missing sheet identity headers");
   }
   return { secret, spreadsheetId };
-}
+};
 
 /** verify → ban check → spreadsheet lock, shared by identityQuota (which
  * also meters usage) and identityCheck (which doesn't — see below). */
-async function checkIdentity(
+const checkIdentity = async (
   backend: IdentityBackend,
   secret: string,
   spreadsheetId: string,
-): Promise<{ uuid: string; tier: Tier }> {
+): Promise<{ uuid: string; tier: Tier }> => {
   const verified = await backend.verify(secret);
   if (!verified) {
     throw httpError(401, ERROR_CODES.UNAUTHORIZED, "Invalid sheet secret");
   }
 
   if (await backend.isBanned(verified.uuid)) {
-    throw httpError(401, ERROR_CODES.UNAUTHORIZED, "Sheet secret temporarily banned after a spreadsheet mismatch");
+    throw httpError(
+      401,
+      ERROR_CODES.UNAUTHORIZED,
+      "Sheet secret temporarily banned after a spreadsheet mismatch",
+    );
   }
 
   const locked = await backend.lockSpreadsheetId(verified.uuid, spreadsheetId);
   if (!locked) {
-    throw httpError(401, ERROR_CODES.UNAUTHORIZED, "Sheet secret is already bound to a different spreadsheet");
+    throw httpError(
+      401,
+      ERROR_CODES.UNAUTHORIZED,
+      "Sheet secret is already bound to a different spreadsheet",
+    );
   }
 
   return verified;
-}
+};
 
 /**
  * Applied after the existing `auth` (shared API_KEY) middleware on the
@@ -130,7 +139,11 @@ export const identityQuota = (group: Group): MiddlewareHandler<HonoEnv> => {
     const count = await backend.incrementUsage(usageKey(verified.uuid, group));
     const limit = DAILY_LIMIT[verified.tier];
     if (count > limit) {
-      throw httpError(429, ERROR_CODES.RATE_LIMITED, `Daily ${group} limit reached — try again tomorrow.`);
+      throw httpError(
+        429,
+        ERROR_CODES.RATE_LIMITED,
+        `Daily ${group} limit reached — try again tomorrow.`,
+      );
     }
 
     c.set("quota", { remaining: limit - count, limit });

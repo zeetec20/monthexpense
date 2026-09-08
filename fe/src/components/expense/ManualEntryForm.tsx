@@ -49,7 +49,7 @@ const FIELD_ERROR_KEY: Record<string, TKey> = {
   date: "manualErrorDateRequired",
 };
 
-export function ManualEntryForm({
+export const ManualEntryForm = ({
   expense,
   onSubmit,
   wallets,
@@ -57,7 +57,7 @@ export function ManualEntryForm({
   header,
   submitLabel,
   lang = "id",
-}: ManualEntryFormProps) {
+}: ManualEntryFormProps) => {
   const id = useId();
   const resolvedSubmitLabel = submitLabel ?? t(lang, "submitExpense");
   const [entryType, setEntryType] = useState<EntryType>(() => expense?.scheduleType ?? "normal");
@@ -68,7 +68,9 @@ export function ManualEntryForm({
   const [note, setNote] = useState(() => expense?.note ?? "");
   const [walletId, setWalletId] = useState(() => expense?.walletId ?? defaultWalletId);
   const [category, setCategory] = useState(() => expense?.category ?? "food_snack");
-  const [items, setItems] = useState<ExpenseReceiptItem[]>(() => expense?.receiptDetail?.items ?? []);
+  const [items, setItems] = useState<ExpenseReceiptItem[]>(
+    () => expense?.receiptDetail?.items ?? [],
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Itemized when there's anything to itemize — amount is then derived
@@ -77,7 +79,7 @@ export function ManualEntryForm({
   // ExpenseReviewModal already follows.
   const totals = items.length > 0 ? computeExpenseTotals({ ...BLANK_RECEIPT_DETAIL, items }) : null;
 
-  function reset() {
+  const reset = () => {
     setEntryType("normal");
     setTitle("");
     setAmount(null);
@@ -88,9 +90,9 @@ export function ManualEntryForm({
     setCategory("food_snack");
     setItems([]);
     setErrors({});
-  }
+  };
 
-  function handleSubmit(event: FormEvent) {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
     // Editing is always exactly one record — never the multi-date fan-out
@@ -133,10 +135,16 @@ export function ManualEntryForm({
         ...base,
         date: d,
         ...(entryType === "scheduled"
-          ? { scheduleType: "scheduled" as const, paid: expense?.scheduleType === "scheduled" ? expense.paid : false }
+          ? {
+              scheduleType: "scheduled" as const,
+              paid: expense?.scheduleType === "scheduled" ? expense.paid : false,
+            }
           : {}),
         ...(entryType === "debt"
-          ? { scheduleType: "debt" as const, settled: expense?.scheduleType === "debt" ? expense.settled : false }
+          ? {
+              scheduleType: "debt" as const,
+              settled: expense?.scheduleType === "debt" ? expense.settled : false,
+            }
           : {}),
         // A create never has anything to clear; an edit switching back to
         // Normal needs this so the patch actually drops the old schedule.
@@ -145,7 +153,7 @@ export function ManualEntryForm({
       onSubmit(result);
     }
     if (!expense) reset();
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,10 +167,19 @@ export function ManualEntryForm({
             onClick={() => setEntryType(type)}
             className={
               "flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-all " +
-              (entryType === type ? "bg-emerald-600 text-white shadow-sm" : "text-ink-faint hover:text-ink")
+              (entryType === type
+                ? "bg-emerald-600 text-white shadow-sm"
+                : "text-ink-faint hover:text-ink")
             }
           >
-            {t(lang, type === "normal" ? "typeNormal" : type === "scheduled" ? "typeScheduled" : "typeDebt")}
+            {t(
+              lang,
+              type === "normal"
+                ? "typeNormal"
+                : type === "scheduled"
+                  ? "typeScheduled"
+                  : "typeDebt",
+            )}
           </button>
         ))}
       </div>
@@ -197,7 +214,9 @@ export function ManualEntryForm({
         // result's total.
         <div className="space-y-1.5">
           <Label>{t(lang, "amountLabel")}</Label>
-          <p className="text-lg font-semibold tabular-nums">{formatCurrency(totals?.total ?? null, "IDR")}</p>
+          <p className="text-lg font-semibold tabular-nums">
+            {formatCurrency(totals?.total ?? null, "IDR")}
+          </p>
         </div>
       )}
 
@@ -234,7 +253,12 @@ export function ManualEntryForm({
               </div>
             ))}
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={() => setDates((prev) => [...prev, today()])}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setDates((prev) => [...prev, today()])}
+          >
             <Plus className="size-3.5" /> {t(lang, "addDate")}
           </Button>
           {errors.date && <p className="text-xs text-red-500">{errors.date}</p>}
@@ -258,7 +282,13 @@ export function ManualEntryForm({
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <WalletPicker id={`${id}-wallet`} wallets={wallets} value={walletId} onChange={setWalletId} lang={lang} />
+        <WalletPicker
+          id={`${id}-wallet`}
+          wallets={wallets}
+          value={walletId}
+          onChange={setWalletId}
+          lang={lang}
+        />
         <CategoryPicker id={`${id}-category`} value={category} onChange={setCategory} lang={lang} />
       </div>
 
@@ -267,4 +297,4 @@ export function ManualEntryForm({
       </Button>
     </form>
   );
-}
+};

@@ -4,16 +4,23 @@ import { decryptEmail, computeSecretForEmail } from "../../src/lib/email-cipher"
 // Mirrors the FE's src/features/sync/email-cipher.ts encryptEmail — same
 // algorithm (AES-GCM, key = SHA-256(apiKey), random 12-byte IV), built
 // here directly with Web Crypto rather than importing across repos.
-async function encryptEmail(email: string, apiKey: string): Promise<{ ciphertext: string; iv: string }> {
+const encryptEmail = async (
+  email: string,
+  apiKey: string,
+): Promise<{ ciphertext: string; iv: string }> => {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(apiKey));
   const key = await crypto.subtle.importKey("raw", digest, { name: "AES-GCM" }, false, ["encrypt"]);
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(email));
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    new TextEncoder().encode(email),
+  );
   return { ciphertext: bytesToBase64(new Uint8Array(ciphertext)), iv: bytesToBase64(iv) };
-}
-function bytesToBase64(bytes: Uint8Array): string {
+};
+const bytesToBase64 = (bytes: Uint8Array): string => {
   return btoa(String.fromCharCode(...bytes));
-}
+};
 
 const API_KEY = "test-api-key";
 

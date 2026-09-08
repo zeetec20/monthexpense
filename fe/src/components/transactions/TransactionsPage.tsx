@@ -7,7 +7,13 @@ import { t, type Lang } from "@/i18n/translations";
 import { EXPENSE_CATEGORIES, type Expense } from "@/features/expense/expense.schema";
 import type { Wallet } from "@/features/wallet/wallet.schema";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ALL = "all";
 
@@ -21,7 +27,7 @@ const ALL = "all";
  * rebuilt bottom-sheet clone — that modal already does more than the
  * prototype's detail sheet.
  */
-export function TransactionsPage({
+export const TransactionsPage = ({
   expenses,
   wallets,
   onSelect,
@@ -31,16 +37,21 @@ export function TransactionsPage({
   wallets: Wallet[];
   onSelect: (expense: Expense) => void;
   lang: Lang;
-}) {
+}) => {
   const [search, setSearch] = useState("");
   const [walletFilter, setWalletFilter] = useState(ALL);
   const [categoryFilter, setCategoryFilter] = useState(ALL);
   const [monthFilter, setMonthFilter] = useState(ALL);
   const [filterOpen, setFilterOpen] = useState(false);
-  const activeFilterCount = [walletFilter, categoryFilter, monthFilter].filter((f) => f !== ALL).length;
+  const activeFilterCount = [walletFilter, categoryFilter, monthFilter].filter(
+    (f) => f !== ALL,
+  ).length;
 
   const walletName = (id: string | undefined) => wallets.find((w) => w.id === id)?.name ?? "";
-  const months = useMemo(() => [...new Set(expenses.map((e) => e.date.slice(0, 7)))].sort().reverse(), [expenses]);
+  const months = useMemo(
+    () => [...new Set(expenses.map((e) => e.date.slice(0, 7)))].sort().reverse(),
+    [expenses],
+  );
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -56,7 +67,9 @@ export function TransactionsPage({
   return (
     <div className="space-y-3.5 max-w-sm mx-auto">
       <div className="flex items-center justify-between py-1">
-        <h2 className="text-lg font-bold text-ink tracking-tight">{t(lang, "transactionsTitle")}</h2>
+        <h2 className="text-lg font-bold text-ink tracking-tight">
+          {t(lang, "transactionsTitle")}
+        </h2>
       </div>
 
       <button
@@ -191,7 +204,9 @@ export function TransactionsPage({
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-bold font-mono text-ink">{formatCurrency(expense.amount, expense.currency)}</p>
+                  <p className="text-xs font-bold font-mono text-ink">
+                    {formatCurrency(expense.amount, expense.currency)}
+                  </p>
                   <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full border bg-elevated text-ink-faint border-line-subtle">
                     {categoryLabel(expense.category, lang)}
                   </span>
@@ -203,4 +218,4 @@ export function TransactionsPage({
       )}
     </div>
   );
-}
+};

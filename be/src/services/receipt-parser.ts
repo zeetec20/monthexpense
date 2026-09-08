@@ -13,7 +13,9 @@ const validate = (rawOutput: string): { receipt?: Receipt; errorSummary?: string
   try {
     candidate = extractJson(rawOutput);
   } catch (err) {
-    return { errorSummary: err instanceof Error ? err.message : "invalid or unparseable JSON output" };
+    return {
+      errorSummary: err instanceof Error ? err.message : "invalid or unparseable JSON output",
+    };
   }
 
   const result = ReceiptSchema.safeParse(normalizeReceiptCandidate(candidate));
@@ -42,7 +44,14 @@ export const parseReceipt = async (
   let rawOutput = String(await model.parse(normalizedText, language));
   let { receipt, errorSummary } = validate(rawOutput);
   if (!receipt) {
-    console.error(JSON.stringify({ msg: "parse attempt failed", attempt: 0, errorSummary, outputLength: rawOutput.length }));
+    console.error(
+      JSON.stringify({
+        msg: "parse attempt failed",
+        attempt: 0,
+        errorSummary,
+        outputLength: rawOutput.length,
+      }),
+    );
   }
 
   let attempts = 0;
@@ -51,7 +60,14 @@ export const parseReceipt = async (
     rawOutput = String(await model.repair(rawOutput, errorSummary!, language));
     ({ receipt, errorSummary } = validate(rawOutput));
     if (!receipt) {
-      console.error(JSON.stringify({ msg: "parse attempt failed", attempt: attempts, errorSummary, outputLength: rawOutput.length }));
+      console.error(
+        JSON.stringify({
+          msg: "parse attempt failed",
+          attempt: attempts,
+          errorSummary,
+          outputLength: rawOutput.length,
+        }),
+      );
     }
   }
 

@@ -13,10 +13,13 @@ import { cropToPaper } from "./crop";
  * data instead of throwing) — the "succeeds with empty items" failure
  * mode. `maxDimension` is overridable so useReceiptScanner.ts's OOM retry
  * can still ask for an even smaller bound. */
-export async function preprocessReceiptImage(file: Blob, maxDimension = DEFAULT_MAX_DIMENSION): Promise<Blob> {
+export const preprocessReceiptImage = async (
+  file: Blob,
+  maxDimension = DEFAULT_MAX_DIMENSION,
+): Promise<Blob> => {
   const source = isHeic(file) ? await convertHeicToJpeg(file) : file;
   const oriented = await correctOrientation(source);
   const bounded = await downscaleBitmap(oriented, maxDimension);
   const cropped = await cropToPaper(bounded);
   return resizeImage(cropped, maxDimension);
-}
+};

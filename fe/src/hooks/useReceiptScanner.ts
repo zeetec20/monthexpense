@@ -10,7 +10,10 @@ import type { Receipt } from "@/features/receipt/receipt.schema";
 // A translation key, not literal prose — this hook has no reactive access
 // to the current app language, so it hands back a stable key and lets the
 // caller (Scanner.tsx, which has `lang`) translate it.
-type ScannerErrorKey = "scannerErrorUnclear" | "scannerErrorParseFailed" | "scannerErrorQuotaExceeded";
+type ScannerErrorKey =
+  | "scannerErrorUnclear"
+  | "scannerErrorParseFailed"
+  | "scannerErrorQuotaExceeded";
 
 type ScannerState =
   | { status: "idle"; receipt: null; message?: undefined; detail?: undefined }
@@ -28,7 +31,7 @@ export type ScannerStatus = ScannerState["status"];
 
 const IDLE: ScannerState = { status: "idle", receipt: null };
 
-export function useReceiptScanner() {
+export const useReceiptScanner = () => {
   const [state, setState] = useState<ScannerState>(IDLE);
 
   const scan = useCallback(async (file: Blob) => {
@@ -42,11 +45,11 @@ export function useReceiptScanner() {
     // undownscaled bitmap) and OCR inference are both real OOM sites —
     // wrapping just the OCR half left preprocess-stage OOMs with no
     // retry at all. One retryable helper covers both.
-    async function runPipeline(maxDimension?: number) {
+    const runPipeline = async (maxDimension?: number) => {
       const image = await preprocessReceiptImage(file, maxDimension);
       phase = "ocr";
       return recognizeReceipt(image);
-    }
+    };
 
     try {
       let document;
@@ -65,7 +68,12 @@ export function useReceiptScanner() {
       }
 
       if (!document.text.trim()) {
-        setState({ status: "error", receipt: null, message: "scannerErrorUnclear", detail: "empty OCR text" });
+        setState({
+          status: "error",
+          receipt: null,
+          message: "scannerErrorUnclear",
+          detail: "empty OCR text",
+        });
         return;
       }
 
@@ -90,7 +98,8 @@ export function useReceiptScanner() {
         setState({ status: "error", receipt: null, message: "scannerErrorQuotaExceeded", detail });
         return;
       }
-      const message: ScannerErrorKey = phase === "parsing" ? "scannerErrorParseFailed" : "scannerErrorUnclear";
+      const message: ScannerErrorKey =
+        phase === "parsing" ? "scannerErrorParseFailed" : "scannerErrorUnclear";
       setState({ status: "error", receipt: null, message, detail });
     }
   }, []);
@@ -98,4 +107,4 @@ export function useReceiptScanner() {
   const reset = useCallback(() => setState(IDLE), []);
 
   return { ...state, scan, reset };
-}
+};

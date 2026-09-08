@@ -29,7 +29,7 @@ import { readFileSync } from "node:fs";
 // .dev.vars uses the same KEY=VALUE-per-line shape as .env — load it into
 // process.env for anything not already set there, so exported real env
 // vars (prod minting) always win over the local file.
-function loadDevVars(path = ".dev.vars") {
+const loadDevVars = (path = ".dev.vars") => {
   let raw: string;
   try {
     raw = readFileSync(path, "utf8");
@@ -42,13 +42,15 @@ function loadDevVars(path = ".dev.vars") {
     const [, key, value] = match;
     if (process.env[key] === undefined) process.env[key] = value;
   }
-}
+};
 loadDevVars();
 
 const tier: "standard" | "premium" = process.argv.includes("--premium") ? "premium" : "standard";
 const signingKey = tier === "premium" ? process.env.PREMIUM_API_KEY : process.env.REGULAR_API_KEY;
 if (!signingKey) {
-  console.error(`Missing ${tier === "premium" ? "PREMIUM_API_KEY" : "REGULAR_API_KEY"} in the environment.`);
+  console.error(
+    `Missing ${tier === "premium" ? "PREMIUM_API_KEY" : "REGULAR_API_KEY"} in the environment.`,
+  );
   process.exit(1);
 }
 

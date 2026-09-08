@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { usePwaUpdateStatus } from "@/hooks/usePwaUpdateStatus";
 import { isStandalone } from "@/hooks/usePwaInstall";
@@ -15,7 +22,7 @@ import { t, type Lang } from "@/i18n/translations";
  * onNeedRefresh unconditionally calls updateSW() regardless of this
  * component), it just doesn't see any UI for it; only an installed app has
  * no other way to notice a reload just happened underneath it. */
-export function PwaUpdateModal({ lang }: { lang: Lang }) {
+export const PwaUpdateModal = ({ lang }: { lang: Lang }) => {
   const updating = usePwaUpdateStatus();
   const [justUpdated, setJustUpdated] = useState(() => {
     const seen = sessionStorage.getItem(PWA_UPDATE_MARKER) === "1";
@@ -59,4 +66,4 @@ export function PwaUpdateModal({ lang }: { lang: Lang }) {
       </Dialog>
     </>
   );
-}
+};

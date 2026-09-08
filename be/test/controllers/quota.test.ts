@@ -2,9 +2,16 @@ import { describe, it, expect } from "vitest";
 import app from "../../src/index";
 import { buildTestEnv, testCtx, authHeaders, fakeIdentityBackend } from "./helpers";
 
-function getQuota(env: ReturnType<typeof buildTestEnv>, headers: Record<string, string> = authHeaders()) {
-  return app.fetch(new Request("http://localhost/v1/quota", { method: "GET", headers }), env, testCtx);
-}
+const getQuota = (
+  env: ReturnType<typeof buildTestEnv>,
+  headers: Record<string, string> = authHeaders(),
+) => {
+  return app.fetch(
+    new Request("http://localhost/v1/quota", { method: "GET", headers }),
+    env,
+    testCtx,
+  );
+};
 
 describe("GET /v1/quota", () => {
   it("requires auth", async () => {
@@ -16,7 +23,7 @@ describe("GET /v1/quota", () => {
     let incremented = false;
     const env = buildTestEnv({
       __testIdentity: fakeIdentityBackend({
-        incrementUsage: async () => (incremented = true, 1),
+        incrementUsage: async () => ((incremented = true), 1),
         peekUsage: async (key) => (key.includes(":scan:") ? 5 : 0),
       }),
     });
@@ -32,7 +39,10 @@ describe("GET /v1/quota", () => {
   });
 
   it("rejects an invalid sheet secret", async () => {
-    const res = await getQuota(buildTestEnv(), { ...authHeaders(), "X-Sheet-Secret": "not-a-real-secret" });
+    const res = await getQuota(buildTestEnv(), {
+      ...authHeaders(),
+      "X-Sheet-Secret": "not-a-real-secret",
+    });
     expect(res.status).toBe(401);
   });
 });

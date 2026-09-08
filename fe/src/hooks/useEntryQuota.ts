@@ -5,6 +5,10 @@ import { getQuota, subscribeQuota, type Quota, type QuotaGroup } from "@/lib/ent
  * — same useSyncExternalStore + module-level pub/sub shape as
  * usePwaUpdateStatus.ts, so a badge/gate anywhere in the tree re-renders
  * the instant any other component records a fresh number. */
-export function useEntryQuota(group: QuotaGroup): Quota | undefined {
-  return useSyncExternalStore(subscribeQuota, () => getQuota(group), () => undefined);
-}
+export const useEntryQuota = (group: QuotaGroup): Quota | undefined => {
+  return useSyncExternalStore(
+    subscribeQuota,
+    () => getQuota(group),
+    () => undefined,
+  );
+};

@@ -12,12 +12,16 @@ import { useEntryQuota } from "@/hooks/useEntryQuota";
 import { isHeic, convertHeicToJpeg } from "@/lib/image/heic";
 import { saveImage } from "@/lib/image/image-store";
 import { t, type Lang } from "@/i18n/translations";
-import { receiptToExpenseInput, type ExpenseInput, type ExpenseSource } from "@/features/expense/expense.schema";
+import {
+  receiptToExpenseInput,
+  type ExpenseInput,
+  type ExpenseSource,
+} from "@/features/expense/expense.schema";
 import type { Wallet } from "@/features/wallet/wallet.schema";
 
 let hasScannedOnce = false;
 
-export function Scanner({
+export const Scanner = ({
   addExpense,
   wallets,
   defaultWalletId,
@@ -39,21 +43,24 @@ export function Scanner({
    * camera-capture UI) — without this, nothing ever told the sheet to
    * close, so it stayed open showing the camera again after saving. */
   onSaved?: () => void;
-}) {
+}) => {
   const { status, receipt, message, detail, scan, reset } = useReceiptScanner();
   const online = useOnlineStatus();
   const quota = useEntryQuota("scan");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const imageBlobRef = useRef<Blob | null>(null);
   const imageIdRef = useRef<string | null>(null);
-  const firstRunRef = useRef(!hasScannedOnce);
+  const [firstRun, setFirstRun] = useState(!hasScannedOnce);
 
-  useEffect(() => () => {
-    if (imageUrl) URL.revokeObjectURL(imageUrl);
-  }, [imageUrl]);
+  useEffect(
+    () => () => {
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
+    },
+    [imageUrl],
+  );
 
-  async function handleCapture(file: File) {
-    firstRunRef.current = !hasScannedOnce;
+  const handleCapture = async (file: File) => {
+    setFirstRun(!hasScannedOnce);
     hasScannedOnce = true;
     // Convert HEIC once, up front — <img> can't decode it directly (only
     // Safari, inconsistently), and this same converted blob doubles as what
@@ -63,15 +70,15 @@ export function Scanner({
     imageIdRef.current = crypto.randomUUID();
     setImageUrl(URL.createObjectURL(displayable));
     void scan(file);
-  }
+  };
 
-  function handleReset() {
+  const handleReset = () => {
     if (imageUrl) URL.revokeObjectURL(imageUrl);
     setImageUrl(null);
     imageBlobRef.current = null;
     imageIdRef.current = null;
     reset();
-  }
+  };
 
   const isBusy = status === "ocr" || status === "parsing";
 
@@ -93,7 +100,13 @@ export function Scanner({
           once, which read as a glitch. handleReset (retry, or closing the
           success review modal) clears imageUrl and brings it back. */}
       {!imageUrl && (
-        <LiveCameraCapture onCapture={handleCapture} disabled={isBusy} active={active} lang={lang} onExpandChange={onExpandChange} />
+        <LiveCameraCapture
+          onCapture={handleCapture}
+          disabled={isBusy}
+          active={active}
+          lang={lang}
+          onExpandChange={onExpandChange}
+        />
       )}
 
       {/* Shown for both busy and error — only success (a separate
@@ -102,14 +115,18 @@ export function Scanner({
       {imageUrl && (isBusy || status === "error") && (
         <div className="flex flex-col items-center gap-3">
           <ScannerPreview imageUrl={imageUrl} />
-          {isBusy && <ScannerStatus status={status} firstRun={firstRunRef.current} lang={lang} />}
+          {isBusy && <ScannerStatus status={status} firstRun={firstRun} lang={lang} />}
         </div>
       )}
 
       {status === "error" && (
         <div className="flex max-w-64 flex-col items-center gap-3 text-center">
-          <p className="text-sm whitespace-pre-line text-[var(--color-ink-2)]">{message && t(lang, message)}</p>
-          {detail && <p className="text-center text-[10px] font-mono text-ink-faint/70">{detail}</p>}
+          <p className="text-sm whitespace-pre-line text-[var(--color-ink-2)]">
+            {message && t(lang, message)}
+          </p>
+          {detail && (
+            <p className="text-center text-[10px] font-mono text-ink-faint/70">{detail}</p>
+          )}
           <Button variant="outline" size="sm" onClick={handleReset}>
             {t(lang, "scannerTryAgain")}
           </Button>
@@ -137,4 +154,4 @@ export function Scanner({
       )}
     </div>
   );
-}
+};

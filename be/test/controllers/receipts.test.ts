@@ -16,17 +16,21 @@ const VALID_JSON = JSON.stringify({
   metadata: { currency: "IDR", confidence: 0.9 },
 });
 
-function post(body: unknown, headers: Record<string, string> = authHeaders()) {
+const post = (body: unknown, headers: Record<string, string> = authHeaders()) => {
   return new Request("http://localhost/v1/receipts/parse", {
     method: "POST",
     headers,
     body: JSON.stringify(body),
   });
-}
+};
 
 describe("POST /v1/receipts/parse", () => {
   it("rejects requests without a valid API key", async () => {
-    const res = await app.fetch(post({ text: "hi" }, { "Content-Type": "application/json" }), buildTestEnv(), testCtx);
+    const res = await app.fetch(
+      post({ text: "hi" }, { "Content-Type": "application/json" }),
+      buildTestEnv(),
+      testCtx,
+    );
     expect(res.status).toBe(401);
   });
 

@@ -26,7 +26,7 @@ bun run dev:remote    # wrangler dev --remote — real Workers AI, real neuron u
 > startup — even with `LOCAL_MOCK_AI=true` — and requires `wrangler login` /
 > a `CLOUDFLARE_API_TOKEN` to do so. This is a Wrangler/Workers AI platform
 > constraint (Workers AI has no local simulation), not something app code
-> controls. `LOCAL_MOCK_AI=true` only guarantees the app never *calls* the
+> controls. `LOCAL_MOCK_AI=true` only guarantees the app never _calls_ the
 > model once the dev server is up — it doesn't remove the need to
 > authenticate to start `wrangler dev` at all. For fully offline iteration
 > with zero Cloudflare credentials, use `bun run test` (vitest simulates the
@@ -65,19 +65,19 @@ bun run deploy
 
 ## Config
 
-| Var | Meaning | Where declared |
-|---|---|---|
-| `API_KEY` | Bearer auth for `/v1/*`; also key material for `lib/email-cipher.ts`'s email-in-transit cipher. "Is this the real compiled app calling" — unrelated to which user or tier. | **Secret** — `wrangler secret put` / dashboard, `.dev.vars` locally |
-| `REGULAR_API_KEY` | Signs standard-tier sheet secrets (`lib/email-cipher.ts`'s `computeSecretForEmail`, `scripts/mint-secret.ts`'s default path). Split from `API_KEY` so rotating the app's own service key can't silently invalidate every standard user's sync secret. | **Secret** — same as above |
-| `PREMIUM_API_KEY` | Signs premium-tier sheet secrets — only ever produced by `scripts/mint-secret.ts --premium`, no HTTP path grants premium. | **Secret** — same as above |
-| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST endpoint (`lib/redis.ts`). | **Secret** — same as above |
-| `MODEL_NAME` | Workers AI model id, e.g. `@cf/meta/llama-3.1-8b-instruct`. Change this one value to swap models — `ReceiptModel` isolates the rest of the app from it. | `wrangler.jsonc` `vars` (committed, non-sensitive) |
-| `MAX_INPUT_LENGTH` | Max chars accepted in `POST /v1/receipts/parse` `text` field. | `wrangler.jsonc` `vars` |
-| `MAX_AUDIO_BYTES` | Max decoded size accepted in `POST /v1/voice/transcribe` `audio` (base64) field. | `wrangler.jsonc` `vars` |
-| `AI_TIMEOUT_MS` | Per-AI-call timeout (`Promise.race`; doesn't cancel the backend call, just stops waiting). | `wrangler.jsonc` `vars` |
-| `MAX_REPAIR_ATTEMPTS` | Bounded repair-loop attempts when model output fails schema validation. | `wrangler.jsonc` `vars` |
-| `API_VERSION`, `SERVICE_VERSION` | Exposed via `GET /v1/meta`. | `wrangler.jsonc` `vars` |
-| `LOCAL_MOCK_AI` | `true` swaps in `createFakeReceiptModel()`'s result. Keep `false` in `wrangler.jsonc` (deployed default); override to `true` in `.dev.vars` for offline local work. | `wrangler.jsonc` `vars` (default), `.dev.vars` (local override) |
+| Var                                                   | Meaning                                                                                                                                                                                                                                               | Where declared                                                      |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `API_KEY`                                             | Bearer auth for `/v1/*`; also key material for `lib/email-cipher.ts`'s email-in-transit cipher. "Is this the real compiled app calling" — unrelated to which user or tier.                                                                            | **Secret** — `wrangler secret put` / dashboard, `.dev.vars` locally |
+| `REGULAR_API_KEY`                                     | Signs standard-tier sheet secrets (`lib/email-cipher.ts`'s `computeSecretForEmail`, `scripts/mint-secret.ts`'s default path). Split from `API_KEY` so rotating the app's own service key can't silently invalidate every standard user's sync secret. | **Secret** — same as above                                          |
+| `PREMIUM_API_KEY`                                     | Signs premium-tier sheet secrets — only ever produced by `scripts/mint-secret.ts --premium`, no HTTP path grants premium.                                                                                                                             | **Secret** — same as above                                          |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST endpoint (`lib/redis.ts`).                                                                                                                                                                                                         | **Secret** — same as above                                          |
+| `MODEL_NAME`                                          | Workers AI model id, e.g. `@cf/meta/llama-3.1-8b-instruct`. Change this one value to swap models — `ReceiptModel` isolates the rest of the app from it.                                                                                               | `wrangler.jsonc` `vars` (committed, non-sensitive)                  |
+| `MAX_INPUT_LENGTH`                                    | Max chars accepted in `POST /v1/receipts/parse` `text` field.                                                                                                                                                                                         | `wrangler.jsonc` `vars`                                             |
+| `MAX_AUDIO_BYTES`                                     | Max decoded size accepted in `POST /v1/voice/transcribe` `audio` (base64) field.                                                                                                                                                                      | `wrangler.jsonc` `vars`                                             |
+| `AI_TIMEOUT_MS`                                       | Per-AI-call timeout (`Promise.race`; doesn't cancel the backend call, just stops waiting).                                                                                                                                                            | `wrangler.jsonc` `vars`                                             |
+| `MAX_REPAIR_ATTEMPTS`                                 | Bounded repair-loop attempts when model output fails schema validation.                                                                                                                                                                               | `wrangler.jsonc` `vars`                                             |
+| `API_VERSION`, `SERVICE_VERSION`                      | Exposed via `GET /v1/meta`.                                                                                                                                                                                                                           | `wrangler.jsonc` `vars`                                             |
+| `LOCAL_MOCK_AI`                                       | `true` swaps in `createFakeReceiptModel()`'s result. Keep `false` in `wrangler.jsonc` (deployed default); override to `true` in `.dev.vars` for offline local work.                                                                                   | `wrangler.jsonc` `vars` (default), `.dev.vars` (local override)     |
 
 The 5 secrets are **never** written to `wrangler.jsonc` — only to Cloudflare's
 encrypted secret store (deployed) and `.dev.vars` (gitignored, local). After

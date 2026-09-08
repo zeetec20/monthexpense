@@ -3,7 +3,11 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GoogleIcon } from "@/components/ui/GoogleIcon";
 import { t, translateBackendMessage, type Lang, type TKey } from "@/i18n/translations";
-import { exchangeEmailForSecret, fetchGoogleEmail, requestGoogleAccessToken } from "@/features/sync/google-auth";
+import {
+  exchangeEmailForSecret,
+  fetchGoogleEmail,
+  requestGoogleAccessToken,
+} from "@/features/sync/google-auth";
 import {
   findExistingSheet,
   provisionSheet,
@@ -43,21 +47,26 @@ const CONNECT_STEP_LABEL: Record<Exclude<ConnectStep, null>, TKey> = {
  * sheets-sync.api.ts) — no Apps Script deployment, no one-time "Review
  * permissions" screen to click through.
  */
-export function ConnectGate({
+export const ConnectGate = ({
   onConnect,
   connecting,
   connectStep,
   lang,
 }: {
-  onConnect: (spreadsheetId: string, spreadsheetUrl: string, secret: string, email: string) => Promise<void>;
+  onConnect: (
+    spreadsheetId: string,
+    spreadsheetUrl: string,
+    secret: string,
+    email: string,
+  ) => Promise<void>;
   connecting: boolean;
   connectStep: ConnectStep;
   lang: Lang;
-}) {
+}) => {
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  async function handleGoogleLogin() {
+  const handleGoogleLogin = async () => {
     setError(null);
     setPhase("signing-in");
     try {
@@ -86,10 +95,14 @@ export function ConnectGate({
       setPhase("connecting");
       await onConnect(result.spreadsheetId, result.spreadsheetUrl, secret, email);
     } catch (err) {
-      setError(err instanceof Error ? translateBackendMessage(err.message, lang) : t(lang, "connectErrorNoCode"));
+      setError(
+        err instanceof Error
+          ? translateBackendMessage(err.message, lang)
+          : t(lang, "connectErrorNoCode"),
+      );
       setPhase("error");
     }
-  }
+  };
 
   const provisioningLabel =
     phase === "signing-in"
@@ -107,7 +120,9 @@ export function ConnectGate({
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-4 px-1 py-2 text-center">
       <img src="/icon-512.png" alt="MonthExpense" className="w-10 h-10 rounded-xl" />
-      <p className="font-mono text-xs tracking-[0.06em] text-[var(--color-ink-3)] uppercase">MonthExpense</p>
+      <p className="font-mono text-xs tracking-[0.06em] text-[var(--color-ink-3)] uppercase">
+        MonthExpense
+      </p>
 
       {provisioningLabel ? (
         <p className="flex items-center gap-1.5 text-sm text-[var(--color-ink-2)]">
@@ -117,16 +132,24 @@ export function ConnectGate({
       ) : (
         <div className="w-full space-y-3 text-left">
           <p className="text-center text-sm text-[var(--color-ink-2)]">{t(lang, "connectBody")}</p>
-          {phase === "error" && error && <p className="text-center text-sm text-[var(--color-error)]">{error}</p>}
+          {phase === "error" && error && (
+            <p className="text-center text-sm text-[var(--color-error)]">{error}</p>
+          )}
           <Button type="button" variant="outline" className="w-full" onClick={handleGoogleLogin}>
             <GoogleIcon className="w-4 h-4" />
             {t(lang, "googleLoginButton")}
           </Button>
           <p className="text-center text-[10px] text-ink-faint">
-            <a href="/privacy" className="underline">Privacy Policy</a> · <a href="/terms" className="underline">Terms of Service</a>
+            <a href="/privacy" className="underline">
+              Privacy Policy
+            </a>{" "}
+            ·{" "}
+            <a href="/terms" className="underline">
+              Terms of Service
+            </a>
           </p>
         </div>
       )}
     </div>
   );
-}
+};

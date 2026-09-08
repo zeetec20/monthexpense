@@ -4,24 +4,42 @@ import { Button } from "@/components/ui/button";
 import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 
-function ZoomControls() {
+const ZoomControls = () => {
   const { zoomIn, zoomOut, resetTransform } = useControls();
   return (
     <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center gap-2">
-      <Button type="button" size="icon" variant="secondary" onClick={() => zoomOut()} aria-label="Zoom out">
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        onClick={() => zoomOut()}
+        aria-label="Zoom out"
+      >
         <ZoomOut />
       </Button>
-      <Button type="button" size="icon" variant="secondary" onClick={() => resetTransform()} aria-label="Reset zoom">
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        onClick={() => resetTransform()}
+        aria-label="Reset zoom"
+      >
         <RotateCcw />
       </Button>
-      <Button type="button" size="icon" variant="secondary" onClick={() => zoomIn()} aria-label="Zoom in">
+      <Button
+        type="button"
+        size="icon"
+        variant="secondary"
+        onClick={() => zoomIn()}
+        aria-label="Zoom in"
+      >
         <ZoomIn />
       </Button>
     </div>
   );
-}
+};
 
-export function ImageLightbox({
+export const ImageLightbox = ({
   imageUrl,
   open,
   onClose,
@@ -29,7 +47,7 @@ export function ImageLightbox({
   imageUrl: string | null;
   open: boolean;
   onClose: () => void;
-}) {
+}) => {
   // Portals into the same shell frame BottomSheet/SelectContent already
   // confine themselves to (useShellPortalContainer) — without this,
   // Radix's default document.body portal + DialogContent's own
@@ -51,12 +69,19 @@ export function ImageLightbox({
       >
         <DialogTitle className="sr-only">Receipt photo</DialogTitle>
         <TransformWrapper doubleClick={{ mode: "toggle" }}>
-          <TransformComponent wrapperClass="!size-full" contentClass="!size-full !items-center !justify-center">
-            <img src={imageUrl} alt="Scanned receipt" className="max-h-full max-w-full object-contain" />
+          <TransformComponent
+            wrapperClass="!size-full"
+            contentClass="!size-full !items-center !justify-center"
+          >
+            <img
+              src={imageUrl}
+              alt="Scanned receipt"
+              className="max-h-full max-w-full object-contain"
+            />
           </TransformComponent>
           <ZoomControls />
         </TransformWrapper>
       </DialogContent>
     </Dialog>
   );
-}
+};

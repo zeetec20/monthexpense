@@ -14,7 +14,7 @@ export type QueuedOp = SyncOp | { type: "restoreFromSheets" };
 // Exported so sync.store.ts's connect() can pass it to claimAccountSlot.
 export const STORAGE_KEY = "expense-notes.sync-queue.v1";
 
-function targetKey(op: QueuedOp): string {
+const targetKey = (op: QueuedOp): string => {
   switch (op.type) {
     case "upsertExpense":
       return `expense:${op.expense.id}`;
@@ -27,9 +27,9 @@ function targetKey(op: QueuedOp): string {
     case "restoreFromSheets":
       return "restore";
   }
-}
+};
 
-export function readQueue(): QueuedOp[] {
+export const readQueue = (): QueuedOp[] => {
   try {
     migrateLegacyKey(STORAGE_KEY);
     const raw = localStorage.getItem(scopedKey(STORAGE_KEY));
@@ -40,15 +40,15 @@ export function readQueue(): QueuedOp[] {
     // ponytail: corrupt/foreign localStorage data just resets the queue, never crashes
     return [];
   }
-}
+};
 
-export function writeQueue(ops: QueuedOp[]): void {
+export const writeQueue = (ops: QueuedOp[]): void => {
   localStorage.setItem(scopedKey(STORAGE_KEY), JSON.stringify(ops));
-}
+};
 
-export function clearQueue(): void {
+export const clearQueue = (): void => {
   localStorage.removeItem(scopedKey(STORAGE_KEY));
-}
+};
 
 /** Appends `op`, collapsing any earlier queued op for the same target —
  * only the latest state of a given expense/wallet matters once it's
@@ -56,8 +56,8 @@ export function clearQueue(): void {
  * delete; a second edit should replace the first, not send both). Same
  * dedupe collapses repeated restore clicks onto the one already pending,
  * since every restore shares the fixed `"restore"` target key. */
-export function enqueue(op: QueuedOp): void {
+export const enqueue = (op: QueuedOp): void => {
   const queue = readQueue().filter((existing) => targetKey(existing) !== targetKey(op));
   queue.push(op);
   writeQueue(queue);
-}
+};

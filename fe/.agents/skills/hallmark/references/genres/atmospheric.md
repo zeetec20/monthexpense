@@ -4,13 +4,13 @@ For the AI-creative product page. Dark canvas with warm radial blooms, confident
 
 ## When to pick it
 
-Brief mentions any of: *AI tool, generative, music, video, image, voice, late-night, atmospheric, dark mode, expressive, creative tool, model playground, vibe-coded, dreamlike, nocturnal*. Also pick when the user names a *mood* that requires darkness (e.g. "moody", "cinematic", "after hours").
+Brief mentions any of: _AI tool, generative, music, video, image, voice, late-night, atmospheric, dark mode, expressive, creative tool, model playground, vibe-coded, dreamlike, nocturnal_. Also pick when the user names a _mood_ that requires darkness (e.g. "moody", "cinematic", "after hours").
 
 ## Themes that belong
 
 `Bloom` (canonical light-paper), `Midnight`, `Terminal`, `Aurora`, `Lumen`. Five themes; the rotation walks them when atmospheric is active.
 
-`Lumen` is the premium AI-tool register — Modal / Anthropic / Together / ElevenLabs / Cluely / Adept / Granola. One focal CSS artefact + classical italic-serif headline + mono technical eyebrow. **Two palette drops** (Night Foundry — dark amber-gold, emits; Day Foundry — light indigo, refracts). The only atmospheric theme with a serif display and the only one whose canvas treatment is one *built* artefact rather than two diffuse blooms.
+`Lumen` is the premium AI-tool register — Modal / Anthropic / Together / ElevenLabs / Cluely / Adept / Granola. One focal CSS artefact + classical italic-serif headline + mono technical eyebrow. **Two palette drops** (Night Foundry — dark amber-gold, emits; Day Foundry — light indigo, refracts). The only atmospheric theme with a serif display and the only one whose canvas treatment is one _built_ artefact rather than two diffuse blooms.
 
 ## Voice
 
@@ -19,7 +19,7 @@ Brief mentions any of: *AI tool, generative, music, video, image, voice, late-ni
 - **Accent** — single warm hue (orange / amber / red / pink). Used in radial-gradient blooms on the canvas, on focus rings, on small tags. Never on display text (that's gate 2 universal — gradient text stays banned).
 - **Layout** — centred or near-centred heroes. The canvas itself is the design; the type sits on top of an atmospheric ground.
 - **Motion** — fade-in only. No slide, no bounce. The atmosphere does the work.
-- **Copy tone** — direct, slightly poetic, specific. *"Make a house song about quitting your job."* is the calibration.
+- **Copy tone** — direct, slightly poetic, specific. _"Make a house song about quitting your job."_ is the calibration.
 
 ## What this genre allows
 
@@ -31,22 +31,22 @@ Brief mentions any of: *AI tool, generative, music, video, image, voice, late-ni
 
 ## What this genre disallows
 
-- **Light-paper aesthetics** — the *default* canvas is dark. Bloom and Lumen's Day Foundry are the documented light-paper exceptions; both still emit/refract light from a focal canvas treatment. Don't sneak white sections into a dark-paper build.
+- **Light-paper aesthetics** — the _default_ canvas is dark. Bloom and Lumen's Day Foundry are the documented light-paper exceptions; both still emit/refract light from a focal canvas treatment. Don't sneak white sections into a dark-paper build.
 - **Italic in headers** — banned globally (a top AI tell). Atmospheric display is roman; Lumen ships Instrument Serif as a **roman** headline face, with the verb landmark carried by accent colour + a drawn underline, never italics. Body stays Geist Sans.
 - **Hairlines** — atmospheric uses elevated cards (`paper-2`, `paper-3`) instead of hairline-on-paper.
 - **Multiple accent hues** — one warm bloom + one secondary (pink/red) is the maximum. No teal-and-amber juggling.
-- **Glassmorphism** — banned. Atmospheric is *atmospheric*, not glass.
+- **Glassmorphism** — banned. Atmospheric is _atmospheric_, not glass.
 - **Gradient text** — gate 2 universal. Stays banned.
 
 ## Voice fixtures
 
-- *"Built for the dark."*
-- *"The page should feel like a place you could sit in."*
-- *"A canvas, then a tool."*
-- *"Generate, refine, ship — between Tuesday and Wednesday."*
-- *"The instrument is dark. The output is yours."*
-- *"Built to think in real time."* — Lumen voice; the verb is the landmark via accent colour + underline, never italics.
-- *"A single primitive that scales down to zero."* — Lumen voice; technical, declarative.
+- _"Built for the dark."_
+- _"The page should feel like a place you could sit in."_
+- _"A canvas, then a tool."_
+- _"Generate, refine, ship — between Tuesday and Wednesday."_
+- _"The instrument is dark. The output is yours."_
+- _"Built to think in real time."_ — Lumen voice; the verb is the landmark via accent colour + underline, never italics.
+- _"A single primitive that scales down to zero."_ — Lumen voice; technical, declarative.
 
 ## Nav and footer voice
 

@@ -273,21 +273,30 @@ test("receiptToExpenseInput populates receiptDetail.items and merchantName for a
     {
       merchant: { name: "Point Cafe", address: null, phone: null },
       transaction: { date: "2026-08-26", time: null, receipt_number: null },
-      items: [{ name: "Coffee latte", quantity: 1, unit_price: 10000, discount: null, total: 10000 }],
+      items: [
+        { name: "Coffee latte", quantity: 1, unit_price: 10000, discount: null, total: 10000 },
+      ],
       subtotal: 10000,
       tax: null,
       discount: null,
       service_charge: null,
       total: 10000,
       payment: { method: "cash", amount: 10000, cash_received: null, change: null },
-      metadata: { currency: "IDR", confidence: 0.9, category: "food_snack", validation_warning: null },
+      metadata: {
+        currency: "IDR",
+        confidence: 0.9,
+        category: "food_snack",
+        validation_warning: null,
+      },
       suggested_title: "Expense: Point Cafe",
     },
     null,
     "Expense",
   );
 
-  expect(input.receiptDetail?.items).toEqual([{ name: "Coffee latte", quantity: 1, unitPrice: 10000, total: 10000 }]);
+  expect(input.receiptDetail?.items).toEqual([
+    { name: "Coffee latte", quantity: 1, unitPrice: 10000, total: 10000 },
+  ]);
   expect(input.receiptDetail?.merchantName).toBe("Point Cafe");
   expect(input.title).toBe("Expense: Point Cafe");
   expect(input.category).toBe("food_snack");
@@ -316,7 +325,9 @@ test("computeItemTotal multiplies quantity by unit price", () => {
 });
 
 test("computeItemTotal is null when quantity or unit price is missing", () => {
-  expect(computeItemTotal({ name: "Kopi", quantity: null, unitPrice: 15000, total: null })).toBeNull();
+  expect(
+    computeItemTotal({ name: "Kopi", quantity: null, unitPrice: 15000, total: null }),
+  ).toBeNull();
   expect(computeItemTotal({ name: "Kopi", quantity: 1, unitPrice: null, total: null })).toBeNull();
 });
 

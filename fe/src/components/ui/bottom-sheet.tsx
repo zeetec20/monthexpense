@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState, type ReactNode } from "react";
 import { X } from "lucide-react";
@@ -16,6 +16,7 @@ import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 export function useShellPortalContainer() {
   const [container, setContainer] = useState<HTMLElement | null>(null);
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- the target node doesn't exist in the DOM until after mount commits, nothing to derive during render
     setContainer(document.getElementById("app-shell-root"));
   }, []);
   return container;

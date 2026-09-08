@@ -48,14 +48,17 @@ describe("ReceiptSchema", () => {
     expect(ReceiptSchema.safeParse(allNull).success).toBe(true);
   });
 
-  it("defaults payment.method to \"cash\" when omitted, rejects a method outside the enum", () => {
+  it('defaults payment.method to "cash" when omitted, rejects a method outside the enum', () => {
     const { payment, ...rest } = validReceipt;
     const { method, ...paymentRest } = payment;
     const result = ReceiptSchema.safeParse({ ...rest, payment: paymentRest });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.payment.method).toBe("cash");
 
-    const invalid = { ...validReceipt, payment: { ...validReceipt.payment, method: "credit card" } };
+    const invalid = {
+      ...validReceipt,
+      payment: { ...validReceipt.payment, method: "credit card" },
+    };
     expect(ReceiptSchema.safeParse(invalid).success).toBe(false);
   });
 
@@ -77,7 +80,10 @@ describe("ReceiptSchema", () => {
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.metadata.category).toBeNull();
 
-    const invalid = { ...validReceipt, metadata: { currency: "IDR", confidence: 0.9, category: "furniture" } };
+    const invalid = {
+      ...validReceipt,
+      metadata: { currency: "IDR", confidence: 0.9, category: "furniture" },
+    };
     expect(ReceiptSchema.safeParse(invalid).success).toBe(false);
   });
 

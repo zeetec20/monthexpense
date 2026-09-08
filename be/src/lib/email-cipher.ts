@@ -17,22 +17,25 @@ import type { Env } from "../types/env";
 // auth again: check the access_token against Google's tokeninfo endpoint
 // server-side instead of trusting a client-supplied email at all.
 
-async function deriveKey(apiKey: string): Promise<CryptoKey> {
+const deriveKey = async (apiKey: string): Promise<CryptoKey> => {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(apiKey));
   return crypto.subtle.importKey("raw", digest, { name: "AES-GCM" }, false, ["decrypt"]);
-}
+};
 
-function base64ToBytes(b64: string): Uint8Array {
+const base64ToBytes = (b64: string): Uint8Array => {
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
-}
+};
 
-export async function decryptEmail(env: Pick<Env, "API_KEY">, payload: { ciphertext: string; iv: string }): Promise<string> {
+export const decryptEmail = async (
+  env: Pick<Env, "API_KEY">,
+  payload: { ciphertext: string; iv: string },
+): Promise<string> => {
   const key = await deriveKey(env.API_KEY);
   const iv = base64ToBytes(payload.iv);
   const ciphertext = base64ToBytes(payload.ciphertext);
   const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
   return new TextDecoder().decode(plaintext);
-}
+};
 
 /** hex(HMAC-SHA256(REGULAR_API_KEY, base64(email))) + base64(email) — same
  * shape scripts/mint-secret.ts produces for a random uuid (see
@@ -43,8 +46,11 @@ export async function decryptEmail(env: Pick<Env, "API_KEY">, payload: { ciphert
  * always recoverable for standard tier by just reconnecting; premium
  * secrets aren't (random uuid payload), which is what the Config sheet's
  * stored copy exists to protect (see fe's google-provision.client.ts). */
-export async function computeSecretForEmail(env: Pick<Env, "REGULAR_API_KEY">, email: string): Promise<string> {
+export const computeSecretForEmail = async (
+  env: Pick<Env, "REGULAR_API_KEY">,
+  email: string,
+): Promise<string> => {
   const payload = btoa(email);
   const hash = await computeHash(env.REGULAR_API_KEY, payload);
   return hash + payload;
-}
+};

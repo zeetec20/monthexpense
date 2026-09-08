@@ -10,7 +10,10 @@ import type { Expense, ExpenseInput } from "@/features/expense/expense.schema";
 
 type ScheduleTab = "all" | "scheduled" | "debt" | "daily";
 const TABS: ScheduleTab[] = ["all", "scheduled", "debt", "daily"];
-const TAB_KEY: Record<ScheduleTab, "scheduleAll" | "scheduleScheduled" | "scheduleDebt" | "scheduleDaily"> = {
+const TAB_KEY: Record<
+  ScheduleTab,
+  "scheduleAll" | "scheduleScheduled" | "scheduleDebt" | "scheduleDaily"
+> = {
   all: "scheduleAll",
   scheduled: "scheduleScheduled",
   debt: "scheduleDebt",
@@ -26,7 +29,7 @@ const TAB_KEY: Record<ScheduleTab, "scheduleAll" | "scheduleScheduled" | "schedu
 const todayKey = localDateKey;
 const pad = (n: number) => String(n).padStart(2, "0");
 
-function ScheduleRow({
+const ScheduleRow = ({
   expense,
   onToggle,
   onOpen,
@@ -36,7 +39,7 @@ function ScheduleRow({
   onToggle: (patch: Partial<ExpenseInput>) => void;
   onOpen: () => void;
   lang: Lang;
-}) {
+}) => {
   if (expense.scheduleType === "scheduled" || expense.scheduleType === "debt") {
     const done = expense.scheduleType === "scheduled" ? !!expense.paid : !!expense.settled;
     const toggleLabel =
@@ -49,17 +52,30 @@ function ScheduleRow({
         tabIndex={0}
         onClick={onOpen}
         onKeyDown={(e) => e.key === "Enter" && onOpen()}
-        className={"flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors " + (done ? "border-line-subtle bg-elevated/60 opacity-60" : "border-line bg-elevated hover:bg-card-hover")}
+        className={
+          "flex items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 cursor-pointer transition-colors " +
+          (done
+            ? "border-line-subtle bg-elevated/60 opacity-60"
+            : "border-line bg-elevated hover:bg-card-hover")
+        }
       >
         <div className="min-w-0">
-          <p className={"text-xs font-semibold text-ink truncate " + (done ? "line-through" : "")}>{expense.title}</p>
-          <p className="text-[10px] font-mono text-ink-faint">{formatCurrency(expense.amount, expense.currency)}</p>
+          <p className={"text-xs font-semibold text-ink truncate " + (done ? "line-through" : "")}>
+            {expense.title}
+          </p>
+          <p className="text-[10px] font-mono text-ink-faint">
+            {formatCurrency(expense.amount, expense.currency)}
+          </p>
         </div>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onToggle(expense.scheduleType === "scheduled" ? { paid: !expense.paid } : { settled: !expense.settled });
+            onToggle(
+              expense.scheduleType === "scheduled"
+                ? { paid: !expense.paid }
+                : { settled: !expense.settled },
+            );
           }}
           className={
             "shrink-0 flex items-center gap-1 py-1.5 px-2.5 rounded-xl text-[10px] font-semibold border transition-colors " +
@@ -82,14 +98,22 @@ function ScheduleRow({
       onClick={onOpen}
       className="flex w-full items-center gap-3 rounded-2xl border border-line bg-elevated px-3 py-2.5 text-left transition-colors hover:bg-card-hover"
     >
-      <span className="w-8 h-8 rounded-xl shrink-0 grid place-items-center" style={{ backgroundColor: color + "26", color }}>
+      <span
+        className="w-8 h-8 rounded-xl shrink-0 grid place-items-center"
+        style={{ backgroundColor: color + "26", color }}
+      >
+        {/* eslint-disable-next-line react/static-components -- categoryIcon() returns a stable lookup from CATEGORY_ICON, not a new component */}
         <Icon className="w-4 h-4" />
       </span>
-      <span className="min-w-0 flex-1 text-xs font-semibold text-ink truncate">{expense.title}</span>
-      <span className="shrink-0 text-xs font-bold font-mono text-ink">{formatCurrency(expense.amount, expense.currency)}</span>
+      <span className="min-w-0 flex-1 text-xs font-semibold text-ink truncate">
+        {expense.title}
+      </span>
+      <span className="shrink-0 text-xs font-bold font-mono text-ink">
+        {formatCurrency(expense.amount, expense.currency)}
+      </span>
     </button>
   );
-}
+};
 
 /**
  * Calendar + 4 tabs (All/Terjadwal/Hutang/Harian) over the real
@@ -98,7 +122,7 @@ function ScheduleRow({
  * through the FAB's Manual entry flow (see ManualEntryForm.tsx); this page
  * is purely a filtered view + paid/settled toggles.
  */
-export function ExpenseSchedulePage({
+export const ExpenseSchedulePage = ({
   expenses,
   onUpdateExpense,
   onSelectExpense,
@@ -108,11 +132,14 @@ export function ExpenseSchedulePage({
   onUpdateExpense: (id: string, patch: Partial<ExpenseInput>) => void;
   onSelectExpense: (expense: Expense) => void;
   lang: Lang;
-}) {
+}) => {
   const [focusedDate, setFocusedDate] = useState(todayKey());
   const [tab, setTab] = useState<ScheduleTab>("all");
   const initialView = parseISO(focusedDate);
-  const [viewMonth, setViewMonth] = useState({ year: initialView.getFullYear(), month: initialView.getMonth() });
+  const [viewMonth, setViewMonth] = useState({
+    year: initialView.getFullYear(),
+    month: initialView.getMonth(),
+  });
 
   // Per-day marks for the calendar's currently displayed month — Harian
   // count drives the numeric badge, Terjadwal/Hutang presence drives the
@@ -147,7 +174,10 @@ export function ExpenseSchedulePage({
     return { daily, scheduled, debt };
   }, [expenses, viewMonth]);
 
-  const dayExpenses = useMemo(() => expenses.filter((e) => e.date === focusedDate), [expenses, focusedDate]);
+  const dayExpenses = useMemo(
+    () => expenses.filter((e) => e.date === focusedDate),
+    [expenses, focusedDate],
+  );
   const filtered = useMemo(() => {
     if (tab === "all") return dayExpenses;
     if (tab === "daily") return dayExpenses.filter((e) => !e.scheduleType);
@@ -160,7 +190,9 @@ export function ExpenseSchedulePage({
   return (
     <div className="space-y-4 max-w-sm mx-auto">
       <div className="flex items-center justify-between py-1">
-        <h2 className="text-lg font-bold text-ink tracking-tight">{t(lang, "recurringExpensesTitle")}</h2>
+        <h2 className="text-lg font-bold text-ink tracking-tight">
+          {t(lang, "recurringExpensesTitle")}
+        </h2>
       </div>
 
       <div className="p-4 rounded-3xl border bg-card border-line shadow-sm space-y-2">
@@ -175,19 +207,29 @@ export function ExpenseSchedulePage({
           <div className="flex items-center gap-2.5">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-600" />
-              <span className="text-ink-faint">{monthTypeCounts.daily} {t(lang, "scheduleDaily")}</span>
+              <span className="text-ink-faint">
+                {monthTypeCounts.daily} {t(lang, "scheduleDaily")}
+              </span>
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-sky-500" />
-              <span className="text-ink-faint">{monthTypeCounts.scheduled} {t(lang, "scheduleScheduled")}</span>
+              <span className="text-ink-faint">
+                {monthTypeCounts.scheduled} {t(lang, "scheduleScheduled")}
+              </span>
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-rose-500" />
-              <span className="text-ink-faint">{monthTypeCounts.debt} {t(lang, "scheduleDebt")}</span>
+              <span className="text-ink-faint">
+                {monthTypeCounts.debt} {t(lang, "scheduleDebt")}
+              </span>
             </span>
           </div>
           {focusedDate !== todayKey() && (
-            <button type="button" onClick={() => setFocusedDate(todayKey())} className="shrink-0 text-brand hover:underline font-semibold">
+            <button
+              type="button"
+              onClick={() => setFocusedDate(todayKey())}
+              className="shrink-0 text-brand hover:underline font-semibold"
+            >
               {t(lang, "resetFilters")}
             </button>
           )}
@@ -236,4 +278,4 @@ export function ExpenseSchedulePage({
       </div>
     </div>
   );
-}
+};

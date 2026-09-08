@@ -6,7 +6,11 @@ import {
   buildExpenseRepairPrompt,
   type ChatMessage,
 } from "./prompt";
-import { createFakeReceiptModel, createFakeExpenseModel, createFakeTranscribeModel } from "./fake-model";
+import {
+  createFakeReceiptModel,
+  createFakeExpenseModel,
+  createFakeTranscribeModel,
+} from "./fake-model";
 import type { Env } from "../types/env";
 import { createError, isError } from "../lib/errors";
 
@@ -24,7 +28,12 @@ export interface ReceiptModel {
 /** Same seam as ReceiptModel, for the voice-transcript-to-expense path. `language` is an optional hint from the client's own toggle. */
 export interface ExpenseModel {
   parse(transcript: string, referenceDate: string, language?: "en" | "id"): Promise<unknown>;
-  repair(rawOutput: string, errorSummary: string, referenceDate: string, language?: "en" | "id"): Promise<unknown>;
+  repair(
+    rawOutput: string,
+    errorSummary: string,
+    referenceDate: string,
+    language?: "en" | "id",
+  ): Promise<unknown>;
 }
 
 /** Seam for the raw audio-to-text step (POST /v1/voice/transcribe) — no parse/repair loop, just STT. */
@@ -88,12 +97,15 @@ const runWorkersAiJson = async (
       // adjacent numbers with no separator) — the real fix for the
       // JSON.parse failures free-text prompting alone couldn't prevent.
       // https://developers.cloudflare.com/workers-ai/features/json-mode/
-      ai.run(modelName as Parameters<Ai["run"]>[0], {
-        messages,
-        temperature: 0,
-        max_tokens: 2048,
-        response_format: { type: "json_schema", json_schema: jsonSchema },
-      } as Parameters<Ai["run"]>[1]),
+      ai.run(
+        modelName as Parameters<Ai["run"]>[0],
+        {
+          messages,
+          temperature: 0,
+          max_tokens: 2048,
+          response_format: { type: "json_schema", json_schema: jsonSchema },
+        } as Parameters<Ai["run"]>[1],
+      ),
       timeout,
     ])) as WorkersAiChatResponse;
   } catch (err) {
@@ -101,7 +113,10 @@ const runWorkersAiJson = async (
     // Client only ever sees the generic AI_UNAVAILABLE message (never model
     // internals) — this is the one place the real cause gets recorded.
     console.error(
-      JSON.stringify({ msg: "Workers AI call failed", cause: err instanceof Error ? err.message : String(err) }),
+      JSON.stringify({
+        msg: "Workers AI call failed",
+        cause: err instanceof Error ? err.message : String(err),
+      }),
     );
     throw aiUnavailableError(err);
   }
@@ -110,10 +125,20 @@ const runWorkersAiJson = async (
   return raw.response ?? "";
 };
 
-const createWorkersAIReceiptModel = (ai: Ai, modelName: string, timeoutMs: number): ReceiptModel => {
+const createWorkersAIReceiptModel = (
+  ai: Ai,
+  modelName: string,
+  timeoutMs: number,
+): ReceiptModel => {
   return {
     parse: (ocrText, language) =>
-      runWorkersAiJson(ai, modelName, timeoutMs, buildExtractionPrompt(ocrText, language), RECEIPT_JSON_SCHEMA),
+      runWorkersAiJson(
+        ai,
+        modelName,
+        timeoutMs,
+        buildExtractionPrompt(ocrText, language),
+        RECEIPT_JSON_SCHEMA,
+      ),
     repair: (rawOutput, errorSummary, language) =>
       runWorkersAiJson(
         ai,
@@ -128,7 +153,11 @@ const createWorkersAIReceiptModel = (ai: Ai, modelName: string, timeoutMs: numbe
 // Shares RECEIPT_JSON_SCHEMA with createWorkersAIReceiptModel — voice now
 // extracts the exact same structured shape, see ai/prompt.ts's
 // EXPENSE_SYSTEM_PROMPT comment for why.
-const createWorkersAIExpenseModel = (ai: Ai, modelName: string, timeoutMs: number): ExpenseModel => {
+const createWorkersAIExpenseModel = (
+  ai: Ai,
+  modelName: string,
+  timeoutMs: number,
+): ExpenseModel => {
   return {
     parse: (transcript, referenceDate, language) =>
       runWorkersAiJson(
@@ -180,7 +209,10 @@ const createWorkersAITranscribeModel = (ai: Ai, timeoutMs: number): TranscribeMo
       } catch (err) {
         if (isAiTimeoutError(err)) throw err;
         console.error(
-          JSON.stringify({ msg: "Workers AI call failed", cause: err instanceof Error ? err.message : String(err) }),
+          JSON.stringify({
+            msg: "Workers AI call failed",
+            cause: err instanceof Error ? err.message : String(err),
+          }),
         );
         throw aiUnavailableError(err);
       }

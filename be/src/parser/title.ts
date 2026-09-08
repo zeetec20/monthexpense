@@ -54,7 +54,12 @@ interface TitleInput {
   items?: { name: string | null }[];
 }
 
-export const buildSuggestedTitle = ({ merchant, transaction, metadata, items }: TitleInput): string | null => {
+export const buildSuggestedTitle = ({
+  merchant,
+  transaction,
+  metadata,
+  items,
+}: TitleInput): string | null => {
   // Ambiguous which one to name when there's more than one item and no
   // merchant — leaves it null rather than picking arbitrarily.
   const itemName = items?.length === 1 ? items[0]!.name : null;
@@ -62,7 +67,9 @@ export const buildSuggestedTitle = ({ merchant, transaction, metadata, items }: 
   if (!subject) return null;
 
   const parsed = transaction.time ? parseTime(transaction.time) : null;
-  const prefix = (metadata.category && CATEGORY_LABELS[metadata.category]) || (parsed ? mealPeriodFor(parsed.hour) : "Expense");
+  const prefix =
+    (metadata.category && CATEGORY_LABELS[metadata.category]) ||
+    (parsed ? mealPeriodFor(parsed.hour) : "Expense");
   const lead = merchant.name ? `${prefix} at ${subject}` : `${prefix}: ${subject}`;
 
   return parsed ? `${lead} on ${parsed.formatted}` : lead;

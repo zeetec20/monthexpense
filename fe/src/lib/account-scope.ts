@@ -10,25 +10,25 @@ const POINTER_KEY = "expense-notes.active-account.v1";
  * keeps working exactly as before, just technically namespaced now. */
 const ANONYMOUS_SLOT = "__local__";
 
-function readPointer(): string | null {
+const readPointer = (): string | null => {
   try {
     return localStorage.getItem(POINTER_KEY);
   } catch {
     return null;
   }
-}
+};
 
-function currentSlot(): string {
+const currentSlot = (): string => {
   return readPointer() || ANONYMOUS_SLOT;
-}
+};
 
 /** Every per-account store key should be built with this instead of a bare
  * literal — see expense.store.ts/wallet.store.ts/sync-queue.ts/sync.store.ts.
  * Evaluated fresh on every call (no caching), so a slot change mid-session
  * (claimAccountSlot below) takes effect immediately on the next read/write. */
-export function scopedKey(base: string): string {
+export const scopedKey = (base: string): string => {
   return `${base}.${currentSlot()}`;
-}
+};
 
 /** One-time legacy fallback: a key written before this namespacing existed
  * has no slot suffix at all. Called by each store's readAll() so existing
@@ -36,7 +36,7 @@ export function scopedKey(base: string): string {
  * of appearing to vanish when this ships. No-ops once migrated, or if
  * there was nothing to migrate, or if the scoped key already has data
  * (never overwrites). */
-export function migrateLegacyKey(base: string): void {
+export const migrateLegacyKey = (base: string): void => {
   try {
     const legacy = localStorage.getItem(base);
     if (legacy === null) return;
@@ -47,7 +47,7 @@ export function migrateLegacyKey(base: string): void {
   } catch {
     // ponytail: best-effort — worst case the legacy key just gets rechecked next read
   }
-}
+};
 
 /**
  * Claims this device's per-account slot for `email` — called once per
@@ -60,7 +60,7 @@ export function migrateLegacyKey(base: string): void {
  * instead (empty the first time, or its own previous data if it's been
  * used on this device before) — never the old email's.
  */
-export function claimAccountSlot(email: string, migrateKeysOnFirstClaim: string[]): void {
+export const claimAccountSlot = (email: string, migrateKeysOnFirstClaim: string[]): void => {
   const slug = email.trim().toLowerCase();
   if (!slug) return;
   const previous = readPointer();
@@ -85,4 +85,4 @@ export function claimAccountSlot(email: string, migrateKeysOnFirstClaim: string[
   } catch {
     // ponytail: if localStorage writes are failing here, nothing downstream works either
   }
-}
+};

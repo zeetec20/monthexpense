@@ -1,4 +1,14 @@
-import { Cat, Dog, Rabbit, Squirrel, Bird, Fish, PawPrint, Turtle, type LucideIcon } from "lucide-react";
+import {
+  Cat,
+  Dog,
+  Rabbit,
+  Squirrel,
+  Bird,
+  Fish,
+  PawPrint,
+  Turtle,
+  type LucideIcon,
+} from "lucide-react";
 import type { WalletAnimal } from "@/features/wallet/wallet.schema";
 
 // Ported from expense-tracker's AnimalAvatar.tsx — "panda" slot swapped for

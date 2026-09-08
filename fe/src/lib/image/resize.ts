@@ -17,7 +17,10 @@ export const OOM_FALLBACK_MAX_DIMENSION = 1600;
  * used on OOM retry to shrink ahead of cropToPaper's getImageData
  * allocation, which is large enough to OOM on a full-resolution phone
  * photo independent of the final output size resizeImage below caps. */
-export async function downscaleBitmap(image: ImageBitmap, maxDimension: number): Promise<ImageBitmap> {
+export const downscaleBitmap = async (
+  image: ImageBitmap,
+  maxDimension: number,
+): Promise<ImageBitmap> => {
   const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
   if (scale === 1) return image; // already within the cap — no copy needed
 
@@ -31,13 +34,13 @@ export async function downscaleBitmap(image: ImageBitmap, maxDimension: number):
   image.close();
 
   return canvas.transferToImageBitmap();
-}
+};
 
 /** Downscales an image if it exceeds MAX_DIMENSION on its longest side. */
-export async function resizeImage(
+export const resizeImage = async (
   image: ImageBitmap,
   maxDimension = DEFAULT_MAX_DIMENSION,
-): Promise<Blob> {
+): Promise<Blob> => {
   const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
   const width = Math.round(image.width * scale);
   const height = Math.round(image.height * scale);
@@ -50,4 +53,4 @@ export async function resizeImage(
   image.close(); // release the source bitmap, don't retain extra copies (PRD §13)
 
   return canvas.convertToBlob({ type: "image/jpeg", quality: 0.85 });
-}
+};

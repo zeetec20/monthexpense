@@ -1,6 +1,12 @@
 import { useCallback, useState } from "react";
 import { z } from "zod";
-import { walletSchema, WALLET_MAX, DEFAULT_WALLET_NAME, type Wallet, type WalletAnimal } from "./wallet.schema";
+import {
+  walletSchema,
+  WALLET_MAX,
+  DEFAULT_WALLET_NAME,
+  type Wallet,
+  type WalletAnimal,
+} from "./wallet.schema";
 import type { Expense } from "@/features/expense/expense.schema";
 import { scopedKey, migrateLegacyKey } from "@/lib/account-scope";
 
@@ -8,14 +14,14 @@ import { scopedKey, migrateLegacyKey } from "@/lib/account-scope";
 export const STORAGE_KEY = "expense-notes.wallets.v1";
 const storedListSchema = z.array(walletSchema);
 
-function seedDefault(): Wallet[] {
+const seedDefault = (): Wallet[] => {
   return [{ id: crypto.randomUUID(), name: DEFAULT_WALLET_NAME, animal: "cat" }];
-}
+};
 
 /** A wallet list is never empty after this — first run (or corrupt/foreign
  * data) seeds one "Main Wallet" so every expense always has somewhere to
  * default to. */
-export function readAll(): Wallet[] {
+export const readAll = (): Wallet[] => {
   try {
     migrateLegacyKey(STORAGE_KEY);
     const raw = localStorage.getItem(scopedKey(STORAGE_KEY));
@@ -25,59 +31,68 @@ export function readAll(): Wallet[] {
   } catch {
     return seedDefault();
   }
-}
+};
 
-export function writeAll(wallets: Wallet[]) {
+export const writeAll = (wallets: Wallet[]) => {
   localStorage.setItem(scopedKey(STORAGE_KEY), JSON.stringify(wallets));
-}
+};
 
 /** Why a wallet can't be removed right now, or null if it's safe to. Pure
  * check so the settings page can disable/explain the button before the
  * user even taps it, not just reject after. */
-export function getRemoveBlockReason(id: string, wallets: Wallet[], expenses: Expense[]): string | null {
+export const getRemoveBlockReason = (
+  id: string,
+  wallets: Wallet[],
+  expenses: Expense[],
+): string | null => {
   if (wallets.length <= 1) return "You need at least one wallet.";
   if (expenses.some((e) => e.walletId === id)) {
     return "Delete or reassign this wallet's expenses first, or rename it instead.";
   }
   return null;
-}
+};
 
 // Pure list-transform helpers, kept separate from the hook below so they're
 // directly testable without a React render harness (this repo doesn't have
 // one — see expense.test.ts, which only exercises expense.store.ts's plain
 // readAll/writeAll the same way).
-export function addWalletPure(
+export const addWalletPure = (
   wallets: Wallet[],
   name: string,
   animal: WalletAnimal,
-): { wallets: Wallet[]; added: boolean; wallet?: Wallet } {
+): { wallets: Wallet[]; added: boolean; wallet?: Wallet } => {
   const trimmed = name.trim();
   if (!trimmed || wallets.length >= WALLET_MAX) return { wallets, added: false };
-  if (wallets.some((w) => w.name.toLowerCase() === trimmed.toLowerCase())) return { wallets, added: false };
+  if (wallets.some((w) => w.name.toLowerCase() === trimmed.toLowerCase()))
+    return { wallets, added: false };
   const wallet: Wallet = { id: crypto.randomUUID(), name: trimmed, animal };
   return { wallets: [...wallets, wallet], added: true, wallet };
-}
+};
 
-export function renameWalletPure(wallets: Wallet[], id: string, name: string): Wallet[] {
+export const renameWalletPure = (wallets: Wallet[], id: string, name: string): Wallet[] => {
   const trimmed = name.trim();
   if (!trimmed) return wallets;
   return wallets.map((w) => (w.id === id ? { ...w, name: trimmed } : w));
-}
+};
 
-export function updateWalletAnimalPure(wallets: Wallet[], id: string, animal: WalletAnimal): Wallet[] {
+export const updateWalletAnimalPure = (
+  wallets: Wallet[],
+  id: string,
+  animal: WalletAnimal,
+): Wallet[] => {
   return wallets.map((w) => (w.id === id ? { ...w, animal } : w));
-}
+};
 
-export function removeWalletPure(
+export const removeWalletPure = (
   wallets: Wallet[],
   id: string,
   expenses: Expense[],
-): { wallets: Wallet[]; removed: boolean } {
+): { wallets: Wallet[]; removed: boolean } => {
   if (getRemoveBlockReason(id, wallets, expenses)) return { wallets, removed: false };
   return { wallets: wallets.filter((w) => w.id !== id), removed: true };
-}
+};
 
-export function useWallets() {
+export const useWallets = () => {
   const [wallets, setWallets] = useState<Wallet[]>(() => readAll());
 
   const addWallet = useCallback((name: string, animal: WalletAnimal) => {
@@ -125,4 +140,4 @@ export function useWallets() {
   }, []);
 
   return { wallets, addWallet, renameWallet, updateWalletAnimal, removeWallet, setWallets };
-}
+};

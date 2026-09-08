@@ -12,9 +12,9 @@ export type NumberFieldProps = NumberInputProps;
 /** Formatted-thousands number input (see NumberInput) — kept as its own
  * export/name since ExpenseReviewModal already imports NumberField from
  * here. */
-export function NumberField(props: NumberFieldProps) {
+export const NumberField = (props: NumberFieldProps) => {
   return <NumberInput {...props} />;
-}
+};
 
 interface ExpenseItemsEditorProps {
   items: ExpenseReceiptItem[];
@@ -29,9 +29,10 @@ interface ExpenseItemsEditorProps {
  * can't silently disagree with the two numbers it comes from. Rows can be
  * added/removed only in edit mode.
  */
-export function ExpenseItemsEditor({ items, editing, onChange }: ExpenseItemsEditorProps) {
+export const ExpenseItemsEditor = ({ items, editing, onChange }: ExpenseItemsEditorProps) => {
   if (!editing) {
-    if (items.length === 0) return <p className="text-sm text-[var(--color-ink-3)]">No line items.</p>;
+    if (items.length === 0)
+      return <p className="text-sm text-[var(--color-ink-3)]">No line items.</p>;
     return (
       <ul className="space-y-2.5">
         {items.map((item, index) => (
@@ -42,16 +43,18 @@ export function ExpenseItemsEditor({ items, editing, onChange }: ExpenseItemsEdi
                 {item.quantity ?? "–"} × {formatCurrency(item.unitPrice, "IDR")}
               </p>
             </div>
-            <p className="shrink-0 font-medium tabular-nums">{formatCurrency(computeItemTotal(item), "IDR")}</p>
+            <p className="shrink-0 font-medium tabular-nums">
+              {formatCurrency(computeItemTotal(item), "IDR")}
+            </p>
           </li>
         ))}
       </ul>
     );
   }
 
-  function updateItem(index: number, patch: Partial<ExpenseReceiptItem>) {
+  const updateItem = (index: number, patch: Partial<ExpenseReceiptItem>) => {
     onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
-  }
+  };
 
   return (
     <div className="space-y-3">
@@ -112,4 +115,4 @@ export function ExpenseItemsEditor({ items, editing, onChange }: ExpenseItemsEdi
       </Button>
     </div>
   );
-}
+};

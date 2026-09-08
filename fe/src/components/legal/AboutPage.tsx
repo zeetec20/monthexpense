@@ -19,23 +19,21 @@ const SOCIAL_LINKS = [
   },
 ];
 
-export function AboutPage() {
+export const AboutPage = () => {
   return (
     <LegalPageShell title="About">
       <p>
-        MonthExpense is a personal expense tracker built to make logging
-        day-to-day spending less annoying. You scan a receipt, say it out loud,
-        or paste a chat/order confirmation as text, and it's logged. Expenses
-        stay on your device and working offline and connecting to Google Sheets
-        for the backup.
+        MonthExpense is a personal expense tracker built to make logging day-to-day spending less
+        annoying. You scan a receipt, say it out loud, or paste a chat/order confirmation as text,
+        and it's logged. Expenses stay on your device and working offline and connecting to Google
+        Sheets for the backup.
       </p>
 
       <h2>Who built this</h2>
       <p>
-        Firman Lestari, a full-stack engineer from Banyuwangi, East Java,
-        Indonesia, working mostly in TypeScript across React, Next.js, and
-        Node.js, with a growing interest in Rust, Go, and practical AI tooling.
-        Active open-source contributor.
+        Firman Lestari, a full-stack engineer from Banyuwangi, East Java, Indonesia, working mostly
+        in TypeScript across React, Next.js, and Node.js, with a growing interest in Rust, Go, and
+        practical AI tooling. Active open-source contributor.
       </p>
       <ul>
         {SOCIAL_LINKS.map(({ href, label, Icon }) => (
@@ -65,4 +63,4 @@ export function AboutPage() {
       </p>
     </LegalPageShell>
   );
-}
+};

@@ -22,6 +22,9 @@ describe("createWorkersAIReceiptModel (via createReceiptModel)", () => {
     expect(run).toHaveBeenCalledTimes(1);
     const [calledModel, options] = run.mock.calls[0]!;
     expect(calledModel).toBe("@cf/meta/llama-3.1-8b-instruct-fast");
-    expect(options.response_format).toEqual({ type: "json_schema", json_schema: RECEIPT_JSON_SCHEMA });
+    expect(options.response_format).toEqual({
+      type: "json_schema",
+      json_schema: RECEIPT_JSON_SCHEMA,
+    });
   });
 });

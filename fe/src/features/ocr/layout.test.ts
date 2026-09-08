@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { reconstructLayout } from "./layout";
 import type { OcrDocument } from "./ocr.types";
 
-function line(text: string, x0: number, y0: number, x1: number, y1: number, confidence = 0.99) {
+const line = (text: string, x0: number, y0: number, x1: number, y1: number, confidence = 0.99) => {
   return {
     text,
     confidence,
@@ -13,7 +13,7 @@ function line(text: string, x0: number, y0: number, x1: number, y1: number, conf
       [x0, y1],
     ] as [number, number][],
   };
-}
+};
 
 test("reconstructLayout restores row/column order from scrambled detection order", () => {
   // Two rows ("SUSU ULTRA" / 4500 and "TOTAL" / 18000), but detection handed
@@ -92,7 +92,9 @@ test("reconstructLayout inserts a blank line before a large vertical gap", () =>
     ],
   };
 
-  expect(reconstructLayout(document)).toBe("Nasi Goreng                            30001\n\nThank you");
+  expect(reconstructLayout(document)).toBe(
+    "Nasi Goreng                            30001\n\nThank you",
+  );
 });
 
 test("reconstructLayout inserts a blank line before a recognized section label even without a big gap", () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Scanner } from "@/components/scanner/Scanner";
 import { ManualEntryForm } from "@/components/expense/ManualEntryForm";
@@ -17,7 +17,14 @@ import { TransactionsPage } from "@/components/transactions/TransactionsPage";
 import { ExpenseSchedulePage } from "@/components/schedule/ExpenseSchedulePage";
 import { AnalyticsPage } from "@/components/analytics/AnalyticsPage";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { PwaUpdateModal } from "@/components/pwa/PwaUpdateModal";
 import { t, translateBackendMessage } from "@/i18n/translations";
@@ -37,9 +44,10 @@ import type { WalletAnimal } from "@/features/wallet/wallet.schema";
 
 type EntryFlow = "scan" | "manual" | "voice" | "text" | null;
 
-export default function App() {
+const App = () => {
   const { expenses, addExpense, removeExpense, updateExpense, setExpenses } = useExpenses();
-  const { wallets, addWallet, renameWallet, updateWalletAnimal, removeWallet, setWallets } = useWallets();
+  const { wallets, addWallet, renameWallet, updateWalletAnimal, removeWallet, setWallets } =
+    useWallets();
   const sync = useSheetsSync(setExpenses, setWallets);
 
   // Each wraps a store mutator with the matching sync.notify* — the
@@ -47,38 +55,38 @@ export default function App() {
   // changed, not just that expenses/wallets changed, so every mutation
   // path in this component goes through one of these instead of the raw
   // store function directly.
-  function handleAddExpense(input: ExpenseInput, source: ExpenseSource) {
+  const handleAddExpense = (input: ExpenseInput, source: ExpenseSource) => {
     const entry = addExpense(input, source);
     sync.notifyExpenseUpsert(entry);
     return entry;
-  }
-  function handleUpdateExpense(id: string, patch: Partial<ExpenseInput>) {
+  };
+  const handleUpdateExpense = (id: string, patch: Partial<ExpenseInput>) => {
     const updated = updateExpense(id, patch);
     sync.notifyExpenseUpsert(updated);
     return updated;
-  }
-  function handleRemoveExpense(id: string) {
+  };
+  const handleRemoveExpense = (id: string) => {
     removeExpense(id);
     sync.notifyExpenseDelete(id);
-  }
-  function handleAddWallet(name: string, animal: WalletAnimal) {
+  };
+  const handleAddWallet = (name: string, animal: WalletAnimal) => {
     const result = addWallet(name, animal);
     sync.notifyWalletUpsert(result.wallet);
     return result.added;
-  }
-  function handleRenameWallet(id: string, name: string) {
+  };
+  const handleRenameWallet = (id: string, name: string) => {
     const updated = renameWallet(id, name);
     sync.notifyWalletUpsert(updated);
-  }
-  function handleUpdateWalletAnimal(id: string, animal: WalletAnimal) {
+  };
+  const handleUpdateWalletAnimal = (id: string, animal: WalletAnimal) => {
     const updated = updateWalletAnimal(id, animal);
     sync.notifyWalletUpsert(updated);
-  }
-  function handleRemoveWallet(id: string) {
+  };
+  const handleRemoveWallet = (id: string) => {
     const removed = removeWallet(id, expenses);
     if (removed) sync.notifyWalletDelete(id);
     return removed;
-  }
+  };
   const { theme, toggleTheme } = useTheme();
   const { lang, setLanguage } = useLanguage();
   const online = useOnlineStatus();
@@ -88,10 +96,10 @@ export default function App() {
   // (see viewport-nudge.ts) — covers the pattern this bug is most
   // reliably seen in (right after saving/discarding an expense), on
   // top of the mount-time nudge below covering cold launch itself.
-  function closeEntryFlow() {
+  const closeEntryFlow = () => {
     setEntryFlow(null);
     nudgeViewport();
-  }
+  };
   // Cold-launch is the actual root case (confirmed: the gap can survive
   // a full reload) — nudge once up front before the user does anything.
   useEffect(() => {
@@ -102,17 +110,18 @@ export default function App() {
   // close animation instead of the ternary flipping content the instant
   // entryFlow clears to null (which used to swap VoiceEntry for the much
   // taller ManualEntryForm mid-close, glitching the sheet's height).
-  const lastEntryFlowRef = useRef<EntryFlow>(null);
-  if (entryFlow !== null) lastEntryFlowRef.current = entryFlow;
-  const displayFlow = entryFlow ?? lastEntryFlowRef.current;
+  // Derived during render (React's "adjusting state when a prop changes"
+  // pattern) instead of a ref read during render.
+  const [displayFlow, setDisplayFlow] = useState<EntryFlow>(entryFlow);
+  if (entryFlow !== null && entryFlow !== displayFlow) setDisplayFlow(entryFlow);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   // Same latch as displayFlow above — keeps the form mounted with its last
   // real expense through the sheet's close animation instead of unmounting
   // the instant editingExpense clears to null.
-  const lastEditingExpenseRef = useRef<Expense | null>(null);
-  if (editingExpense) lastEditingExpenseRef.current = editingExpense;
-  const displayEditingExpense = editingExpense ?? lastEditingExpenseRef.current;
+  const [displayEditingExpense, setDisplayEditingExpense] = useState<Expense | null>(null);
+  if (editingExpense && editingExpense !== displayEditingExpense)
+    setDisplayEditingExpense(editingExpense);
   const [walletsOpen, setWalletsOpen] = useState(false);
   const [connectOpen, setConnectOpen] = useState(false);
   // Scan drawer only needs to be tall while the camera preview is
@@ -171,13 +180,13 @@ export default function App() {
   // point of use instead of the whole app. See ConnectGate.tsx. (Browsing
   // is also effectively gated now: every display consumer below reads
   // visibleExpenses/visibleWallets, empty while disconnected.)
-  function requestEntryFlow(flow: Exclude<EntryFlow, null>) {
+  const requestEntryFlow = (flow: Exclude<EntryFlow, null>) => {
     if (sync.gateStatus !== "connected") {
       setConnectOpen(true);
       return;
     }
     setEntryFlow(flow);
-  }
+  };
 
   // Explicit whitelist — an unrecognized path used to silently fall
   // through to the normal home shell below; now it gets a real 404.
@@ -211,7 +220,9 @@ export default function App() {
           expenses={visibleExpenses}
           wallets={visibleWallets}
           onManageRecurring={() => setTab("recurring")}
-          onOpenWallets={() => (sync.gateStatus === "connected" ? setWalletsOpen(true) : setConnectOpen(true))}
+          onOpenWallets={() =>
+            sync.gateStatus === "connected" ? setWalletsOpen(true) : setConnectOpen(true)
+          }
           onScan={() => requestEntryFlow("scan")}
           onVoice={() => requestEntryFlow("voice")}
           onText={() => requestEntryFlow("text")}
@@ -223,7 +234,12 @@ export default function App() {
         />
       )}
       {tab === "transactions" && (
-        <TransactionsPage expenses={visibleExpenses} wallets={visibleWallets} onSelect={setSelectedExpense} lang={lang} />
+        <TransactionsPage
+          expenses={visibleExpenses}
+          wallets={visibleWallets}
+          onSelect={setSelectedExpense}
+          lang={lang}
+        />
       )}
       {tab === "analytics" && <AnalyticsPage expenses={visibleExpenses} lang={lang} />}
       {tab === "recurring" && (
@@ -282,7 +298,11 @@ export default function App() {
         </div>
       </BottomSheet>
 
-      <BottomSheet open={connectOpen} onClose={() => setConnectOpen(false)} title={t(lang, "connectTitle")}>
+      <BottomSheet
+        open={connectOpen}
+        onClose={() => setConnectOpen(false)}
+        title={t(lang, "connectTitle")}
+      >
         <ConnectGate
           onConnect={sync.connect}
           connecting={sync.connecting}
@@ -321,7 +341,9 @@ export default function App() {
         // way out, and it already resets scanExpanded correctly.
         dismissible={!scanExpanded}
       >
-        <h3 className="shrink-0 pt-1 pb-1 text-sm font-bold text-ink">{t(lang, "scanReceiptCard")}</h3>
+        <h3 className="shrink-0 pt-1 pb-1 text-sm font-bold text-ink">
+          {t(lang, "scanReceiptCard")}
+        </h3>
         <div className="min-h-0 flex-1 overflow-y-auto -mx-1 px-1 space-y-4">
           <Scanner
             addExpense={handleAddExpense}
@@ -391,7 +413,10 @@ export default function App() {
 
       <PwaUpdateModal lang={lang} />
 
-      <Dialog open={sync.sheetDeletedNotice} onOpenChange={(open) => !open && sync.dismissSheetDeletedNotice()}>
+      <Dialog
+        open={sync.sheetDeletedNotice}
+        onOpenChange={(open) => !open && sync.dismissSheetDeletedNotice()}
+      >
         <DialogContent className="sm:max-w-xs text-center">
           <DialogHeader className="items-center">
             <AlertTriangle className="w-6 h-6 text-amber-500 dark:text-amber-400" />
@@ -430,4 +455,6 @@ export default function App() {
       </Dialog>
     </AppShell>
   );
-}
+};
+
+export default App;

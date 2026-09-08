@@ -1,7 +1,10 @@
-import { useEffect, useState, type ChangeEvent, type ComponentProps } from "react";
+import { useState, type ChangeEvent, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-export interface NumberInputProps extends Omit<ComponentProps<"input">, "value" | "onChange" | "type"> {
+export interface NumberInputProps extends Omit<
+  ComponentProps<"input">,
+  "value" | "onChange" | "type"
+> {
   value: number | null;
   onChange: (value: number | null) => void;
   /** Allow a fractional part (e.g. quantity "1.5 kg") instead of the
@@ -16,11 +19,14 @@ export interface NumberInputProps extends Omit<ComponentProps<"input">, "value" 
  * decrement spinner by construction, no spinner-hiding CSS needed. */
 export function NumberInput({ value, onChange, className, decimal, ...props }: NumberInputProps) {
   const [raw, setRaw] = useState(value == null ? "" : String(value));
-
-  // Stay in sync when the value changes from outside (form reset, etc).
-  useEffect(() => {
+  // Stay in sync when the value changes from outside (form reset, etc) —
+  // derived during render (React's "adjusting state when a prop changes"
+  // pattern) instead of an effect, so there's no extra render round-trip.
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
     setRaw(value == null ? "" : String(value));
-  }, [value]);
+  }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     if (decimal) {

@@ -46,7 +46,12 @@ export default defineConfig({
         icons: [
           { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
           { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-          { src: "/maskable-icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          {
+            src: "/maskable-icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
         ],
       },
       workbox: {
@@ -77,7 +82,10 @@ export default defineConfig({
           {
             urlPattern: ({ url }) => url.pathname.endsWith(".wasm"),
             handler: "CacheFirst",
-            options: { cacheName: "wasm-runtime", expiration: { maxEntries: 8, maxAgeSeconds: 31536000 } },
+            options: {
+              cacheName: "wasm-runtime",
+              expiration: { maxEntries: 8, maxAgeSeconds: 31536000 },
+            },
           },
           {
             // PaddleOCR's onnxruntime-web WASM loads from jsdelivr (see
@@ -85,7 +93,10 @@ export default defineConfig({
             // working offline after first use.
             urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/npm\/onnxruntime-web/,
             handler: "CacheFirst",
-            options: { cacheName: "ort-cdn", expiration: { maxEntries: 8, maxAgeSeconds: 31536000 } },
+            options: {
+              cacheName: "ort-cdn",
+              expiration: { maxEntries: 8, maxAgeSeconds: 31536000 },
+            },
           },
           {
             // PaddleOCR's det/rec model weights load from Baidu's BOS CDN at
@@ -95,7 +106,10 @@ export default defineConfig({
             // ~5-10MB every time.
             urlPattern: /^https:\/\/paddle-model-ecology\.bj\.bcebos\.com\//,
             handler: "CacheFirst",
-            options: { cacheName: "ocr-models", expiration: { maxEntries: 4, maxAgeSeconds: 31536000 } },
+            options: {
+              cacheName: "ocr-models",
+              expiration: { maxEntries: 4, maxAgeSeconds: 31536000 },
+            },
           },
         ],
       },

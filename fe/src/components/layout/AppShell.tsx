@@ -20,7 +20,7 @@ import type { Theme } from "@/hooks/useTheme";
 
 export type AppTab = "home" | "transactions" | "analytics" | "recurring";
 
-function TabButton({
+const TabButton = ({
   active,
   label,
   icon,
@@ -30,7 +30,7 @@ function TabButton({
   label: string;
   icon: ReactNode;
   onClick: () => void;
-}) {
+}) => {
   return (
     <button
       type="button"
@@ -39,15 +39,13 @@ function TabButton({
       aria-current={active ? "page" : undefined}
       className={
         "p-2 rounded-2xl flex flex-col items-center transition-all " +
-        (active
-          ? "text-brand bg-brand/10"
-          : "text-ink-faint hover:text-ink-soft")
+        (active ? "text-brand bg-brand/10" : "text-ink-faint hover:text-ink-soft")
       }
     >
       {icon}
     </button>
   );
-}
+};
 
 /**
  * Literal port of expense-tracker's MobileContainer.tsx — the boxed
@@ -58,7 +56,7 @@ function TabButton({
  * switchers live here (persistent app-level settings) rather than
  * re-declared per-page the way HomeView.tsx does.
  */
-export function AppShell({
+export const AppShell = ({
   tab,
   onTabChange,
   theme,
@@ -86,13 +84,13 @@ export function AppShell({
   gateStatus: "connected" | "disconnected";
   onRequireConnect: () => void;
   children: ReactNode;
-}) {
+}) => {
   const [quickActionOpen, setQuickActionOpen] = useState(false);
 
-  function choose(action: () => void) {
+  const choose = (action: () => void) => {
     setQuickActionOpen(false);
     action();
-  }
+  };
 
   return (
     <div className="min-h-dvh bg-surface text-ink flex justify-center transition-colors duration-200">
@@ -109,9 +107,7 @@ export function AppShell({
         <div className="flex items-center justify-between px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 border-b border-line-subtle shrink-0">
           <div className="flex items-center gap-2">
             <img src="/icon-192.png" alt="MonthExpense" className="w-6 h-6" />
-            <span className="text-sm font-extrabold tracking-tight text-ink">
-              MonthExpense
-            </span>
+            <span className="text-sm font-extrabold tracking-tight text-ink">MonthExpense</span>
           </div>
           <div className="flex items-center gap-1.5">
             <InstallPwaButton lang={lang} />
@@ -144,7 +140,9 @@ export function AppShell({
             />
             <button
               type="button"
-              onClick={() => (gateStatus === "connected" ? setQuickActionOpen(true) : onRequireConnect())}
+              onClick={() =>
+                gateStatus === "connected" ? setQuickActionOpen(true) : onRequireConnect()
+              }
               title={t(lang, "addExpense")}
               className="relative -top-3 w-12 h-12 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-black/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
             >
@@ -173,9 +171,7 @@ export function AppShell({
         >
           <>
             <div className="pb-2">
-              <h3 className="text-sm font-bold text-ink">
-                {t(lang, "quickActionsTitle")}
-              </h3>
+              <h3 className="text-sm font-bold text-ink">{t(lang, "quickActionsTitle")}</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -190,9 +186,7 @@ export function AppShell({
                 <span className="text-xs font-bold text-ink text-center">
                   {t(lang, "scanReceiptCard")}
                 </span>
-                <span className="text-[10px] text-brand">
-                  {t(lang, "scanReceiptCardSub")}
-                </span>
+                <span className="text-[10px] text-brand">{t(lang, "scanReceiptCardSub")}</span>
               </button>
 
               <button
@@ -248,4 +242,4 @@ export function AppShell({
       </div>
     </div>
   );
-}
+};

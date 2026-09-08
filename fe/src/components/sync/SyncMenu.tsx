@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Loader2, Check, AlertTriangle, Link2, RotateCcw, Unplug, Cloud, WifiOff } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  AlertTriangle,
+  Link2,
+  RotateCcw,
+  Unplug,
+  Cloud,
+  WifiOff,
+} from "lucide-react";
 import { getConnectedEmail } from "@/features/sync/sheets-sync.api";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -28,19 +37,31 @@ interface SyncMenuProps {
  * shortcut straight to the connect drawer — the sheet below (status/copy-
  * link/restore/disconnect) only ever makes sense once actually connected.
  */
-export function SyncMenu({ gateStatus, syncing, status, lastSyncedAt, spreadsheetUrl, onRetry, onRestore, onDisconnect, onConnect, lang, online }: SyncMenuProps) {
+export const SyncMenu = ({
+  gateStatus,
+  syncing,
+  status,
+  lastSyncedAt,
+  spreadsheetUrl,
+  onRetry,
+  onRestore,
+  onDisconnect,
+  onConnect,
+  lang,
+  online,
+}: SyncMenuProps) => {
   const [open, setOpen] = useState(false);
   const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
   const [confirmDisconnectOpen, setConfirmDisconnectOpen] = useState(false);
 
-  function handleDisconnect() {
+  const handleDisconnect = () => {
     setOpen(false);
     onDisconnect();
-  }
+  };
 
-  function handleCopyLink() {
+  const handleCopyLink = () => {
     if (spreadsheetUrl) void navigator.clipboard.writeText(spreadsheetUrl);
-  }
+  };
 
   if (gateStatus !== "connected") {
     return (
@@ -84,7 +105,11 @@ export function SyncMenu({ gateStatus, syncing, status, lastSyncedAt, spreadshee
         <>
           <div className="pb-2">
             <h3 className="text-sm font-bold text-ink">{t(lang, "syncTitle")}</h3>
-            {getConnectedEmail() && <p className="text-xs text-ink-soft">{t(lang, "connectedAs", { email: getConnectedEmail()! })}</p>}
+            {getConnectedEmail() && (
+              <p className="text-xs text-ink-soft">
+                {t(lang, "connectedAs", { email: getConnectedEmail()! })}
+              </p>
+            )}
           </div>
 
           {!online && <WarningCallout>{t(lang, "syncOfflineWarning")}</WarningCallout>}
@@ -104,7 +129,8 @@ export function SyncMenu({ gateStatus, syncing, status, lastSyncedAt, spreadshee
               </>
             ) : lastSyncedAt ? (
               <>
-                <Check className="w-3.5 h-3.5" /> {t(lang, "syncedAt", { time: new Date(lastSyncedAt).toLocaleTimeString() })}
+                <Check className="w-3.5 h-3.5" />{" "}
+                {t(lang, "syncedAt", { time: new Date(lastSyncedAt).toLocaleTimeString() })}
               </>
             ) : (
               t(lang, "notSyncedYet")
@@ -160,4 +186,4 @@ export function SyncMenu({ gateStatus, syncing, status, lastSyncedAt, spreadshee
       />
     </>
   );
-}
+};
