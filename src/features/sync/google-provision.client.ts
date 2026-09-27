@@ -7,6 +7,8 @@
 // sheets-sync.api.ts talks to Sheets API directly with the same
 // access_token, so provisioning only ever needs to find-or-create the
 // spreadsheet itself.
+import { resilientGoogleFetch } from "./google-fetch";
+
 export type ProvisionStep = "searching" | "creating-sheet" | "building-structure";
 
 export interface ProvisionResult {
@@ -76,27 +78,7 @@ const TEXT_DARK = hexToRgb("#233029");
 
 export type ValueEntry = { range: string; values: (string | number)[][] };
 
-const googleFetch = async (
-  accessToken: string,
-  url: string,
-  init: RequestInit = {},
-): Promise<any> => {
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      ...init.headers,
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(
-      `Google API call failed (${response.status}) ${init.method ?? "GET"} ${url}: ${body}`,
-    );
-  }
-  return response.json();
-};
+const googleFetch = resilientGoogleFetch;
 
 const colorRange = (
   sheetId: number,
@@ -603,12 +585,16 @@ export const readConfigSecret = async (
       accessToken,
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(CONFIG_KV_RANGE)}?valueRenderOption=UNFORMATTED_VALUE`,
     );
-    const rows: string[][] = json.values ?? [];
+    const rows: string[][] = json?.values ?? [];
     const secret = rows[1]?.[1]; // D2/E2 — row index 1
     if (!secret) return null;
     return { secret, email: rows[2]?.[1] ?? "" }; // D3/E3 — row index 2
-  } catch {
-    return null;
+  } catch (err: any) {
+    // If the sheet range doesn't exist or is genuinely not found (400/404), treat as null (no stored secret)
+    if (err?.status === 400 || err?.status === 404) {
+      return null;
+    }
+    throw err;
   }
 };
 

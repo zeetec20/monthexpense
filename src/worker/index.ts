@@ -11,7 +11,7 @@ import { getMeta } from "./controllers/meta";
 import { postReceiptsParse } from "./controllers/receipts";
 import { postExpensesParse } from "./controllers/expenses";
 import { postVoiceTranscribe } from "./controllers/voice";
-import { postSheetsValidate } from "./controllers/sheets";
+import { postSheetsValidate, postSheetsProxy } from "./controllers/sheets";
 import { getQuotaStatus } from "./controllers/quota";
 import { postGoogleConnect } from "./controllers/auth";
 
@@ -60,6 +60,8 @@ const routes = app
   // lets the app confirm a secret right after connecting without spending a
   // scan/voice quota unit just to check (see controllers/sheets.ts).
   .post("/v1/sheets/validate", identityCheck, postSheetsValidate)
+  // Fallback proxy for client environments with DNS or network blocks to Google Sheets
+  .post("/v1/sheets/proxy", postSheetsProxy)
   // Read-only usage status (no unit spent) — lets the FE show real
   // remaining/limit numbers on load instead of only after a first scan/
   // voice/text call (see controllers/quota.ts).

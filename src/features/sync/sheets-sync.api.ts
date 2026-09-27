@@ -1,6 +1,7 @@
 import { RECEIPT_API_KEY } from "@/config/env";
 import { client } from "@/lib/api-client";
 import { getFreshAccessToken } from "./google-auth";
+import { resilientGoogleFetch } from "./google-fetch";
 import {
   TXN_HEADERS,
   WALLET_HEADERS,
@@ -155,24 +156,15 @@ const sheetGoneError = (status: number): Error & { code: string } => {
  * rejection the same way regardless of cause. */
 const sheetsFetch = async (url: string, init: RequestInit = {}, isRetry = false): Promise<any> => {
   const token = await getFreshAccessToken();
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      ...init.headers,
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  if (response.status === 401 && !isRetry) {
-    return sheetsFetch(url, init, true);
+  try {
+    return await resilientGoogleFetch(token, url, init);
+  } catch (err: any) {
+    if (err?.status === 401 && !isRetry) {
+      return sheetsFetch(url, init, true);
+    }
+    if (err?.status === 403 || err?.status === 404) throw sheetGoneError(err.status);
+    throw err;
   }
-  if (response.status === 403 || response.status === 404) throw sheetGoneError(response.status);
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(`Sheets sync failed (${response.status}): ${body}`);
-  }
-  if (response.status === 204) return null;
-  return response.json();
 };
 
 const walletRow = (wallet: Wallet): (string | number)[] => {

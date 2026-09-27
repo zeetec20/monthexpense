@@ -74,6 +74,10 @@ export const ConnectGate = ({
       // and reading this account's own email (see google-auth.ts) — no
       // separate id_token/One Tap step.
       const accessToken = await requestGoogleAccessToken();
+      // Brief grace period for browser window focus and network socket pool
+      // to stabilize after the Google OAuth popup window closes
+      await new Promise((resolve) => setTimeout(resolve, 250));
+
       setPhase("verifying");
       const email = await fetchGoogleEmail(accessToken);
       const onStep = (step: ProvisionStep) => setPhase(step);
@@ -95,10 +99,19 @@ export const ConnectGate = ({
       setPhase("connecting");
       await onConnect(result.spreadsheetId, result.spreadsheetUrl, secret, email);
     } catch (err) {
+      console.error("Google connect error:", err);
+      const message = err instanceof Error ? err.message : "";
+      const isNet =
+        message.toLowerCase().includes("network") ||
+        message.toLowerCase().includes("failed to fetch") ||
+        message.toLowerCase().includes("err_");
+
       setError(
-        err instanceof Error
-          ? translateBackendMessage(err.message, lang)
-          : t(lang, "connectErrorNoCode"),
+        isNet
+          ? t(lang, "googleSignInDidntLoad")
+          : err instanceof Error
+            ? translateBackendMessage(err.message, lang)
+            : t(lang, "connectErrorNoCode"),
       );
       setPhase("error");
     }
