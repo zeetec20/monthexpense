@@ -1,0 +1,3 @@
+*.wasm
+wrangler.json
+.dev.vars

@@ -1,0 +1,38 @@
+// Middle tier of the voice-entry hybrid — a thin POST to the BE's Workers AI
+// Whisper endpoint, between native SpeechRecognition and the WASM fallback
+// (see useVoiceExpense.ts). Same account/BE the app already talks to for
+// receipt/expense parsing, no new vendor.
+import { RECEIPT_API_KEY } from "@/config/env";
+import { sheetIdentityHeaders } from "@/features/sync/sheets-sync.api";
+import { client } from "@/lib/api-client";
+
+const blobToBase64 = async (blob: Blob): Promise<string> => {
+  const buffer = await blob.arrayBuffer();
+  let binary = "";
+  for (const byte of new Uint8Array(buffer)) binary += String.fromCharCode(byte);
+  return btoa(binary);
+};
+
+/** POSTs a recorded clip to /v1/voice/transcribe; throws on any non-2xx (caller falls through to WASM). */
+export const transcribeViaCloudflare = async (
+  blob: Blob,
+  language: "english" | "indonesian",
+): Promise<string> => {
+  const audio = await blobToBase64(blob);
+  const response = await client.v1.voice.transcribe.$post(
+    { json: { audio, language: language === "indonesian" ? "id" : "en" } },
+    {
+      headers: {
+        Authorization: `Bearer ${RECEIPT_API_KEY}`,
+        ...sheetIdentityHeaders(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Cloudflare STT failed: ${response.status}`);
+  }
+
+  const json = (await response.json()) as { data: { text: string } };
+  return json.data.text.trim();
+};

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#141811" />
+
+    <!-- Primary SEO Meta Tags -->
+    <title>
+      MonthExpense - Offline-First Expense Tracker with AI Receipt Scanner &amp; Voice Entry
+    </title>
+    <meta
+      name="title"
+      content="MonthExpense - Offline-First Expense Tracker with AI Receipt Scanner &amp; Voice Entry"
+    />
+    <meta
+      name="description"
+      content="MonthExpense is a privacy-first, offline-first personal expense tracker. Scan receipts with on-device AI OCR, log expenses with voice, and sync seamlessly to Google Sheets."
+    />
+    <meta
+      name="keywords"
+      content="expense tracker, receipt scanner, personal finance, budget tracker, offline expense app, voice expense entry, local OCR, google sheets sync, PWA expense tracker"
+    />
+    <meta name="author" content="MonthExpense" />
+    <meta name="application-name" content="MonthExpense" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <link rel="canonical" href="https://monthexpense.pages.dev/" />
+
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="googled9a94e8de0439e03" />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://monthexpense.pages.dev/" />
+    <meta property="og:title" content="MonthExpense - Offline-First Expense Tracker" />
+    <meta
+      property="og:description"
+      content="Track expenses effortlessly with local on-device OCR receipt scanning, voice input, and private Google Sheets cloud sync."
+    />
+    <meta property="og:image" content="/icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="MonthExpense Application Icon" />
+    <meta property="og:site_name" content="MonthExpense" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="https://monthexpense.pages.dev/" />
+    <meta name="twitter:title" content="MonthExpense - Offline-First Expense Tracker" />
+    <meta
+      name="twitter:description"
+      content="Track expenses effortlessly with local on-device OCR receipt scanning, voice input, and private Google Sheets cloud sync."
+    />
+    <meta name="twitter:image" content="/icon-512.png" />
+
+    <!-- Icons & PWA -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- vite-plugin-pwa injects the manifest link at build time; these iOS
+         home-screen tags aren't auto-injected and are added manually. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="MonthExpense" />
+
+    <!-- Schema.org JSON-LD Structured Data for Google Search -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "MonthExpense",
+        "url": "https://monthexpense.pages.dev/",
+        "description": "Offline-first personal expense tracker with receipt scanning, voice entry, and private Google Sheets sync.",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Local OCR Receipt Scanning",
+          "Voice Expense Input",
+          "Google Sheets Cloud Backup",
+          "Offline-First Storage",
+          "Recurring Expense Schedules",
+          "Multi-Wallet Tracking"
+        ]
+      }
+    </script>
+
+    <!-- Google Identity Services — client-side sign-in (id_token) and
+         OAuth token client (access_token) for the Google-login sync
+         setup. See src/features/sync/google-auth.ts. No SRI hash here on
+         purpose: Google serves and updates this script unversioned and
+         explicitly documents that pinning its integrity hash breaks it
+         on their next update — not an oversight. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <!-- Fallback content for search engine crawlers and browsers without JavaScript -->
+    <noscript>
+      <div
+        style="
+          font-family:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            &quot;Segoe UI&quot;,
+            Roboto,
+            sans-serif;
+          max-width: 640px;
+          margin: 2rem auto;
+          padding: 1.5rem;
+          line-height: 1.6;
+          color: #141811;
+        "
+      >
+        <h1>MonthExpense - Offline-First Expense Tracker</h1>
+        <p>
+          MonthExpense is a privacy-first, offline-first personal expense tracker. Log daily
+          spending via on-device AI receipt scanning, voice recognition, or fast manual input, with
+          automatic backup to your private Google Sheets spreadsheet.
+        </p>
+        <h2>Key Features</h2>
+        <ul>
+          <li>
+            <strong>Offline-First:</strong> All expenses and wallets are stored locally on your
+            device in IndexedDB/localStorage.
+          </li>
+          <li>
+            <strong>Local OCR Receipt Scanner:</strong> Scan receipts instantly with on-device
+            PaddleOCR without sending photos to third parties.
+          </li>
+          <li>
+            <strong>Voice Entry:</strong> Speak your expenses naturally in English or Indonesian.
+          </li>
+          <li>
+            <strong>Private Google Sheets Sync:</strong> Automatic bidirectional sync directly to
+            your personal Google Drive spreadsheet.
+          </li>
+          <li>
+            <strong>Multi-Wallet &amp; Analytics:</strong> Track budgets across multiple wallets and
+            visualize monthly trends.
+          </li>
+        </ul>
+        <p>Please enable JavaScript in your browser to run the full interactive application.</p>
+        <nav style="margin-top: 1.5rem">
+          <a href="/about" style="color: #2e7d32; font-weight: bold; margin-right: 1rem"
+            >About MonthExpense</a
+          >
+          <a href="/privacy" style="color: #2e7d32; font-weight: bold; margin-right: 1rem"
+            >Privacy Policy</a
+          >
+          <a href="/terms" style="color: #2e7d32; font-weight: bold">Terms of Service</a>
+        </nav>
+      </div>
+    </noscript>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

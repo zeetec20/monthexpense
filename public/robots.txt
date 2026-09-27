@@ -1,0 +1,19 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /privacy
+Allow: /terms
+Allow: /assets/
+Allow: /manifest.webmanifest
+Allow: /icon-192.png
+Allow: /icon-512.png
+Allow: /maskable-icon-512.png
+Allow: /apple-touch-icon.png
+Allow: /favicon.png
+
+# Disallow API and internal probe routes from search engine indexing
+Disallow: /v1/
+Disallow: /health
+
+Sitemap: https://monthexpense.pages.dev/sitemap.xml
