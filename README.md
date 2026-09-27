@@ -28,9 +28,9 @@ Your data is stored **locally on your device** (local-first) and syncs directly 
 ### ✨ Key Features
 
 - 📸 **Smart In-Browser Receipt Scanner**: Capture physical receipts on mobile or web. Runs local client-side OCR ([PaddleOCR-JS](https://github.com/flyinox/PaddleOCR-JS) WebAssembly) and extracts items, merchant, tax, date, and category using edge AI ([Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/) with Meta Llama 3.1 8B Instruct).
-- 🎙️ **Voice Expense Logging**: Speak your daily expenses naturally (e.g., _"Bought coffee for 18000 from Main Wallet"_ or _"Beli nasi padang 25 ribu pake gopay"_). Transcribed using Web Speech API or in-browser Whisper WASM and structured with LLM parsing.
+- 🎙️ **Voice Expense Logging**: Speak your daily expenses naturally (e.g., _"Bought coffee for 18 dollars from Main Wallet"_ or _"Groceries for 45 dollars paid with debit card"_). Transcribed using Web Speech API or in-browser Whisper WASM and structured with LLM parsing.
 - 💳 **Multi-Wallet Management**: Group expenses into custom wallets (Cash, Bank, E-Wallets) with playful animal avatars and monthly spending cards.
-- 📅 **Recurring Bills & Debt ("Hutang") Tracking**: Track loan/debt repayments with expected due dates and reminder indicators on your calendar. Once marked paid/settled, debts are automatically excluded from your real monthly spending totals both in the app and your Google Sheet.
+- 📅 **Recurring Bills & Debt Tracking**: Track loan/debt repayments with expected due dates and reminder indicators on your calendar. Once marked paid/settled, debts are automatically excluded from your real monthly spending totals both in the app and your Google Sheet.
 - 📊 **Interactive Analytics & Spending Trends**: View 5-day period spending trends, category distributions, daily averages, and peak expense days.
 - 📈 **Zero-Lock-In Google Sheets Sync**: Connects directly to Google Sheets using Google Identity Services (GIS). All transactions, wallets, and interactive charts are preserved in your personal spreadsheet.
 - 📱 **Installable Progressive Web App (PWA)**: Fast, responsive, offline-capable, and installable on iOS, Android, and desktop.
@@ -252,10 +252,10 @@ When you link MonthExpense to Google Sheets, it provisions a private spreadsheet
 1. **`Transactions`**: Chronological log of all transactions (ID, Date, Wallet, Title, Amount, Currency, Source, Note, Merchant, Items, Month, Created At, Category, Detail, Schedule Type, Status).
 2. **`Config`**: Wallet mapping (ID, Name) and encrypted sync identity.
 3. **`Stats`**: Interactive financial dashboard including:
-   - **Total Pengeluaran (Total Expense)**: Automatically excludes settled debts so reimbursed money does not inflate spending.
-   - **Rata-rata Harian**: Real daily spend average.
-   - **Tren Pengeluaran**: Dynamic 5-day interval spending trend.
-   - **Distribusi Kategori**: Breakdown and charts by expense category.
+   - **Total Expense**: Automatically excludes settled debts so reimbursed money does not inflate spending.
+   - **Daily Average**: Real daily spend average.
+   - **Spending Trends**: Dynamic 5-day interval spending trend.
+   - **Category Distribution**: Breakdown and charts by expense category.
    - **Spend by Wallet**: Aggregated spend across individual wallets.
    - **Spend by Month**: Month-over-month history.
 
