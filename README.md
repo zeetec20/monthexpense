@@ -17,6 +17,10 @@
   <a href="https://bun.sh/"><img src="https://img.shields.io/badge/Runtime-Bun-fbf0df?logo=bun" alt="Bun" /></a>
 </p>
 
+<p align="center">
+  <img src="public/mockup.webp" width="880" alt="MonthExpense app preview" />
+</p>
+
 ---
 
 ## 🌟 What is MonthExpense?
