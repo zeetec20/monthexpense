@@ -2,6 +2,7 @@
 // pointed at simpleicons.org instead) but still ship and render fine —
 // not worth a whole new dependency for two icons.
 import { Linkedin, Github, Globe, Newspaper, ExternalLink } from "lucide-react";
+import { formatDate } from "@/lib/format";
 import { LegalPageShell } from "./LegalPageShell";
 
 const SOCIAL_LINKS = [
@@ -21,7 +22,7 @@ const SOCIAL_LINKS = [
 
 export const AboutPage = () => {
   return (
-    <LegalPageShell title="About">
+    <LegalPageShell title="About" updated={formatDate(__APP_BUILD_TIME__)}>
       <p>
         MonthExpense is a personal expense tracker built to make logging day-to-day spending less
         annoying. You scan a receipt, say it out loud, or paste a chat/order confirmation as text,
@@ -61,6 +62,21 @@ export const AboutPage = () => {
           Terms of Service
         </a>
       </p>
+
+      <div className="pt-6 mt-6 border-t border-line-subtle flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-ink-faint">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-medium text-ink-soft">MonthExpense v{__APP_VERSION__}</span>
+          <span>Last updated at {formatDate(__APP_BUILD_TIME__)}</span>
+        </div>
+        <a
+          href="https://github.com/zeetec20/monthexpense/releases"
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center gap-1 hover:text-brand underline self-start sm:self-auto"
+        >
+          Release notes <ExternalLink className="w-3 h-3 opacity-50" />
+        </a>
+      </div>
     </LegalPageShell>
   );
 };

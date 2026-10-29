@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "node:path";
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { syncEnvToDevVars } from "./scripts/sync-env.ts";
 
 // Compared at runtime (pwa-register.ts's checkBuildVersion) against a
@@ -12,6 +12,10 @@ import { syncEnvToDevVars } from "./scripts/sync-env.ts";
 // serving an old precached app shell — see that file for why the SW's own
 // update-install cycle alone isn't reliable enough on mobile.
 const buildId = String(Date.now());
+const pkg = JSON.parse(readFileSync(path.resolve(__dirname, "package.json"), "utf-8")) as {
+  version: string;
+};
+const buildTime = new Date().toISOString();
 
 // Ensure .dev.vars for Cloudflare Worker local development is synchronized from .env
 const syncedEnv = syncEnvToDevVars();
@@ -25,6 +29,8 @@ const sharedApiKey =
 export default defineConfig({
   define: {
     __APP_BUILD_ID__: JSON.stringify(buildId),
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    __APP_BUILD_TIME__: JSON.stringify(buildTime),
     "import.meta.env.VITE_RECEIPT_API_KEY": JSON.stringify(sharedApiKey),
   },
   plugins: [
@@ -34,7 +40,10 @@ export default defineConfig({
     {
       name: "emit-build-version",
       writeBundle() {
-        writeFileSync(path.resolve(__dirname, "dist/version.json"), JSON.stringify({ buildId }));
+        writeFileSync(
+          path.resolve(__dirname, "dist/version.json"),
+          JSON.stringify({ buildId, version: pkg.version, buildTime }),
+        );
       },
     },
     VitePWA({
