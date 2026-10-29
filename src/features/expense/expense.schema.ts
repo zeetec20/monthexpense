@@ -118,6 +118,7 @@ export const expenseSchema = expenseInputSchema.extend({
   id: z.string(),
   source: expenseSourceSchema,
   createdAt: z.string(),
+  synced: z.boolean().optional(),
 });
 
 export type ExpenseReceiptDetail = z.infer<typeof expenseReceiptDetailSchema>;
@@ -125,6 +126,8 @@ export type ExpenseInput = z.infer<typeof expenseInputSchema>;
 export type Expense = z.infer<typeof expenseSchema>;
 export type ExpenseSource = z.infer<typeof expenseSourceSchema>;
 export type ExpenseReceiptItem = ExpenseReceiptDetail["items"][number];
+
+export const isExpenseSynced = (expense: Expense): boolean => expense.synced !== false;
 
 /** Shared "nothing itemized yet" starting point — ExpenseReviewModal
  * (editing an existing scan/voice/text result) and ManualEntryForm

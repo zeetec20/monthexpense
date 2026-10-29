@@ -40,6 +40,7 @@ export const useExpenses = () => {
       id: crypto.randomUUID(),
       source,
       createdAt: new Date().toISOString(),
+      synced: false,
     };
     setExpenses((prev) => {
       const next = [entry, ...prev];
@@ -64,7 +65,7 @@ export const useExpenses = () => {
     setExpenses((prev) => {
       const next = prev.map((e) => {
         if (e.id !== id) return e;
-        updated = { ...e, ...patch };
+        updated = { ...e, ...patch, synced: false };
         return updated;
       });
       writeAll(next);

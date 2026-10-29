@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { describe, it, expect, afterEach } from "bun:test";
 import { resilientGoogleFetch, isNetworkOrTransientError } from "./google-fetch";
 
 describe("isNetworkOrTransientError", () => {
@@ -101,7 +101,7 @@ describe("resilientGoogleFetch", () => {
     let directAttempts = 0;
     let proxyCalled = false;
 
-    globalThis.fetch = (async (url: RequestInfo | URL, init?: RequestInit) => {
+    globalThis.fetch = (async (url: RequestInfo | URL) => {
       const u = String(url);
       if (u.includes("sheets.googleapis.com")) {
         directAttempts++;

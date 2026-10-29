@@ -1,0 +1,6 @@
+# Gitflow agent config — auto-detected from this repo's branches and history.
+branch_format: "{type}/{topic}"
+commit_format: "{type}: {summary}"
+commit_detail: "bulleted-list-with-emoji"
+ticket_required: false
+base_branches: [master]

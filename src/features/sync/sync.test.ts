@@ -1,4 +1,5 @@
 import { test, expect, mock, afterEach, beforeEach } from "bun:test";
+import type { Expense } from "@/features/expense/expense.schema";
 
 // ponytail: same in-memory localStorage shim as expense.test.ts/wallet.test.ts.
 class MemoryStorage {
@@ -18,13 +19,18 @@ globalThis.localStorage = new MemoryStorage() as unknown as Storage;
 // No `window`/GIS in bun test — pullRecent (behind pullAndMergeRestore)
 // goes through getFreshAccessToken (google-auth.ts), which needs a real
 // browser. Stub it — see sheets-sync.test.ts for the same reasoning.
-mock.module("./google-auth", () => ({ getFreshAccessToken: async () => "test-access-token" }));
+mock.module("./google-auth", () => ({
+  getFreshAccessToken: async () => "test-access-token",
+  requestGoogleAccessToken: async () => "test-access-token",
+}));
 
 const { readAll: readExpenses, writeAll: writeAllExpenses } =
   await import("@/features/expense/expense.store");
 const { readAll: readWallets, writeAll: writeAllWallets } =
   await import("@/features/wallet/wallet.store");
 const { DEFAULT_WALLET_NAME } = await import("@/features/wallet/wallet.schema");
+const { isExpenseSynced } = await import("@/features/expense/expense.schema");
+const { readQueue, enqueue } = await import("./sync-queue");
 const { writeCredentials } = await import("./sheets-sync.api");
 const { pullAndMergeRestore, mergeById, hasRealLocalData, dedupeWalletsByName } =
   await import("./sync.store");
@@ -40,7 +46,7 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
-const VALID_EXPENSE = {
+const VALID_EXPENSE: Expense = {
   id: "1",
   source: "manual",
   title: "Coffee",
@@ -52,7 +58,7 @@ const VALID_EXPENSE = {
 };
 const VALID_WALLET = { id: "w1", name: "Main Wallet", animal: "cat" as const };
 
-// pullAndMergeRestore pulls the same trailing-7-day window as
+// pullAndMergeRestore pulls the trailing-30-day window as
 // pullRecentAndMerge (see sync.store.ts's recentCutoffKey) — a row dated
 // today is always inside it, so these tests date rows "today" (well
 // within the window) and "2020-01-01" (always outside it) rather than
@@ -102,7 +108,7 @@ test("pullAndMergeRestore reconciles the recent window (sheet wins in-window) bu
   // explicitly, even for a blank Note cell.
   const expectedExpenses = [
     oldLocal,
-    { ...VALID_EXPENSE, date: TODAY, category: null, note: null },
+    { ...VALID_EXPENSE, date: TODAY, category: null, note: null, synced: true },
   ];
   expect(result.expenses).toEqual(expectedExpenses);
   expect(result.wallets).toEqual([VALID_WALLET]);
@@ -268,8 +274,18 @@ test("dedupeWalletsByName no-ops when names are already unique", () => {
 // says now (added, edited, or vanished because another device deleted it).
 test("mergeRecentWindow keeps old local expenses untouched and replaces the window with the sheet's copy", () => {
   const old = { ...VALID_EXPENSE, id: "old", date: "2026-08-01" };
-  const localInWindow = { ...VALID_EXPENSE, id: "local-in-window", date: "2026-08-25" };
-  const sheetInWindow = { ...VALID_EXPENSE, id: "sheet-in-window", date: "2026-08-26" };
+  const localInWindow = {
+    ...VALID_EXPENSE,
+    id: "local-in-window",
+    date: "2026-08-25",
+    synced: true,
+  };
+  const sheetInWindow = {
+    ...VALID_EXPENSE,
+    id: "sheet-in-window",
+    date: "2026-08-26",
+    synced: true,
+  };
 
   const result = mergeRecentWindow([old, localInWindow], [sheetInWindow], "2026-08-24");
 
@@ -277,11 +293,59 @@ test("mergeRecentWindow keeps old local expenses untouched and replaces the wind
 });
 
 test("mergeRecentWindow drops a local expense in-window that the sheet no longer has (remote delete)", () => {
-  const deletedRemotely = { ...VALID_EXPENSE, id: "deleted", date: "2026-08-25" };
+  const deletedRemotely = { ...VALID_EXPENSE, id: "deleted", date: "2026-08-25", synced: true };
   expect(mergeRecentWindow([deletedRemotely], [], "2026-08-24")).toEqual([]);
 });
 
+test("mergeRecentWindow preserves synced: false local expenses in-window when sheet doesn't have them (pending sync)", () => {
+  const pendingLocal = { ...VALID_EXPENSE, id: "pending-1", date: "2026-08-25", synced: false };
+  const result = mergeRecentWindow([pendingLocal], [], "2026-08-24");
+  expect(result).toEqual([pendingLocal]);
+});
+
+test("mergeRecentWindow keeps local pending edits (synced: false) when sheet has stale data", () => {
+  const localPendingEdit = {
+    ...VALID_EXPENSE,
+    id: "e1",
+    title: "Edited Locally",
+    amount: 50000,
+    date: "2026-08-25",
+    synced: false,
+  };
+  const staleSheetItem = {
+    ...VALID_EXPENSE,
+    id: "e1",
+    title: "Original Title",
+    amount: 20000,
+    date: "2026-08-25",
+    synced: true,
+  };
+
+  const result = mergeRecentWindow([localPendingEdit], [staleSheetItem], "2026-08-24");
+  expect(result).toEqual([localPendingEdit]);
+});
+
 test("mergeRecentWindow adds a sheet expense the device never had (another device's push)", () => {
-  const fromOtherDevice = { ...VALID_EXPENSE, id: "other-device", date: "2026-08-27" };
+  const fromOtherDevice = {
+    ...VALID_EXPENSE,
+    id: "other-device",
+    date: "2026-08-27",
+    synced: true,
+  };
   expect(mergeRecentWindow([], [fromOtherDevice], "2026-08-24")).toEqual([fromOtherDevice]);
+});
+
+test("isExpenseSynced returns true unless explicitly false", () => {
+  expect(isExpenseSynced({ ...VALID_EXPENSE, synced: true })).toBe(true);
+  expect(isExpenseSynced({ ...VALID_EXPENSE, synced: undefined })).toBe(true);
+  expect(isExpenseSynced({ ...VALID_EXPENSE, synced: false })).toBe(false);
+});
+
+test("enqueue upsertExpense deduplicates by target ID", () => {
+  const exp1: Expense = { ...VALID_EXPENSE, id: "exp-1", title: "V1", synced: false };
+  const exp2: Expense = { ...VALID_EXPENSE, id: "exp-1", title: "V2", synced: false };
+  enqueue({ type: "upsertExpense", expense: exp1 });
+  expect(readQueue()).toEqual([{ type: "upsertExpense", expense: exp1 }]);
+  enqueue({ type: "upsertExpense", expense: exp2 });
+  expect(readQueue()).toEqual([{ type: "upsertExpense", expense: exp2 }]);
 });

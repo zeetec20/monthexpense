@@ -8,7 +8,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { getImage } from "@/lib/image/image-store";
 import { ImageLightbox } from "@/components/receipt/ImageLightbox";
-import { ImageOff } from "lucide-react";
+import { ImageOff, Check, CloudOff, Loader2, RefreshCw } from "lucide-react";
 import {
   EXPENSE_CATEGORIES,
   type Expense,
@@ -49,6 +49,8 @@ export const ExpenseDetailModal = ({
   onRemove,
   onEdit,
   lang = "id",
+  onSync,
+  syncing = false,
 }: {
   expense: Expense | null;
   wallets: Wallet[];
@@ -57,6 +59,8 @@ export const ExpenseDetailModal = ({
   onRemove: (id: string) => void;
   onEdit: (expense: Expense) => void;
   lang?: Lang;
+  onSync?: (expense: Expense) => void;
+  syncing?: boolean;
 }) => {
   // Keep rendering the last non-null expense while the sheet closes —
   // `expenseProp` going null used to early-return `null` here on the
@@ -171,6 +175,21 @@ export const ExpenseDetailModal = ({
             <div className="flex items-center gap-1.5 flex-wrap">
               <Badge variant="outline" className="w-fit font-mono text-[10px] uppercase">
                 {t(lang, SOURCE_LABEL_KEY[expense.source])}
+              </Badge>
+              <Badge
+                variant="outline"
+                className={`w-fit text-[10px] flex items-center gap-1 ${
+                  expense.synced === false
+                    ? "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
+                    : "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                }`}
+              >
+                {expense.synced === false ? (
+                  <CloudOff className="w-3 h-3" />
+                ) : (
+                  <Check className="w-3 h-3" />
+                )}
+                {t(lang, expense.synced === false ? "notSynced" : "synced")}
               </Badge>
               {walletName && (
                 <Badge variant="secondary" className="w-fit text-[10px]">
@@ -326,6 +345,21 @@ export const ExpenseDetailModal = ({
             {t(lang, "addedOn", { date: formatDate(expense.createdAt) })}
           </p>
 
+          {expense.synced === false && onSync && (
+            <Button
+              variant="outline"
+              disabled={syncing}
+              className="w-full flex items-center justify-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30 font-semibold text-xs"
+              onClick={() => onSync(expense)}
+            >
+              {syncing ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3.5 h-3.5" />
+              )}
+              {t(lang, "trySync")}
+            </Button>
+          )}
           <div className="flex gap-2">
             <Button
               variant="outline"

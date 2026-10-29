@@ -243,6 +243,9 @@ const App = () => {
           wallets={visibleWallets}
           onSelect={setSelectedExpense}
           lang={lang}
+          onRetrySync={sync.retrySync}
+          onSyncExpense={sync.syncExpense}
+          syncing={sync.syncing}
         />
       )}
       {tab === "analytics" && <AnalyticsPage expenses={visibleExpenses} lang={lang} />}
@@ -256,7 +259,11 @@ const App = () => {
       )}
 
       <ExpenseDetailModal
-        expense={selectedExpense}
+        expense={
+          selectedExpense
+            ? (visibleExpenses.find((e) => e.id === selectedExpense.id) ?? selectedExpense)
+            : null
+        }
         wallets={visibleWallets}
         onClose={() => setSelectedExpense(null)}
         onSave={handleUpdateExpense}
@@ -266,6 +273,8 @@ const App = () => {
           setEditingExpense(expense);
         }}
         lang={lang}
+        onSync={sync.syncExpense}
+        syncing={sync.syncing}
       />
 
       <BottomSheet

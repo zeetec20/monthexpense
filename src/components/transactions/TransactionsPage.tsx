@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, Receipt } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  Receipt,
+  Check,
+  CloudOff,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { categoryColor, categoryIcon, categoryLabel } from "@/features/expense/category-visuals";
@@ -36,11 +44,17 @@ export const TransactionsPage = ({
   wallets,
   onSelect,
   lang,
+  onRetrySync,
+  onSyncExpense,
+  syncing = false,
 }: {
   expenses: Expense[];
   wallets: Wallet[];
   onSelect: (expense: Expense) => void;
   lang: Lang;
+  onRetrySync?: () => void;
+  onSyncExpense?: (expense: Expense) => void;
+  syncing?: boolean;
 }) => {
   const [search, setSearch] = useState("");
   const [walletFilter, setWalletFilter] = useState(ALL);
@@ -51,6 +65,10 @@ export const TransactionsPage = ({
     (f) => f !== ALL,
   ).length;
 
+  const unsyncedCount = useMemo(
+    () => expenses.filter((e) => e.synced === false).length,
+    [expenses],
+  );
   const walletName = (id: string | undefined) => wallets.find((w) => w.id === id)?.name ?? "";
   const months = useMemo(
     () => [...new Set(expenses.map((e) => e.date.slice(0, 7)))].sort().reverse(),
@@ -76,6 +94,29 @@ export const TransactionsPage = ({
           {t(lang, "transactionsTitle")}
         </h2>
       </div>
+      {unsyncedCount > 0 && onRetrySync && (
+        <div className="flex items-center justify-between gap-2 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs shadow-sm">
+          <div className="flex items-center gap-2 min-w-0">
+            <CloudOff className="w-4 h-4 shrink-0 text-amber-500" />
+            <span className="font-medium truncate">
+              {t(lang, "unsyncedCount").replace("{count}", String(unsyncedCount))}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={onRetrySync}
+            disabled={syncing}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-semibold text-xs transition-colors shadow-sm"
+          >
+            {syncing ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" />
+            )}
+            {t(lang, "trySync")}
+          </button>
+        </div>
+      )}
 
       <button
         type="button"
@@ -187,6 +228,7 @@ export const TransactionsPage = ({
           {filtered.map((expense) => {
             const Icon = categoryIcon(expense.category);
             const color = categoryColor(expense.category);
+            const isSynced = expense.synced !== false;
             return (
               <div
                 key={expense.id}
@@ -202,19 +244,55 @@ export const TransactionsPage = ({
                   </span>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-ink truncate">{expense.title}</p>
-                    <p className="text-[10px] text-ink-faint">
-                      {formatDate(expense.date)}
-                      {walletName(expense.walletId) ? ` · ${walletName(expense.walletId)}` : ""}
+                    <p className="text-[10px] text-ink-faint flex items-center gap-1.5 flex-wrap">
+                      <span>{formatDate(expense.date)}</span>
+                      {walletName(expense.walletId) ? (
+                        <span>· {walletName(expense.walletId)}</span>
+                      ) : null}
+                      <span
+                        className={`inline-flex items-center gap-0.5 text-[10px] font-medium ${
+                          isSynced
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-amber-600 dark:text-amber-400"
+                        }`}
+                      >
+                        {isSynced ? (
+                          <Check className="w-2.5 h-2.5" />
+                        ) : (
+                          <CloudOff className="w-2.5 h-2.5" />
+                        )}
+                        {t(lang, isSynced ? "synced" : "notSynced")}
+                      </span>
                     </p>
                   </div>
                 </div>
-                <div className="text-right shrink-0">
+                <div className="text-right shrink-0 flex flex-col items-end gap-1">
                   <p className="text-xs font-bold font-mono text-ink">
                     {formatCurrency(expense.amount, expense.currency)}
                   </p>
-                  <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full border bg-elevated text-ink-faint border-line-subtle">
-                    {categoryLabel(expense.category, lang)}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {!isSynced && onSyncExpense && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSyncExpense(expense);
+                        }}
+                        disabled={syncing}
+                        className="inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors"
+                      >
+                        {syncing ? (
+                          <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                        ) : (
+                          <RefreshCw className="w-2.5 h-2.5" />
+                        )}
+                        {t(lang, "trySync")}
+                      </button>
+                    )}
+                    <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full border bg-elevated text-ink-faint border-line-subtle">
+                      {categoryLabel(expense.category, lang)}
+                    </span>
+                  </div>
                 </div>
               </div>
             );

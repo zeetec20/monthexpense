@@ -214,6 +214,10 @@ export const translations = {
     retry: "Coba lagi",
     syncedAt: "Tersinkron {time}",
     notSyncedYet: "Belum tersinkron",
+    synced: "Tersinkron",
+    notSynced: "Belum tersinkron",
+    trySync: "Coba sinkronkan",
+    unsyncedCount: "{count} transaksi belum tersinkron",
     copyLink: "Salin tautan spreadsheet",
     restoreSheets: "Pulihkan dari Sheets",
     disconnect: "Putuskan Sambungan",
@@ -223,7 +227,7 @@ export const translations = {
       "Putuskan perangkat ini dari Google Sheets? Data lokal tetap ada. Sambungkan lagi kapan saja.",
     confirmRestoreTitle: "Pulihkan dari Sheets?",
     confirmRestoreBody:
-      "Cocokkan data 7 hari terakhir dengan Google Sheets? Data yang lebih lama tidak berubah.",
+      "Cocokkan data 30 hari terakhir dengan Google Sheets? Data yang lebih lama tidak berubah.",
     connectedAs: "Terhubung sebagai {email}",
 
     // Connect / login flow
@@ -480,6 +484,10 @@ export const translations = {
     retry: "Retry",
     syncedAt: "Synced {time}",
     notSyncedYet: "Not synced yet",
+    synced: "Synced",
+    notSynced: "Not synced",
+    trySync: "Try sync",
+    unsyncedCount: "{count} transactions not synced",
     copyLink: "Copy spreadsheet link",
     restoreSheets: "Restore from Sheets",
     disconnect: "Disconnect",
@@ -489,7 +497,7 @@ export const translations = {
       "Disconnect this device from Google Sheets? Your local data stays put. Reconnect anytime.",
     confirmRestoreTitle: "Restore from Sheets?",
     confirmRestoreBody:
-      "Reconcile the last 7 days with Google Sheets? Older local data stays untouched.",
+      "Reconcile the last 30 days with Google Sheets? Older local data stays untouched.",
     connectedAs: "Connected as {email}",
 
     // Connect / login flow

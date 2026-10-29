@@ -170,6 +170,7 @@ test("pullAll maps Transactions/Wallets rows, converting the Date serial back to
       note: null,
       createdAt: "2026-08-21T00:00:00.000Z",
       category: "food_snack",
+      synced: true,
     },
   ]);
   expect(result.wallets).toEqual([{ id: "w1", name: "Main Wallet", animal: "cat" }]);

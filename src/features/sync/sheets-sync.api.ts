@@ -286,6 +286,7 @@ const expenseFromRow = (row: unknown[]): Expense => {
     ...(scheduleType !== undefined ? { scheduleType } : {}),
     ...(settled !== undefined ? { settled } : {}),
     ...(paid !== undefined ? { paid } : {}),
+    synced: true,
   };
 };
 

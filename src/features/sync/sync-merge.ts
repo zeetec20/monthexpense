@@ -25,20 +25,38 @@ export const hasRealLocalData = (expenses: Expense[], wallets: Wallet[]): boolea
 };
 
 /** Sheet-wins merge for the trailing-window recent-pull (see sync.store.ts's
- * pullRecentAndMerge): everything in `local` dated before `cutoff` (a
- * "YYYY-MM-DD" key, string-comparable since that format sorts the same
- * lexicographically and chronologically) is left untouched; everything
- * from `cutoff` onward is replaced wholesale by whatever `recent` (the
- * sheet's own windowed pull) contains — covers both another device having
- * added/edited something in the window and another device having deleted
- * something in it (a sheet-side delete just isn't in `recent` to begin
- * with). Exported for direct testing, same reasoning as mergeById above. */
+ * pullRecentAndMerge):
+ * 1. Older local expenses before `cutoff` survive untouched unless superseded by `recent`.
+ * 2. In-window local expenses with pending unsynced edits (`synced === false`) survive
+ *    to prevent data loss if the queue hasn't flushed or a push failed.
+ * 3. In-window local expenses previously synced (`synced !== false`) not in `recent`
+ *    are dropped (remote delete).
+ * 4. Items in `recent` are mapped to sheet data with `synced: true`, except when
+ *    local holds an unpushed local edit (`synced === false`).
+ */
 export const mergeRecentWindow = (
   local: Expense[],
   recent: Expense[],
   cutoff: string,
 ): Expense[] => {
-  return [...local.filter((e) => e.date < cutoff), ...recent];
+  const recentIds = new Set(recent.map((r) => r.id));
+  const localById = new Map(local.map((l) => [l.id, l]));
+
+  const keptLocal = local.filter((e) => {
+    if (recentIds.has(e.id)) return false;
+    if (e.date < cutoff) return true;
+    return e.synced === false;
+  });
+
+  const mergedRecent = recent.map((r) => {
+    const localCopy = localById.get(r.id);
+    if (localCopy && localCopy.synced === false) {
+      return localCopy;
+    }
+    return { ...r, synced: true };
+  });
+
+  return [...keptLocal, ...mergedRecent];
 };
 
 /** Collapses wallets sharing a name (trimmed, case-insensitive) down to the

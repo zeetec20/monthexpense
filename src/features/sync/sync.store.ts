@@ -42,12 +42,11 @@ import {
   STORAGE_KEY as WALLETS_KEY,
 } from "@/features/wallet/wallet.store";
 
-// Trailing window (today back 6 days = 7 days total) used by
+// Trailing window (today back 29 days = 30 days total) used by
 // pullRecentAndMerge below — purely a client-side filter now (Sheets API
 // has no server-side row filtering — see sheets-sync.api.ts's pullRecent),
-// but the *behavior* (only this week's data can affect the local merge)
-// stays identical to before.
-const RECENT_WINDOW_DAYS = 7;
+// covering a full month so recent cross-device edits stay reconciled.
+const RECENT_WINDOW_DAYS = 30;
 
 const recentCutoffKey = (): string => {
   return localDateKey(new Date(Date.now() - (RECENT_WINDOW_DAYS - 1) * 24 * 60 * 60 * 1000));
@@ -193,6 +192,14 @@ export const useSheetsSync = (
           setWallets(wallets);
         } else {
           await applySyncOp(credentials.spreadsheetId, op!);
+          if (op!.type === "upsertExpense") {
+            const upsertedId = op!.expense.id;
+            setExpenses((prev) => {
+              const next = prev.map((e) => (e.id === upsertedId ? { ...e, synced: true } : e));
+              writeAllExpenses(next);
+              return next;
+            });
+          }
         }
         writeQueue(rest);
       }
@@ -302,7 +309,9 @@ export const useSheetsSync = (
     const credentials = readCredentials();
     if (!credentials) return;
     await flushQueue();
-    await pullRecentAndMerge();
+    if (readQueue().length === 0) {
+      await pullRecentAndMerge();
+    }
     const migrationKey = `expense-notes.sheet-v2-migrated.${credentials.spreadsheetId}`;
     if (typeof window !== "undefined" && !localStorage.getItem(migrationKey)) {
       try {
@@ -446,10 +455,32 @@ export const useSheetsSync = (
     };
   }, []);
 
-  const retrySync = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    void verifyConnection();
+  const retrySync = useCallback(async () => {
+    clearTimeout(timerRef.current ?? undefined);
+    const queue = readQueue();
+    const queuedIds = new Set(
+      queue
+        .filter(
+          (op): op is { type: "upsertExpense"; expense: Expense } => op.type === "upsertExpense",
+        )
+        .map((op) => op.expense.id),
+    );
+    const unsynced = readExpenses().filter((e) => e.synced === false && !queuedIds.has(e.id));
+    for (const exp of unsynced) {
+      enqueueOp({ type: "upsertExpense", expense: exp });
+    }
+    await verifyConnection();
   }, [verifyConnection]);
+
+  const syncExpense = useCallback(
+    async (expense: Expense) => {
+      if (expense.synced === false) {
+        enqueueOp({ type: "upsertExpense", expense });
+      }
+      await flushQueue();
+    },
+    [flushQueue],
+  );
 
   /** Disconnects this device from the sheet — clears the stored
    * credentials and drops back to ConnectGate. Doesn't touch local
@@ -476,6 +507,7 @@ export const useSheetsSync = (
     lastError: state.lastError,
     spreadsheetUrl: state.spreadsheetUrl,
     retrySync,
+    syncExpense,
     notifyExpenseUpsert,
     notifyExpenseDelete,
     notifyWalletUpsert,
