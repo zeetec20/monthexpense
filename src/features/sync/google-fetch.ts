@@ -101,11 +101,7 @@ export const resilientGoogleFetch = async (
 
   // If direct fetch failed with a network error and this is a Google Sheets call,
   // try the backend worker fallback proxy
-  if (
-    useProxyFallback &&
-    url.startsWith("https://sheets.googleapis.com/") &&
-    RECEIPT_API_KEY
-  ) {
+  if (useProxyFallback && url.startsWith("https://sheets.googleapis.com/") && RECEIPT_API_KEY) {
     try {
       const proxyRes = await client.v1.sheets.proxy.$post(
         {

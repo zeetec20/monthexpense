@@ -1,10 +1,8 @@
 import { useState, type ChangeEvent, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-export interface NumberInputProps extends Omit<
-  ComponentProps<"input">,
-  "value" | "onChange" | "type"
-> {
+export interface NumberInputProps
+  extends Omit<ComponentProps<"input">, "value" | "onChange" | "type"> {
   value: number | null;
   onChange: (value: number | null) => void;
   /** Allow a fractional part (e.g. quantity "1.5 kg") instead of the

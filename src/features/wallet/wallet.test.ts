@@ -24,8 +24,9 @@ const {
   updateWalletAnimalPure,
   removeWalletPure,
 } = await import("./wallet.store");
-const { WALLET_MAX, DEFAULT_WALLET_NAME, WALLET_ANIMALS, randomAnimal } =
-  await import("./wallet.schema");
+const { WALLET_MAX, DEFAULT_WALLET_NAME, WALLET_ANIMALS, randomAnimal } = await import(
+  "./wallet.schema"
+);
 
 test("randomAnimal always returns one of the known 8 icons", () => {
   for (let i = 0; i < 20; i++) {

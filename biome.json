@@ -1,0 +1,91 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": ["**", "!!**/dist", "!!**/dev-dist", "!!**/.wrangler"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "all"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": false
+    },
+    "linter": {
+      "enabled": false
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "a11y": {
+        "preset": "none"
+      },
+      "style": {
+        "preset": "none"
+      },
+      "suspicious": {
+        "recommended": true,
+        "noControlCharactersInRegex": "off",
+        "noArrayIndexKey": "warn",
+        "useIterableCallbackReturn": "warn",
+        "noImplicitAnyLet": "warn",
+        "noAssignInExpressions": "warn"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "useHookAtTopLevel": "error",
+        "useExhaustiveDependencies": "warn"
+      },
+      "complexity": {
+        "preset": "none",
+        "useArrowFunction": "error"
+      },
+      "nursery": {
+        "useConsistentFunctionStyle": {
+          "level": "error",
+          "options": {
+            "style": "expression"
+          }
+        }
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/src/components/ui/**",
+        "**/src/features/sync/google-auth.ts",
+        "**/src/worker/ai/fake-model.ts"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useArrowFunction": "off"
+          },
+          "nursery": {
+            "useConsistentFunctionStyle": "off"
+          }
+        }
+      }
+    }
+  ]
+}

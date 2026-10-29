@@ -24,16 +24,19 @@ mock.module("./google-auth", () => ({
   requestGoogleAccessToken: async () => "test-access-token",
 }));
 
-const { readAll: readExpenses, writeAll: writeAllExpenses } =
-  await import("@/features/expense/expense.store");
-const { readAll: readWallets, writeAll: writeAllWallets } =
-  await import("@/features/wallet/wallet.store");
+const { readAll: readExpenses, writeAll: writeAllExpenses } = await import(
+  "@/features/expense/expense.store"
+);
+const { readAll: readWallets, writeAll: writeAllWallets } = await import(
+  "@/features/wallet/wallet.store"
+);
 const { DEFAULT_WALLET_NAME } = await import("@/features/wallet/wallet.schema");
 const { isExpenseSynced } = await import("@/features/expense/expense.schema");
 const { readQueue, enqueue } = await import("./sync-queue");
 const { writeCredentials } = await import("./sheets-sync.api");
-const { pullAndMergeRestore, mergeById, hasRealLocalData, dedupeWalletsByName } =
-  await import("./sync.store");
+const { pullAndMergeRestore, mergeById, hasRealLocalData, dedupeWalletsByName } = await import(
+  "./sync.store"
+);
 const { mergeRecentWindow } = await import("./sync-merge");
 
 const SPREADSHEET_ID = "sheet-123";

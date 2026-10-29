@@ -35,8 +35,11 @@ export const postSheetsProxy = async (c: Context<HonoEnv>) => {
   }
 
   const method = body.method?.toUpperCase() ?? "GET";
-  const payloadBody =
-    body.body ? (typeof body.body === "string" ? body.body : JSON.stringify(body.body)) : undefined;
+  const payloadBody = body.body
+    ? typeof body.body === "string"
+      ? body.body
+      : JSON.stringify(body.body)
+    : undefined;
 
   const res = await fetch(body.url, {
     method,
