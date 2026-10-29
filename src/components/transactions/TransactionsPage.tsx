@@ -245,10 +245,6 @@ export const TransactionsPage = ({
                   <div className="min-w-0">
                     <p className="text-xs font-semibold text-ink truncate">{expense.title}</p>
                     <p className="text-[10px] text-ink-faint flex items-center gap-1.5 flex-wrap">
-                      <span>{formatDate(expense.date)}</span>
-                      {walletName(expense.walletId) ? (
-                        <span>· {walletName(expense.walletId)}</span>
-                      ) : null}
                       <span
                         className={`inline-flex items-center gap-0.5 text-[10px] font-medium ${
                           isSynced
@@ -263,6 +259,11 @@ export const TransactionsPage = ({
                         )}
                         {t(lang, isSynced ? "synced" : "notSynced")}
                       </span>
+                      <span>·</span>
+                      <span>{formatDate(expense.date)}</span>
+                      {walletName(expense.walletId) ? (
+                        <span>· {walletName(expense.walletId)}</span>
+                      ) : null}
                     </p>
                   </div>
                 </div>

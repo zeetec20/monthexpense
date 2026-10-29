@@ -173,9 +173,6 @@ export const ExpenseDetailModal = ({
 
           <div className="space-y-2">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <Badge variant="outline" className="w-fit font-mono text-[10px] uppercase">
-                {t(lang, SOURCE_LABEL_KEY[expense.source])}
-              </Badge>
               <Badge
                 variant="outline"
                 className={`w-fit text-[10px] flex items-center gap-1 ${
@@ -190,6 +187,9 @@ export const ExpenseDetailModal = ({
                   <Check className="w-3 h-3" />
                 )}
                 {t(lang, expense.synced === false ? "notSynced" : "synced")}
+              </Badge>
+              <Badge variant="outline" className="w-fit font-mono text-[10px] uppercase">
+                {t(lang, SOURCE_LABEL_KEY[expense.source])}
               </Badge>
               {walletName && (
                 <Badge variant="secondary" className="w-fit text-[10px]">
