@@ -12,7 +12,7 @@
     "test": "bun run test:worker && bun run test:client",
     "test:worker": "vitest run",
     "test:worker:watch": "vitest",
-    "test:client": "bun test src/",
+    "test:client": "bun test src/ scripts/",
     "typecheck": "tsc -b",
     "types": "wrangler types",
     "lint": "oxlint",
@@ -22,7 +22,8 @@
     "tunnel": "bun scripts/tunnel.ts",
     "dev:tunnel": "bun scripts/tunnel.ts",
     "generate-icons": "bun scripts/generate-icons.mjs",
-    "mint-secret": "bun scripts/mint-secret.ts"
+    "mint-secret": "bun scripts/mint-secret.ts",
+    "release:check": "bun scripts/auto-release.ts --dry-run"
   },
   "dependencies": {
     "@paddleocr/paddleocr-js": "^0.1.0",
