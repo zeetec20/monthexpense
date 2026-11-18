@@ -25,8 +25,8 @@ type ParseLang = (typeof PARSE_LANGS)[number]["code"];
  * receipts a user can only copy as text (no photo, no speech). Same
  * downstream pipeline as Scanner/VoiceEntry: parse to a Receipt, run it
  * through receiptToExpenseInput, hand off to the shared ExpenseReviewModal.
- * `onSubmit` is App.tsx's addExpense(input, "manual") — no dedicated
- * source value, this is just another way to produce the same ExpenseInput. */
+ * `onSubmit` is App.tsx's addExpense(input, "text") — dedicated "text"
+ * source value for pasted text receipts. */
 export const TextReceiptEntry = ({
   onSubmit,
   wallets,

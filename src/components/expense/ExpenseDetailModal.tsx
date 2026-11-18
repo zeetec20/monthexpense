@@ -19,11 +19,12 @@ import { t, type Lang } from "@/i18n/translations";
 
 const SOURCE_LABEL_KEY: Record<
   Expense["source"],
-  "sourceScanned" | "sourceManual" | "sourceVoice"
+  "sourceScanned" | "sourceManual" | "sourceVoice" | "sourceText"
 > = {
   scan: "sourceScanned",
   manual: "sourceManual",
   voice: "sourceVoice",
+  text: "sourceText",
 };
 
 const Row = ({ label, value, strong }: { label: string; value: string; strong?: boolean }) => {
@@ -144,7 +145,7 @@ export const ExpenseDetailModal = ({
           unconditionally for its own gesture tracking, so native scroll
           never engages there no matter what (see NotificationDrawer.tsx,
           the pattern every other sheet was brought in line with). */}
-        <div className="min-h-0 flex-1 overflow-y-auto -mx-1 px-1 space-y-4">
+        <div className="min-h-0 flex-1 overflow-y-auto -mx-1 px-1 pt-3 space-y-4">
           {expense.receiptImageId &&
             (imageUrl ? (
               <button
@@ -172,51 +173,53 @@ export const ExpenseDetailModal = ({
           />
 
           <div className="space-y-2">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <Badge
-                variant="outline"
-                className={`w-fit text-[10px] flex items-center gap-1 ${
-                  expense.synced === false
-                    ? "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
-                    : "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
-                }`}
-              >
-                {expense.synced === false ? (
-                  <CloudOff className="w-3 h-3" />
-                ) : (
-                  <Check className="w-3 h-3" />
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                <Badge
+                  variant="outline"
+                  className={`w-fit text-[10px] flex items-center gap-1 ${
+                    expense.synced === false
+                      ? "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
+                      : "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+                  }`}
+                >
+                  {expense.synced === false ? (
+                    <CloudOff className="w-3 h-3" />
+                  ) : (
+                    <Check className="w-3 h-3" />
+                  )}
+                  {t(lang, expense.synced === false ? "notSynced" : "synced")}
+                </Badge>
+                {walletName && (
+                  <Badge variant="secondary" className="w-fit text-[10px]">
+                    {walletName}
+                  </Badge>
                 )}
-                {t(lang, expense.synced === false ? "notSynced" : "synced")}
-              </Badge>
-              <Badge variant="outline" className="w-fit font-mono text-[10px] uppercase">
+                {categoryLabel && (
+                  <Badge variant="secondary" className="w-fit text-[10px]">
+                    {categoryLabel}
+                  </Badge>
+                )}
+                {expense.scheduleType === "debt" && (
+                  <Badge
+                    variant="secondary"
+                    className="w-fit text-[10px] text-rose-500 bg-rose-500/10 border-rose-500/20"
+                  >
+                    {t(lang, "typeDebt")}
+                  </Badge>
+                )}
+                {expense.scheduleType === "scheduled" && (
+                  <Badge
+                    variant="secondary"
+                    className="w-fit text-[10px] text-sky-500 bg-sky-500/10 border-sky-500/20"
+                  >
+                    {t(lang, "typeScheduled")}
+                  </Badge>
+                )}
+              </div>
+              <Badge variant="outline" className="shrink-0 w-fit font-mono text-[10px] uppercase">
                 {t(lang, SOURCE_LABEL_KEY[expense.source])}
               </Badge>
-              {walletName && (
-                <Badge variant="secondary" className="w-fit text-[10px]">
-                  {walletName}
-                </Badge>
-              )}
-              {categoryLabel && (
-                <Badge variant="secondary" className="w-fit text-[10px]">
-                  {categoryLabel}
-                </Badge>
-              )}
-              {expense.scheduleType === "debt" && (
-                <Badge
-                  variant="secondary"
-                  className="w-fit text-[10px] text-rose-500 bg-rose-500/10 border-rose-500/20"
-                >
-                  {t(lang, "typeDebt")}
-                </Badge>
-              )}
-              {expense.scheduleType === "scheduled" && (
-                <Badge
-                  variant="secondary"
-                  className="w-fit text-[10px] text-sky-500 bg-sky-500/10 border-sky-500/20"
-                >
-                  {t(lang, "typeScheduled")}
-                </Badge>
-              )}
             </div>
 
             {/* Styled to read as a heading (matches ReceiptHeader's merchant

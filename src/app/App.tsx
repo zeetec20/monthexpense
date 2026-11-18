@@ -406,7 +406,7 @@ const App = () => {
               defaultWalletId={defaultWalletId}
               lang={lang}
               onSubmit={(input) => {
-                handleAddExpense(input, "manual");
+                handleAddExpense(input, "text");
                 closeEntryFlow();
               }}
             />

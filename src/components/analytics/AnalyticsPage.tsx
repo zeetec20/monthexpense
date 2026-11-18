@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import {
+  addDays,
   differenceInCalendarDays,
   getDaysInMonth,
   parseISO,
@@ -33,7 +34,7 @@ import { categoryColor, categoryLabel } from "@/features/expense/category-visual
 import { t, type Lang } from "@/i18n/translations";
 import { EXPENSE_CATEGORIES, type Expense } from "@/features/expense/expense.schema";
 
-type Period = "thisMonth" | "last3m" | "last6m" | "thisYear";
+type Period = "thisMonth" | "last1m" | "last3m" | "last6m" | "thisYear";
 
 /** Same 5-day-bucket idea already proven in the Google Sheets "Tren
  * Pengeluaran" formula (see google-provision.client.ts's
@@ -59,6 +60,31 @@ const bucketByFiveDays = (expenses: Expense[], today: Date) => {
     .map(([name, spending]) => ({ name, spending }));
 };
 
+// Rolling 5-day buckets for last1m — bucketByFiveDays keys on day-of-month,
+// which merges and mis-sorts buckets when the 30-day window spans two months.
+const bucketByFiveDaysRolling = (expenses: Expense[], today: Date, lang: Lang) => {
+  const cutoff = subMonths(today, 1);
+  const bucketCount = Math.ceil((differenceInCalendarDays(today, cutoff) + 1) / 5);
+  const buckets: { name: string; spending: number }[] = [];
+  for (let i = 0; i < bucketCount; i++) {
+    const end = addDays(cutoff, i * 5 + 4);
+    buckets.push({
+      name: `${addDays(cutoff, i * 5).getDate()}-${end.getDate()} ${end.toLocaleDateString(
+        lang === "id" ? "id-ID" : "en-US",
+        { month: "short" },
+      )}`,
+      spending: 0,
+    });
+  }
+  for (const e of expenses) {
+    const idx = differenceInCalendarDays(parseISO(e.date), cutoff);
+    if (idx < 0) continue;
+    const bucket = buckets[Math.min(Math.floor(idx / 5), bucketCount - 1)];
+    bucket.spending += e.amount;
+  }
+  return buckets;
+};
+
 const bucketByMonth = (expenses: Expense[], lang: Lang) => {
   const sums = new Map<string, number>();
   for (const e of expenses) {
@@ -79,6 +105,10 @@ const bucketByMonth = (expenses: Expense[], lang: Lang) => {
 const periodExpenses = (expenses: Expense[], period: Period, today: Date) => {
   const counted = expenses.filter(isCountedExpense);
   if (period === "thisMonth") return counted.filter((e) => e.date.startsWith(localMonthKey(today)));
+  if (period === "last1m") {
+    const cutoff = subMonths(today, 1);
+    return counted.filter((e) => parseISO(e.date) >= cutoff);
+  }
   if (period === "thisYear")
     return counted.filter((e) => e.date.startsWith(String(today.getFullYear())));
   const months = period === "last3m" ? 3 : 6;
@@ -97,6 +127,14 @@ const previousPeriodExpenses = (expenses: Expense[], period: Period, today: Date
     const prevMonth = localMonthKey(subMonths(today, 1));
     return counted.filter((e) => e.date.startsWith(prevMonth));
   }
+  if (period === "last1m") {
+    const cutoff = subMonths(today, 1);
+    const previousCutoff = subMonths(today, 2);
+    return counted.filter((e) => {
+      const d = parseISO(e.date);
+      return d >= previousCutoff && d < cutoff;
+    });
+  }
   if (period === "thisYear") {
     const prevYear = String(today.getFullYear() - 1);
     return counted.filter((e) => e.date.startsWith(prevYear));
@@ -111,7 +149,8 @@ const previousPeriodExpenses = (expenses: Expense[], period: Period, today: Date
 };
 
 const periodDays = (period: Period, today: Date) => {
-  if (period === "thisMonth") return getDaysInMonth(today);
+  if (period === "thisMonth") return differenceInCalendarDays(today, startOfMonth(today)) + 1;
+  if (period === "last1m") return differenceInCalendarDays(today, subMonths(today, 1)) + 1;
   if (period === "thisYear") return differenceInCalendarDays(today, startOfYear(today)) + 1;
   return (period === "last3m" ? 3 : 6) * 30;
 };
@@ -133,7 +172,11 @@ export const AnalyticsPage = ({ expenses, lang }: { expenses: Expense[]; lang: L
   );
   const trendData = useMemo(
     () =>
-      period === "thisMonth" ? bucketByFiveDays(inPeriod, today) : bucketByMonth(inPeriod, lang),
+      period === "thisMonth"
+        ? bucketByFiveDays(inPeriod, today)
+        : period === "last1m"
+          ? bucketByFiveDaysRolling(inPeriod, today, lang)
+          : bucketByMonth(inPeriod, lang),
     [inPeriod, period, today, lang],
   );
   const categoryData = useMemo(
@@ -177,6 +220,7 @@ export const AnalyticsPage = ({ expenses, lang }: { expenses: Expense[]; lang: L
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="thisMonth">{t(lang, "thisMonth")}</SelectItem>
+            <SelectItem value="last1m">{t(lang, "rangeLast1Month")}</SelectItem>
             <SelectItem value="last3m">{t(lang, "rangeLast3Months")}</SelectItem>
             <SelectItem value="last6m">{t(lang, "rangeLast6Months")}</SelectItem>
             <SelectItem value="thisYear">{t(lang, "thisYear")}</SelectItem>
