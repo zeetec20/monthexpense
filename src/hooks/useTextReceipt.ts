@@ -44,7 +44,12 @@ export const useTextReceipt = () => {
       const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
       if (error instanceof QuotaExceededError) {
         recordQuota("text", { remaining: 0, limit: getQuota("text")?.limit ?? 20 });
-        setState({ status: "error", receipt: null, message: "textReceiptErrorQuotaExceeded", detail });
+        setState({
+          status: "error",
+          receipt: null,
+          message: "textReceiptErrorQuotaExceeded",
+          detail,
+        });
         return;
       }
       setState({ status: "error", receipt: null, message: "textReceiptErrorParseFailed", detail });

@@ -1,8 +1,6 @@
 export const RECEIPT_API_URL = import.meta.env.VITE_RECEIPT_API_URL || "";
 export const RECEIPT_API_KEY =
-  import.meta.env.VITE_RECEIPT_API_KEY ||
-  import.meta.env.API_KEY ||
-  "GzxGoFoFdSKhNlt9J1NoZ";
+  import.meta.env.VITE_RECEIPT_API_KEY || import.meta.env.API_KEY || "GzxGoFoFdSKhNlt9J1NoZ";
 
 // Public — an OAuth client_id is not a secret. No client_secret exists
 // anywhere in this flow at all: this app talks to Google directly via
