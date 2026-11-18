@@ -43,7 +43,7 @@ export const TextReceiptEntry = ({
   // sttLang default following its own convention — here there's no fixed
   // "always Indonesian" product decision to override it with.
   const [parseLang, setParseLang] = useState<ParseLang>(lang);
-  const { status, receipt, message, parse, reset } = useTextReceipt();
+  const { status, receipt, message, detail, parse, reset } = useTextReceipt();
   const quota = useEntryQuota("text");
   const online = useOnlineStatus();
 
@@ -113,7 +113,12 @@ export const TextReceiptEntry = ({
         rows={8}
         disabled={busy}
       />
-      {status === "error" && message && <p className="text-xs text-red-500">{t(lang, message)}</p>}
+      {status === "error" && message && (
+        <div className="space-y-0.5">
+          <p className="text-xs text-red-500">{t(lang, message)}</p>
+          {detail && <p className="text-[10px] text-ink-faint font-mono">{detail}</p>}
+        </div>
+      )}
       <Button
         type="button"
         className="w-full"

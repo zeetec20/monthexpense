@@ -24,7 +24,11 @@ const sharedApiKey =
   process.env.API_KEY ||
   syncedEnv.VITE_RECEIPT_API_KEY ||
   syncedEnv.API_KEY ||
-  "";
+  "GzxGoFoFdSKhNlt9J1NoZ";
+const googleClientId =
+  process.env.VITE_GOOGLE_CLIENT_ID ||
+  syncedEnv.VITE_GOOGLE_CLIENT_ID ||
+  "371376807545-t17t8r3nqqiphocm5pecri3i4gmadedf.apps.googleusercontent.com";
 
 export default defineConfig({
   define: {
@@ -32,6 +36,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
     __APP_BUILD_TIME__: JSON.stringify(buildTime),
     "import.meta.env.VITE_RECEIPT_API_KEY": JSON.stringify(sharedApiKey),
+    "import.meta.env.VITE_GOOGLE_CLIENT_ID": JSON.stringify(googleClientId),
   },
   plugins: [
     cloudflare(),

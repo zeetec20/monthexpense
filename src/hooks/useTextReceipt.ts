@@ -12,10 +12,10 @@ type TextReceiptErrorKey =
   | "textReceiptErrorQuotaExceeded";
 
 type TextReceiptState =
-  | { status: "idle"; receipt: null; message?: undefined }
-  | { status: "parsing"; receipt: null; message?: undefined }
-  | { status: "success"; receipt: Receipt; message?: undefined }
-  | { status: "error"; receipt: null; message: TextReceiptErrorKey };
+  | { status: "idle"; receipt: null; message?: undefined; detail?: undefined }
+  | { status: "parsing"; receipt: null; message?: undefined; detail?: undefined }
+  | { status: "success"; receipt: Receipt; message?: undefined; detail?: undefined }
+  | { status: "error"; receipt: null; message: TextReceiptErrorKey; detail?: string };
 
 const IDLE: TextReceiptState = { status: "idle", receipt: null };
 
@@ -41,12 +41,13 @@ export const useTextReceipt = () => {
       setState({ status: "success", receipt: response.data });
     } catch (error) {
       console.error("Text receipt parse failed", error);
+      const detail = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
       if (error instanceof QuotaExceededError) {
         recordQuota("text", { remaining: 0, limit: getQuota("text")?.limit ?? 20 });
-        setState({ status: "error", receipt: null, message: "textReceiptErrorQuotaExceeded" });
+        setState({ status: "error", receipt: null, message: "textReceiptErrorQuotaExceeded", detail });
         return;
       }
-      setState({ status: "error", receipt: null, message: "textReceiptErrorParseFailed" });
+      setState({ status: "error", receipt: null, message: "textReceiptErrorParseFailed", detail });
     }
   }, []);
 
