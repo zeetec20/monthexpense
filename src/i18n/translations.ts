@@ -135,6 +135,7 @@ export const translations = {
     sourceScanned: "Dipindai",
     sourceManual: "Manual",
     sourceVoice: "Suara",
+    sourceText: "Teks",
     unnamedItem: "Item tanpa nama",
     noLineItemsDetected: "Tidak ada item terdeteksi.",
     addedOn: "Ditambahkan {date}",
@@ -275,6 +276,7 @@ export const translations = {
     // Analytics
     analyticsTitle: "Analitik & Wawasan",
     thisYear: "Tahun ini",
+    rangeLast1Month: "1 Bulan Terakhir",
     rangeLast3Months: "3 Bulan Terakhir",
     rangeLast6Months: "6 Bulan Terakhir",
     totalSpending: "Total Pengeluaran",
@@ -410,6 +412,7 @@ export const translations = {
     sourceScanned: "Scanned",
     sourceManual: "Manual",
     sourceVoice: "Voice",
+    sourceText: "Text",
     unnamedItem: "Unnamed item",
     noLineItemsDetected: "No line items detected.",
     addedOn: "Added {date}",
@@ -542,6 +545,7 @@ export const translations = {
 
     analyticsTitle: "Analytics & Insights",
     thisYear: "This Year",
+    rangeLast1Month: "Last 1 Month",
     rangeLast3Months: "Last 3 Months",
     rangeLast6Months: "Last 6 Months",
     totalSpending: "Total Spending",

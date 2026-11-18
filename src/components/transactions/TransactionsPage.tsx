@@ -7,8 +7,10 @@ import {
   CloudOff,
   Loader2,
   RefreshCw,
+  Wallet as WalletIcon,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { AnimalAvatar } from "@/components/ui/AnimalAvatar";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { categoryColor, categoryIcon, categoryLabel } from "@/features/expense/category-visuals";
 import { t, type Lang } from "@/i18n/translations";
@@ -86,6 +88,9 @@ export const TransactionsPage = ({
     });
     return sortExpensesByNewestCreated(matched);
   }, [expenses, search, walletFilter, categoryFilter, monthFilter]);
+  const selectedWallet = wallets.find((w) => w.id === walletFilter);
+  const selectedCategory = EXPENSE_CATEGORIES.find((c) => c.value === categoryFilter);
+  const CategoryIcon = selectedCategory ? categoryIcon(selectedCategory.value) : null;
 
   return (
     <div className="space-y-3.5 max-w-sm mx-auto">
@@ -153,28 +158,70 @@ export const TransactionsPage = ({
         <div className="space-y-3">
           <Select value={walletFilter} onValueChange={setWalletFilter}>
             <SelectTrigger className="text-xs py-2.5">
-              <SelectValue />
+              <SelectValue>
+                {selectedWallet ? (
+                  <span className="flex min-w-0 items-center gap-2">
+                    <WalletIcon className="w-3.5 h-3.5 shrink-0 text-ink-faint" />
+                    <span className="min-w-0 flex-1 truncate">{selectedWallet.name}</span>
+                  </span>
+                ) : (
+                  t(lang, "allWallets")
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>{t(lang, "allWallets")}</SelectItem>
               {wallets.map((w) => (
                 <SelectItem key={w.id} value={w.id}>
-                  {w.name}
+                  <span className="flex min-w-0 items-center gap-2">
+                    <AnimalAvatar
+                      animal={w.animal}
+                      className="w-5 h-5 shrink-0"
+                      iconClassName="w-3 h-3"
+                    />
+                    <span className="min-w-0 flex-1 truncate">{w.name}</span>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="text-xs py-2.5">
-              <SelectValue />
+              <SelectValue>
+                {selectedCategory && CategoryIcon ? (
+                  <span className="flex min-w-0 items-center gap-2">
+                    {/* eslint-disable-next-line react/static-components -- categoryIcon() returns a stable lookup from CATEGORY_ICON, not a new component */}
+                    <CategoryIcon
+                      className="w-3.5 h-3.5 shrink-0"
+                      style={{ color: categoryColor(selectedCategory.value) }}
+                    />
+                    <span className="min-w-0 flex-1 truncate">
+                      {categoryLabel(selectedCategory.value, lang)}
+                    </span>
+                  </span>
+                ) : (
+                  t(lang, "allCategories")
+                )}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>{t(lang, "allCategories")}</SelectItem>
-              {EXPENSE_CATEGORIES.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {categoryLabel(c.value, lang)}
-                </SelectItem>
-              ))}
+              {EXPENSE_CATEGORIES.map((c) => {
+                const Icon = categoryIcon(c.value);
+                return (
+                  <SelectItem key={c.value} value={c.value}>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <Icon
+                        className="w-3.5 h-3.5 shrink-0"
+                        style={{ color: categoryColor(c.value) }}
+                      />
+                      <span className="min-w-0 flex-1 truncate">
+                        {categoryLabel(c.value, lang)}
+                      </span>
+                    </span>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
           <Select value={monthFilter} onValueChange={setMonthFilter}>
@@ -224,7 +271,7 @@ export const TransactionsPage = ({
       {filtered.length === 0 ? (
         <EmptyState icon={Receipt} message={t(lang, "noTransactionsFound")} />
       ) : (
-        <div className="divide-y divide-line-subtle rounded-2xl border bg-card border-line shadow-sm transition-colors">
+        <div className="divide-y divide-line-subtle rounded-2xl border bg-card border-line shadow-sm transition-colors overflow-hidden">
           {filtered.map((expense) => {
             const Icon = categoryIcon(expense.category);
             const color = categoryColor(expense.category);
@@ -233,67 +280,81 @@ export const TransactionsPage = ({
               <div
                 key={expense.id}
                 onClick={() => onSelect(expense)}
-                className="flex items-center justify-between py-2.5 px-3 transition-colors cursor-pointer hover:bg-card-hover"
+                className="flex items-center justify-between py-3 px-4 transition-colors cursor-pointer hover:bg-card-hover first:rounded-t-2xl last:rounded-b-2xl"
               >
-                <div className="flex items-center gap-3 min-w-0 pr-2">
-                  <span
-                    className="w-8 h-8 rounded-xl shrink-0 grid place-items-center"
-                    style={{ backgroundColor: color + "26", color }}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-ink truncate">{expense.title}</p>
-                    <p className="text-[10px] text-ink-faint flex items-center gap-1.5 flex-wrap">
+                <div className="flex flex-col gap-1.5 w-full min-w-0">
+                  <div className="flex items-center justify-between gap-2 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       <span
-                        className={`inline-flex items-center gap-0.5 text-[10px] font-medium ${
-                          isSynced
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-amber-600 dark:text-amber-400"
-                        }`}
+                        className="w-8 h-8 rounded-xl shrink-0 grid place-items-center"
+                        style={{ backgroundColor: color + "26", color }}
                       >
-                        {isSynced ? (
-                          <Check className="w-2.5 h-2.5" />
-                        ) : (
-                          <CloudOff className="w-2.5 h-2.5" />
-                        )}
-                        {t(lang, isSynced ? "synced" : "notSynced")}
+                        <Icon className="w-4 h-4" />
                       </span>
-                      <span>·</span>
-                      <span>{formatDate(expense.date)}</span>
-                      {walletName(expense.walletId) ? (
-                        <span>· {walletName(expense.walletId)}</span>
-                      ) : null}
+                      <p className="text-xs font-semibold text-ink truncate">{expense.title}</p>
+                    </div>
+                    <p className="shrink-0 text-xs font-bold font-mono text-ink tabular-nums">
+                      {formatCurrency(expense.amount, expense.currency)}
                     </p>
                   </div>
-                </div>
-                <div className="text-right shrink-0 flex flex-col items-end gap-1">
-                  <p className="text-xs font-bold font-mono text-ink">
-                    {formatCurrency(expense.amount, expense.currency)}
-                  </p>
-                  <div className="flex items-center gap-1.5">
-                    {!isSynced && onSyncExpense && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSyncExpense(expense);
-                        }}
-                        disabled={syncing}
-                        className="inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors"
-                      >
-                        {syncing ? (
-                          <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                        ) : (
-                          <RefreshCw className="w-2.5 h-2.5" />
-                        )}
-                        {t(lang, "trySync")}
-                      </button>
-                    )}
-                    <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full border bg-elevated text-ink-faint border-line-subtle">
-                      {categoryLabel(expense.category, lang)}
+                  <p className="text-[10px] text-ink-faint flex items-center gap-1.5">
+                    <span
+                      className={`inline-flex items-center gap-0.5 text-[10px] font-medium ${
+                        isSynced
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-amber-600 dark:text-amber-400"
+                      }`}
+                    >
+                      {isSynced ? (
+                        <Check className="w-2.5 h-2.5" />
+                      ) : (
+                        <CloudOff className="w-2.5 h-2.5" />
+                      )}
+                      {t(lang, isSynced ? "synced" : "notSynced")}
                     </span>
+                    <span>·</span>
+                    <span>{formatDate(expense.date)}</span>
+                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] text-ink-faint truncate">
+                      {walletName(expense.walletId)}
+                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="inline-block text-[9px] font-medium px-2 py-0.5 rounded-full border bg-elevated text-ink-faint border-line-subtle">
+                        {categoryLabel(expense.category, lang)}
+                      </span>
+                      {expense.scheduleType === "scheduled" && (
+                        <span className="inline-flex items-center text-[9px] font-medium px-2 py-0.5 rounded-full border text-sky-500 dark:text-sky-400 border-sky-500/30 bg-sky-500/10">
+                          {t(lang, "typeScheduled")}
+                        </span>
+                      )}
+                      {expense.scheduleType === "debt" && (
+                        <span className="inline-flex items-center text-[9px] font-medium px-2 py-0.5 rounded-full border text-rose-500 dark:text-rose-400 border-rose-500/30 bg-rose-500/10">
+                          {t(lang, "typeDebt")}
+                        </span>
+                      )}
+                    </div>
                   </div>
+                </div>
+                <div className="shrink-0 flex flex-col items-end gap-1">
+                  {!isSynced && onSyncExpense && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSyncExpense(expense);
+                      }}
+                      disabled={syncing}
+                      className="inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-colors"
+                    >
+                      {syncing ? (
+                        <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-2.5 h-2.5" />
+                      )}
+                      {t(lang, "trySync")}
+                    </button>
+                  )}
                 </div>
               </div>
             );

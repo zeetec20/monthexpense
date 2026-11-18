@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Receipt } from "@/features/receipt/receipt.schema";
 import { localDateKey } from "@/lib/format";
 
-export const expenseSourceSchema = z.enum(["scan", "manual", "voice"]);
+export const expenseSourceSchema = z.enum(["scan", "manual", "voice", "text"]);
 
 // Fixed list, not model-extensible — matches text-processing-slm's
 // ReceiptCategorySchema (src/schemas/receipt.ts) value-for-value, so a
